@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCalc.View", "HomeCalc.View\HomeCalc.View.csproj", "{F515B5F8-0202-43B7-903B-CB3ECC12718E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCalc.Model", "HomeCalc.Model\HomeCalc.Model.csproj", "{5580F859-48D3-4EEE-B469-7C9E174CDC3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCalc.Data", "HomeCalc.Data\HomeCalc.Data.csproj", "{45A5A644-3C52-4602-AB93-BB5C535C22F3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F515B5F8-0202-43B7-903B-CB3ECC12718E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F515B5F8-0202-43B7-903B-CB3ECC12718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F515B5F8-0202-43B7-903B-CB3ECC12718E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F515B5F8-0202-43B7-903B-CB3ECC12718E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5580F859-48D3-4EEE-B469-7C9E174CDC3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5580F859-48D3-4EEE-B469-7C9E174CDC3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5580F859-48D3-4EEE-B469-7C9E174CDC3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5580F859-48D3-4EEE-B469-7C9E174CDC3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A5A644-3C52-4602-AB93-BB5C535C22F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A5A644-3C52-4602-AB93-BB5C535C22F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A5A644-3C52-4602-AB93-BB5C535C22F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A5A644-3C52-4602-AB93-BB5C535C22F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
