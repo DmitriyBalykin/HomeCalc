@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HomeCalc.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,19 @@ namespace HomeCalc.View
     /// </summary>
     public partial class MainWindow : Window
     {
+        StatusService statusService;
         public MainWindow()
         {
             InitializeComponent();
+
+            statusService = StatusService.GetInstance();
+            statusService.StatusChanged += statusService_StatusChanged;
+            Status = "Some status";
+        }
+
+        void statusService_StatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            Status = e.Status;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -34,5 +45,7 @@ namespace HomeCalc.View
         {
             this.DragMove();
         }
+
+        public string Status { get; set; }
     }
 }

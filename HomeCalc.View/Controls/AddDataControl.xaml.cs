@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using HomeCalc.Model.ViewModels;
 
 namespace HomeCalc.View.Controls
 {
@@ -23,6 +24,7 @@ namespace HomeCalc.View.Controls
         public AddDataControl()
         {
             InitializeComponent();
+            this.DataContext = new AddDataModel();
         }
     }
 }

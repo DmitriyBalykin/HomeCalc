@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HomeCalc.Model.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace HomeCalc.View.Controls
         public SettingsControl()
         {
             InitializeComponent();
+            this.DataContext = new SettingsModel();
         }
     }
 }
