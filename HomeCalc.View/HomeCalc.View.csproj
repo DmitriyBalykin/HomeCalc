@@ -57,6 +57,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\OperationsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ReadDataControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -75,6 +79,9 @@
     </Compile>
     <Compile Include="Controls\AddDataControl.xaml.cs">
       <DependentUpon>AddDataControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\OperationsControl.xaml.cs">
+      <DependentUpon>OperationsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ReadDataControl.xaml.cs">
       <DependentUpon>ReadDataControl.xaml</DependentUpon>

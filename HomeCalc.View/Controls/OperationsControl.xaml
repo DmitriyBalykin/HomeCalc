@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="HomeCalc.View.Controls.OperationsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="500">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/HomeCalc.View;component/Resources/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid
+        Style="{StaticResource BasicGridStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="150" />
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock
+            Grid.Row="0" Grid.Column="0"
+            Text="Путь к установленной версии" />
+        <TextBox
+            Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+            Text="{Binding ExistingPath}"/>
+        <Button
+            Grid.Row="1" Grid.Column="1"
+            Content="Выбрать путь" />
+        <Button
+            Grid.Row="1" Grid.Column="2"
+            Content="Импортировать данные" />
+    </Grid>
+</UserControl>

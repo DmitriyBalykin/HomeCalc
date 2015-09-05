@@ -1,6 +1,7 @@
 ﻿using HomeCalc.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,16 +20,17 @@ namespace HomeCalc.View
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         StatusService statusService;
         public MainWindow()
         {
             InitializeComponent();
 
+            DataContext = this;
+
             statusService = StatusService.GetInstance();
             statusService.StatusChanged += statusService_StatusChanged;
-            Status = "Some status";
         }
 
         void statusService_StatusChanged(object sender, StatusChangedEventArgs e)

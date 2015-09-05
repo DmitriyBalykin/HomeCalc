@@ -47,7 +47,11 @@
             <Setter Property="BorderThickness" Value="0" />
         </Style.Setters>
     </Style>
-    <Style TargetType="Grid">
+    <Style x:Key="BasicGridStyle" TargetType="Grid">
+        <Style.Setters>
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style.Setters>
         <Style.Resources>
             <Style TargetType="DatePicker">
                 <Style.Setters>
@@ -59,6 +63,7 @@
             <Style TargetType="TextBlock">
                 <Style.Setters>
                     <Setter Property="TextAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
                 </Style.Setters>
             </Style>
             <Style TargetType="TextBox">
@@ -67,6 +72,7 @@
                     <Setter Property="Padding" Value="5" />
                     <Setter Property="Margin" Value="5" />
                     <Setter Property="BorderBrush" Value="{StaticResource GlobalBackground}" />
+                    <Setter Property="BorderThickness" Value="2" />
                 </Style.Setters>
             </Style>
             <Style TargetType="ListBox">
@@ -98,6 +104,25 @@
                 </Style.Setters>
             </Style>
 
+        </Style.Resources>
+    </Style>
+    <Style x:Key="SettingsGridStyle" TargetType="Grid" BasedOn="{StaticResource BasicGridStyle}">
+        <Style.Resources>
+            <Style TargetType="TextBlock">
+                <Style.Setters>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Margin" Value="10,0" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style.Setters>
+            </Style>
+            <Style TargetType="PasswordBox">
+                <Style.Setters>
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="Padding" Value="5" />
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="BorderBrush" Value="{StaticResource GlobalBackground}" />
+                </Style.Setters>
+            </Style>
         </Style.Resources>
     </Style>
 </ResourceDictionary>

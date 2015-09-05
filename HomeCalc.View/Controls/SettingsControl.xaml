@@ -5,7 +5,74 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="850">
-    <Grid>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/HomeCalc.View;component/Resources/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid
+        Style="{StaticResource SettingsGridStyle}"
+        >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <TextBlock
+            Grid.Row="0" Grid.Column="0"
             
+            Text="Сетевой адрес" />
+        <TextBlock
+            Grid.Row="1" Grid.Column="0"
+            Text="Порт" />
+        <TextBlock
+            Grid.Row="2" Grid.Column="0"
+            Text="Имя базы данных" />
+        <TextBlock
+            Grid.Row="3" Grid.Column="0"
+            Text="Имя таблицы" />
+        <TextBlock
+            Grid.Row="4" Grid.Column="0"
+            Text="Имя пользователя" />
+        <TextBlock
+            Grid.Row="5" Grid.Column="0"
+            Text="Пароль" />
+        <Button
+            Grid.Row="6" Grid.Column="0"
+            Content="Сохранить" />
+        
+        <TextBox
+            Grid.Row="0" Grid.Column="1"
+            Text="{Binding NetAddress}" />
+        <TextBox
+            Grid.Row="1" Grid.Column="1"
+            Text="{Binding NetPort}" />
+        <TextBox
+            Grid.Row="2" Grid.Column="1"
+            Text="{Binding DBName}" />
+        <TextBox
+            Grid.Row="3" Grid.Column="1"
+            Text="{Binding DBTable}" />
+        <TextBox
+            Grid.Row="4" Grid.Column="1"
+            Text="{Binding UserName}" />
+        <PasswordBox
+            Grid.Row="5" Grid.Column="1"
+            Password="" />
+        <Button
+            Grid.Row="6" Grid.Column="1"
+            Content="Отменить" />
     </Grid>
 </UserControl>

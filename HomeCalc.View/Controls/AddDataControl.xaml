@@ -15,7 +15,7 @@
     </UserControl.Resources>
     
     <Grid
-        VerticalAlignment="Center">
+        Style="{StaticResource BasicGridStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
