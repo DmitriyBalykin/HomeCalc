@@ -9,5 +9,12 @@ namespace HomeCalc.Model.ViewModels
 {
     public class OperationsModel : ViewModel
     {
+        public OperationsModel()
+        {
+            //Add commad SelectPath
+            //Add commad ImportData
+        }
+
+        public string ExistingPath { get; set; }
     }
 }

@@ -117,16 +117,6 @@
                     <Setter Property="Margin" Value="5" />
                 </Style.Setters>
             </Style>
-            <Style TargetType="ToggleButton">
-                <Style.Setters>
-                    <Setter Property="VerticalAlignment" Value="Stretch" />
-                    <Setter Property="HorizontalAlignment" Value="Stretch" />
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                    <Setter Property="HorizontalContentAlignment" Value="Center" />
-                    <Setter Property="Background" Value="{StaticResource ButtonColor}" />
-                    <Setter Property="Margin" Value="5" />
-                </Style.Setters>
-            </Style>
             <Style TargetType="CheckBox">
                 <Style.Setters>
                     <Setter Property="VerticalAlignment" Value="Center" />
@@ -153,5 +143,13 @@
                 </Style.Setters>
             </Style>
         </Style.Resources>
+    </Style>
+    <Style x:Key="ToggleRadioStyle" TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{StaticResource ButtonColor}" />
+        <Setter Property="Margin" Value="5" />
     </Style>
 </ResourceDictionary>

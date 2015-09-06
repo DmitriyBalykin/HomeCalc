@@ -51,11 +51,11 @@
 
                 <DockPanel Grid.Row="0" Grid.Column="2">
                     <TextBlock Text="с"/>
-                    <DatePicker HorizontalAlignment="Right" />
+                    <DatePicker HorizontalAlignment="Right" SelectedDate="{Binding SearchFromDate}"  />
                 </DockPanel>
                 <DockPanel Grid.Row="0" Grid.Column="3">
                     <TextBlock Text="по"/>
-                    <DatePicker HorizontalAlignment="Right" />
+                    <DatePicker HorizontalAlignment="Right" SelectedDate="{Binding SearchToDate}" />
                 </DockPanel>
 
                 <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
@@ -77,8 +77,8 @@
                              Text="{Binding CostEnd}"/>
                 </DockPanel>
 
-                <Button Grid.Row="4" Grid.Column="2" Content="Получить данные" />
-                <Button Grid.Row="4" Grid.Column="3" Content="Открыть данные в HTML" />
+                <Button Grid.Row="4" Grid.Column="2" Content="Получить данные" Command="{Binding Search}" />
+                <Button Grid.Row="4" Grid.Column="3" Content="Открыть данные в HTML" Command="{Binding OpenInHTML}" />
             </Grid>
     </Border>
         <Border Grid.Row="1">

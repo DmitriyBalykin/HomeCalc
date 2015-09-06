@@ -1,4 +1,5 @@
 ﻿using HomeCalc.Model.BasicModels;
+using HomeCalc.Model.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,12 @@ namespace HomeCalc.Model.ViewModels
 {
     public class AddDataModel : ViewModel
     {
+        public AddDataModel()
+        {
+            //Add command CalcCount
+            //Add command CalcItemCount
+            //Add command Save
+        }
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
             get
@@ -23,5 +30,12 @@ namespace HomeCalc.Model.ViewModels
                 }
             }
         }
+
+        public IObservable<PurchaseType> TypeSelectorItems { get; set; }
+
+        public string PurchaseName { get; set; }
+        public string Count { get; set; }
+        public string ItemCount { get; set; }
+        public string TotalCost { get; set; }
     }
 }

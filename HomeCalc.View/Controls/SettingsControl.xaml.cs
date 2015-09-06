@@ -26,5 +26,13 @@ namespace HomeCalc.View.Controls
             InitializeComponent();
             this.DataContext = new SettingsModel();
         }
+
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext != null)
+            {
+                ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+            }
+        }
     }
 }

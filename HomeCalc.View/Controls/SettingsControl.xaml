@@ -18,61 +18,43 @@
         Style="{StaticResource SettingsGridStyle}"
         >
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="130" />
             <ColumnDefinition Width="200" />
         </Grid.ColumnDefinitions>
-        <TextBlock
-            Grid.Row="0" Grid.Column="0"
-            
-            Text="Сетевой адрес" />
-        <TextBlock
-            Grid.Row="1" Grid.Column="0"
-            Text="Порт" />
-        <TextBlock
-            Grid.Row="2" Grid.Column="0"
-            Text="Имя базы данных" />
-        <TextBlock
-            Grid.Row="3" Grid.Column="0"
-            Text="Имя таблицы" />
-        <TextBlock
-            Grid.Row="4" Grid.Column="0"
-            Text="Имя пользователя" />
-        <TextBlock
-            Grid.Row="5" Grid.Column="0"
-            Text="Пароль" />
-        <Button
-            Grid.Row="6" Grid.Column="0"
-            Content="Сохранить" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Сетевой адрес" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Порт" />
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Имя базы данных" />
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Имя таблицы" />
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Имя пользователя" />
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Пароль" />
+        <Button Grid.Row="6" Grid.Column="0"
+            Content="Сохранить" 
+            Command="{Binding Save}"/>
         
-        <TextBox
-            Grid.Row="0" Grid.Column="1"
+        <TextBox Grid.Row="0" Grid.Column="1"
             Text="{Binding NetAddress}" />
-        <TextBox
-            Grid.Row="1" Grid.Column="1"
+        <TextBox Grid.Row="1" Grid.Column="1"
             Text="{Binding NetPort}" />
-        <TextBox
-            Grid.Row="2" Grid.Column="1"
+        <TextBox Grid.Row="2" Grid.Column="1"
             Text="{Binding DBName}" />
-        <TextBox
-            Grid.Row="3" Grid.Column="1"
+        <TextBox Grid.Row="3" Grid.Column="1"
             Text="{Binding DBTable}" />
-        <TextBox
-            Grid.Row="4" Grid.Column="1"
+        <TextBox Grid.Row="4" Grid.Column="1"
             Text="{Binding UserName}" />
-        <PasswordBox
-            Grid.Row="5" Grid.Column="1"
-            Password="" />
+        <PasswordBox Grid.Row="5" Grid.Column="1"
+            PasswordChanged="PasswordBox_PasswordChanged" />
         <Button
             Grid.Row="6" Grid.Column="1"
-            Content="Отменить" />
+            Content="Отменить"
+            Command="{Binding Cancel}"/>
     </Grid>
 </UserControl>
