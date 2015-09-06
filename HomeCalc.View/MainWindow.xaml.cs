@@ -49,5 +49,7 @@ namespace HomeCalc.View
         }
 
         public string Status { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

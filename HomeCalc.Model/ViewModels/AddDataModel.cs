@@ -9,5 +9,19 @@ namespace HomeCalc.Model.ViewModels
 {
     public class AddDataModel : ViewModel
     {
+        private DateTime dateToStore = DateTime.Now;
+        public DateTime DateToStore {
+            get
+            {
+                return dateToStore;
+            }
+            set
+            {
+                if (value != dateToStore)
+                {
+                    dateToStore = value;
+                }
+            }
+        }
     }
 }

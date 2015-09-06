@@ -6,7 +6,85 @@
              mc:Ignorable="d" 
              Width="850"
              Height="Auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/HomeCalc.View;component/Resources/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border
+            Grid.Row="0"
+            >
+        <Grid
+            Style="{StaticResource SettingsGridStyle}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="170" />
+                    <ColumnDefinition Width="170" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding SearchByDate}" />
+                <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding SearchByName}" />
+                <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding SearchByType}" />
+                <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding SearchByCost}" />
+
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="по дате" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="по имени покупки" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="по типу покупки" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="по стоимости" />
+
+                <DockPanel Grid.Row="0" Grid.Column="2">
+                    <TextBlock Text="с"/>
+                    <DatePicker HorizontalAlignment="Right" />
+                </DockPanel>
+                <DockPanel Grid.Row="0" Grid.Column="3">
+                    <TextBlock Text="по"/>
+                    <DatePicker HorizontalAlignment="Right" />
+                </DockPanel>
+
+                <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                     Text="{Binding PurchaseName}" />
             
+                <ListBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
+                     ItemsSource="{Binding PurchaseTypesList}" />
+
+                <DockPanel Grid.Row="3" Grid.Column="2">
+                    <TextBlock Text="от"/>
+                    <TextBox HorizontalAlignment="Right"
+                             Width="115"
+                             Text="{Binding CostStart}"/>
+                </DockPanel>
+                <DockPanel Grid.Row="3" Grid.Column="3">
+                    <TextBlock Text="до"/>
+                    <TextBox HorizontalAlignment="Right"
+                             Width="115"
+                             Text="{Binding CostEnd}"/>
+                </DockPanel>
+
+                <Button Grid.Row="4" Grid.Column="2" Content="Получить данные" />
+                <Button Grid.Row="4" Grid.Column="3" Content="Открыть данные в HTML" />
+            </Grid>
+    </Border>
+        <Border Grid.Row="1">
+            <ListBox
+                ItemsSource="{Binding SearchResultList}"
+                ></ListBox>
+        </Border>
     </Grid>
 </UserControl>
