@@ -24,7 +24,7 @@ namespace HomeCalc.View.Controls
         public SettingsControl()
         {
             InitializeComponent();
-            this.DataContext = new SettingsModel();
+            this.DataContext = new SettingsViewModel();
         }
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)

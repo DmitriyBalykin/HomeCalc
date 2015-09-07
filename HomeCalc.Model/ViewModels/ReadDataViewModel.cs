@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.Presentation;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Presentation;
 using HomeCalc.Model.BasicModels;
 using HomeCalc.Model.DataModels;
 using System;
@@ -9,10 +10,11 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Model.ViewModels
 {
-    public class ReadDataModel : ViewModel
+    public class ReadDataViewModel : ViewModel
     {
-        public ReadDataModel()
+        public ReadDataViewModel()
         {
+            logger = LogService.GetLogger();
             AddCommand("Search", new DelegateCommand(SearchCommandExecute));
             AddCommand("OpenInHTML", new DelegateCommand(OpenInHTMLCommandExecute));
         }

@@ -24,7 +24,7 @@ namespace HomeCalc.View.Controls
         public OperationsControl()
         {
             InitializeComponent();
-            this.DataContext = new OperationsModel();
+            this.DataContext = new OperationsViewModel();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.Presentation;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Presentation;
 using HomeCalc.Model.BasicModels;
 using HomeCalc.Model.DataModels;
 using System;
@@ -9,10 +10,11 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Model.ViewModels
 {
-    public class AddDataModel : ViewModel
+    public class AddDataViewModel : ViewModel
     {
-        public AddDataModel()
+        public AddDataViewModel()
         {
+            logger = LogService.GetLogger();
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
         }
 

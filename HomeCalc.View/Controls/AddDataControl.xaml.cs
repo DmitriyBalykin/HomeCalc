@@ -24,7 +24,7 @@ namespace HomeCalc.View.Controls
         public AddDataControl()
         {
             InitializeComponent();
-            this.DataContext = new AddDataModel();
+            this.DataContext = new AddDataViewModel();
         }
     }
 }

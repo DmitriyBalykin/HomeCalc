@@ -24,7 +24,7 @@ namespace HomeCalc.View.Controls
         public ReadDataControl()
         {
             InitializeComponent();
-            this.DataContext = new ReadDataModel();
+            this.DataContext = new ReadDataViewModel();
         }
     }
 }

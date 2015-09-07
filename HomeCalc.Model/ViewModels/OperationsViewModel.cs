@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.Presentation;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Presentation;
 using HomeCalc.Core.Utilities;
 using HomeCalc.Model.BasicModels;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -10,10 +11,12 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Model.ViewModels
 {
-    public class OperationsModel : ViewModel
+    public class OperationsViewModel : ViewModel
     {
-        public OperationsModel()
+        public OperationsViewModel()
         {
+            logger = LogService.GetLogger();
+
             AddCommand("SelectPath", new DelegateCommand(SelectPathCommandExecute));
             AddCommand("ImportData", new DelegateCommand(ImportDataCommandExecute, CanImportData));
         }
@@ -37,9 +40,26 @@ namespace HomeCalc.Model.ViewModels
         }
         private bool CanImportData(object obj)
         {
+            bool result = FileUtilities.FileExists(ExistingPath);
+            logger.Debug("CanImport result for path: {0} , result: {1}", ExistingPath, result);
             return FileUtilities.FileExists(ExistingPath);
         }
 
-        public string ExistingPath { get; set; }
+        private string existingPath;
+        public string ExistingPath
+        {
+            get
+            {
+                return existingPath;
+            }
+            set
+            {
+                if (existingPath != value)
+                {
+                    existingPath = value;
+                    OnPropertyChanged(() => ExistingPath);
+                }
+            }
+        }
     }
 }

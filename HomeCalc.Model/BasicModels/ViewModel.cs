@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.Presentation;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,8 +14,8 @@ namespace HomeCalc.Model.BasicModels
 {
     public partial class ViewModel : INotifyPropertyChanged
     {
+        protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
