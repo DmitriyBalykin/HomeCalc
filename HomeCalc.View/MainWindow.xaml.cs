@@ -48,7 +48,22 @@ namespace HomeCalc.View
             this.DragMove();
         }
 
-        public string Status { get; set; }
+        private string status;
+        public string Status
+        {
+            get
+            {
+                return status;
+            }
+            set
+            {
+                if (value != status)
+                {
+                    status = value;
+                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Status"));
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

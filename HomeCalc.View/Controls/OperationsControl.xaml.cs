@@ -1,4 +1,4 @@
-﻿using HomeCalc.Model.ViewModels;
+﻿using HomeCalc.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

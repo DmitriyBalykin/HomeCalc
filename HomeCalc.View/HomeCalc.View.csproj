@@ -135,9 +135,9 @@
       <Project>{466144d4-3b44-4bb1-948a-1411ab4dfe46}</Project>
       <Name>HomeCalc.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HomeCalc.Model\HomeCalc.Model.csproj">
+    <ProjectReference Include="..\HomeCalc.Model\HomeCalc.Presentation.csproj">
       <Project>{5580f859-48d3-4eee-b469-7c9e174cdc3d}</Project>
-      <Name>HomeCalc.Model</Name>
+      <Name>HomeCalc.Presentation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

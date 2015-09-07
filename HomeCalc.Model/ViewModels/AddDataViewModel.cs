@@ -1,14 +1,14 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
-using HomeCalc.Model.BasicModels;
-using HomeCalc.Model.DataModels;
+using HomeCalc.Presentation.BasicModels;
+using HomeCalc.Presentation.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCalc.Model.ViewModels
+namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {

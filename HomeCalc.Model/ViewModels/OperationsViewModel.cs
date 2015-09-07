@@ -1,7 +1,7 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Core.Utilities;
-using HomeCalc.Model.BasicModels;
+using HomeCalc.Presentation.BasicModels;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCalc.Model.ViewModels
+namespace HomeCalc.Presentation.ViewModels
 {
     public class OperationsViewModel : ViewModel
     {
@@ -19,6 +19,17 @@ namespace HomeCalc.Model.ViewModels
 
             AddCommand("SelectPath", new DelegateCommand(SelectPathCommandExecute));
             AddCommand("ImportData", new DelegateCommand(ImportDataCommandExecute, CanImportData));
+            AddCommand("AddType", new DelegateCommand(AddTypeCommandExecute, CanAddType));
+        }
+
+        private bool CanAddType(object obj)
+        {
+            return !string.IsNullOrEmpty(NewPurchaseType);
+        }
+
+        private void AddTypeCommandExecute(object obj)
+        {
+            throw new NotImplementedException();
         }
 
         private void SelectPathCommandExecute(object obj)
@@ -40,8 +51,6 @@ namespace HomeCalc.Model.ViewModels
         }
         private bool CanImportData(object obj)
         {
-            bool result = FileUtilities.FileExists(ExistingPath);
-            logger.Debug("CanImport result for path: {0} , result: {1}", ExistingPath, result);
             return FileUtilities.FileExists(ExistingPath);
         }
 
@@ -58,6 +67,22 @@ namespace HomeCalc.Model.ViewModels
                 {
                     existingPath = value;
                     OnPropertyChanged(() => ExistingPath);
+                }
+            }
+        }
+        private string newPurchaseType;
+        public string NewPurchaseType
+        {
+            get
+            {
+                return newPurchaseType;
+            }
+            set
+            {
+                if (newPurchaseType != value)
+                {
+                    newPurchaseType = value;
+                    OnPropertyChanged(() => NewPurchaseType);
                 }
             }
         }

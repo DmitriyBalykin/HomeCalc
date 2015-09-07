@@ -49,6 +49,7 @@
     <Compile Include="Helpers\UIDispatcherHelper.cs" />
     <Compile Include="LogService\Logger.cs" />
     <Compile Include="LogService\LogService.cs" />
+    <Compile Include="Presentation\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Presentation\DelegateCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusService.cs" />

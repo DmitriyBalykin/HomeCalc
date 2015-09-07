@@ -13,18 +13,20 @@
         </ResourceDictionary>
     </UserControl.Resources>
     
-    <Grid
-        Style="{StaticResource BasicGridStyle}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="170" />
-            <ColumnDefinition Width="170" />
-        </Grid.ColumnDefinitions>
         
+        <Grid
+            
+            Style="{StaticResource BasicGridStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="170" />
+                <ColumnDefinition Width="170" />
+            </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Путь к установленной версии" />
         <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
             Text="{Binding ExistingPath}"/>
@@ -34,5 +36,15 @@
         <Button Grid.Row="1" Grid.Column="2"
             Content="Импортировать данные"
             Command="{Binding ImportData}"/>
+        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="3" />
+
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Новый тип покупки" />
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewPurchaseType}" />
+        <Button Grid.Row="2" Grid.Column="2" Content="Добавить" Command="{Binding AddType}"/>
+
     </Grid>
+        
+        
 </UserControl>

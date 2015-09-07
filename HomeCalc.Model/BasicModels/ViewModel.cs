@@ -10,12 +10,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace HomeCalc.Model.BasicModels
+namespace HomeCalc.Presentation.BasicModels
 {
     public partial class ViewModel : INotifyPropertyChanged
     {
         protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
+
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -68,9 +69,9 @@ namespace HomeCalc.Model.BasicModels
             ICommand command;
             if (!commandCache.TryGetValue(binder.Name, out command))
             {
+                logger.Warn("Binding property not found: {0}", binder.Name);
                 return base.TryGetMember(binder, out result);
             }
-
             return (result = command) != null;
         }
     }

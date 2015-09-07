@@ -1,14 +1,15 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
-using HomeCalc.Model.BasicModels;
-using HomeCalc.Model.DataModels;
+using HomeCalc.Data.Models;
+using HomeCalc.Presentation.BasicModels;
+using HomeCalc.Presentation.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCalc.Model.ViewModels
+namespace HomeCalc.Presentation.ViewModels
 {
     public class ReadDataViewModel : ViewModel
     {
@@ -16,7 +17,12 @@ namespace HomeCalc.Model.ViewModels
         {
             logger = LogService.GetLogger();
             AddCommand("Search", new DelegateCommand(SearchCommandExecute));
-            AddCommand("OpenInHTML", new DelegateCommand(OpenInHTMLCommandExecute));
+            AddCommand("OpenInHTML", new DelegateCommand(OpenInHTMLCommandExecute, CanOpenInHTML));
+        }
+
+        private bool CanOpenInHTML(object obj)
+        {
+            return SearchSucceded;
         }
 
         private void OpenInHTMLCommandExecute(object obj)
@@ -38,7 +44,9 @@ namespace HomeCalc.Model.ViewModels
 
         public string PurchaseName { get; set; }
         public IObservable<PurchaseType> PurchaseTypesList { get; set; }
+        public IObservable<PurchaseModel> SearchResultList { get; set; }
         public string CostStart { get; set; }
         public string CostEnd { get; set; }
+        public bool SearchSucceded { get; set; }
     }
 }

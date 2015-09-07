@@ -7,7 +7,7 @@
     <ProjectGuid>{5580F859-48D3-4EEE-B469-7C9E174CDC3D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HomeCalc.Model</RootNamespace>
+    <RootNamespace>HomeCalc.Presentation</RootNamespace>
     <AssemblyName>HomeCalc.Model</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -57,6 +57,10 @@
     <ProjectReference Include="..\HomeCalc.Core\HomeCalc.Core.csproj">
       <Project>{466144d4-3b44-4bb1-948a-1411ab4dfe46}</Project>
       <Name>HomeCalc.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HomeCalc.Data\HomeCalc.Data.csproj">
+      <Project>{45a5a644-3c52-4602-ab93-bb5c535c22f3}</Project>
+      <Name>HomeCalc.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

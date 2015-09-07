@@ -1,6 +1,6 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
-using HomeCalc.Model.BasicModels;
+using HomeCalc.Presentation.BasicModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeCalc.Model.ViewModels
+namespace HomeCalc.Presentation.ViewModels
 {
     public class SettingsViewModel : ViewModel
     {
