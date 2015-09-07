@@ -1,4 +1,7 @@
-﻿using HomeCalc.Model.BasicModels;
+﻿using HomeCalc.Core.Presentation;
+using HomeCalc.Core.Utilities;
+using HomeCalc.Model.BasicModels;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +14,30 @@ namespace HomeCalc.Model.ViewModels
     {
         public OperationsModel()
         {
-            //Add commad SelectPath
-            //Add commad ImportData
+            AddCommand("SelectPath", new DelegateCommand(SelectPathCommandExecute));
+            AddCommand("ImportData", new DelegateCommand(ImportDataCommandExecute, CanImportData));
+        }
+
+        private void SelectPathCommandExecute(object obj)
+        {
+            var dlg = new CommonOpenFileDialog();
+            dlg.Title = "Select existing installation path";
+            dlg.IsFolderPicker = true;
+            dlg.EnsurePathExists = true;
+            dlg.Multiselect = true;
+            if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                ExistingPath = dlg.FileName;
+            }
+        }
+
+        private void ImportDataCommandExecute(object obj)
+        {
+            FileUtilities.ImportDataFromFile(ExistingPath);
+        }
+        private bool CanImportData(object obj)
+        {
+            return FileUtilities.FileExists(ExistingPath);
         }
 
         public string ExistingPath { get; set; }

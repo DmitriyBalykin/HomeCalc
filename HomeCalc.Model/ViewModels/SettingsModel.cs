@@ -1,4 +1,5 @@
-﻿using HomeCalc.Model.BasicModels;
+﻿using HomeCalc.Core.Presentation;
+using HomeCalc.Model.BasicModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,12 @@ namespace HomeCalc.Model.ViewModels
     {
         public SettingsModel()
         {
-            //Add command Save
-            //Add command Cancel
+            AddCommand("Save", new DelegateCommand(SaveCommandExecute));
+        }
+
+        private void SaveCommandExecute(object obj)
+        {
+            
         }
 
         public string NetAddress { get; set; }

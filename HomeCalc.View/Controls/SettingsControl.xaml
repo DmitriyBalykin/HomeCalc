@@ -36,7 +36,7 @@
         <TextBlock Grid.Row="3" Grid.Column="0" Text="Имя таблицы" />
         <TextBlock Grid.Row="4" Grid.Column="0" Text="Имя пользователя" />
         <TextBlock Grid.Row="5" Grid.Column="0" Text="Пароль" />
-        <Button Grid.Row="6" Grid.Column="0"
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
             Content="Сохранить" 
             Command="{Binding Save}"/>
         
@@ -52,9 +52,5 @@
             Text="{Binding UserName}" />
         <PasswordBox Grid.Row="5" Grid.Column="1"
             PasswordChanged="PasswordBox_PasswordChanged" />
-        <Button
-            Grid.Row="6" Grid.Column="1"
-            Content="Отменить"
-            Command="{Binding Cancel}"/>
     </Grid>
 </UserControl>

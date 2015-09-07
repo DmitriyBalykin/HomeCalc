@@ -1,4 +1,5 @@
-﻿using HomeCalc.Model.BasicModels;
+﻿using HomeCalc.Core.Presentation;
+using HomeCalc.Model.BasicModels;
 using HomeCalc.Model.DataModels;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,18 @@ namespace HomeCalc.Model.ViewModels
     {
         public ReadDataModel()
         {
-            //Add command "Search"
-            //Add command "OpenInHTML"
+            AddCommand("Search", new DelegateCommand(SearchCommandExecute));
+            AddCommand("OpenInHTML", new DelegateCommand(OpenInHTMLCommandExecute));
+        }
+
+        private void OpenInHTMLCommandExecute(object obj)
+        {
+            
+        }
+
+        private void SearchCommandExecute(object obj)
+        {
+            
         }
         public bool SearchByDate { get; set; }
         public bool SearchByName { get; set; }
