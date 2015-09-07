@@ -47,6 +47,12 @@
     <Compile Include="ViewModels\OperationsModel.cs" />
     <Compile Include="ViewModels\SettingsModel.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HomeCalc.Core\HomeCalc.Core.csproj">
+      <Project>{466144d4-3b44-4bb1-948a-1411ab4dfe46}</Project>
+      <Name>HomeCalc.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
