@@ -1,4 +1,5 @@
-﻿using HomeCalc.Model.BasicModels;
+﻿using HomeCalc.Core.Presentation;
+using HomeCalc.Model.BasicModels;
 using HomeCalc.Model.DataModels;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,12 @@ namespace HomeCalc.Model.ViewModels
     {
         public AddDataModel()
         {
-            //Add command CalcCount
-            //Add command CalcItemCount
-            //Add command Save
+            AddCommand("Save", new DelegateCommand(SaveCommandExecute));
+        }
+
+        private void SaveCommandExecute(object obj)
+        {
+            //throw new NotImplementedException();
         }
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
@@ -37,5 +41,64 @@ namespace HomeCalc.Model.ViewModels
         public string Count { get; set; }
         public string ItemCount { get; set; }
         public string TotalCost { get; set; }
+
+        private bool calcTotalCost = true;
+        private bool calcItemCost = false;
+        public bool CalcItemCost
+        {
+            get
+            {
+                return calcItemCost;
+            }
+            set
+            {
+                if (calcItemCost != value)
+                {
+                    calcItemCost = value;
+                    OnPropertyChanged(() => CalcItemCost);
+                }
+                if (value)
+                {
+                    CalcItemsCount = false;
+                    calcTotalCost = false;
+                }
+                else
+                {
+                    setTotalCalc();
+                }
+            }
+        }
+        private bool calcItemsCount = false;
+        public bool CalcItemsCount
+        {
+            get
+            {
+                return calcItemsCount;
+            }
+            set
+            {
+                if (calcItemsCount != value)
+                {
+                    calcItemsCount = value;
+                    OnPropertyChanged(() => CalcItemsCount);
+                }
+                if (value)
+                {
+                    CalcItemCost = false;
+                    calcTotalCost = false;
+                }
+                else
+                {
+                    setTotalCalc();
+                }
+            }
+        }
+        private void setTotalCalc()
+        {
+            if (!calcItemsCount && !calcItemCost)
+            {
+                calcTotalCost = true;
+            }
+        }
     }
 }

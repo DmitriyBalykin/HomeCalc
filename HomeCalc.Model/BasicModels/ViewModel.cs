@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace HomeCalc.Model.BasicModels
 {
-    public class ViewModel : INotifyPropertyChanged
+    public partial class ViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -21,11 +22,55 @@ namespace HomeCalc.Model.BasicModels
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
-        public bool TryGetMember(GetMemberBinder binder, out ICommand command)
+        protected void OnPropertyChanged<T>(Expression<Func<T>> property)
         {
-            command = new DelegateCommand();
-            return true;
+            if (property == null)
+            {
+                return;
+            }
+            var memberExpression = property.Body as MemberExpression;
+            if (memberExpression == null)
+            {
+                return;
+            }
+            if (PropertyChanged != null)
+            {
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(memberExpression.Member.Name));
+            }
+        }
+        private IDictionary<string, ICommand> commandCache = new Dictionary<string, ICommand>();
+        public void AddCommand(string name, ICommand command)
+        {
+            if (string.IsNullOrEmpty(name) || command == null)
+            {
+                throw new ArgumentNullException("command");
+            }
+            if (commandCache.Keys.Contains(name))
+            {
+                throw new ArgumentException(string.Format("Command {0} already exists", name));
+            }
+            commandCache[name] = command;
+        }
+        public void RemoveCommand(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException("command");
+            }
+            commandCache.Remove(name);
+        }
+    }
+    public partial class ViewModel : DynamicObject
+    {
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            ICommand command;
+            if (!commandCache.TryGetValue(binder.Name, out command))
+            {
+                return base.TryGetMember(binder, out result);
+            }
+
+            return (result = command) != null;
         }
     }
 }
