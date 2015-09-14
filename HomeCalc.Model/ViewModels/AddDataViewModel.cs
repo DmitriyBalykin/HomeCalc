@@ -4,6 +4,7 @@ using HomeCalc.Presentation.BasicModels;
 using HomeCalc.Presentation.DataModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,13 @@ namespace HomeCalc.Presentation.ViewModels
         {
             logger = LogService.GetLogger();
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
+
+            typeSelectorItems = new List<PurchaseType>();
+            typeSelectorItems.Add(new PurchaseType { Id = 0, Name = "Еда" });
+            typeSelectorItems.Add(new PurchaseType { Id = 1, Name = "Хозяйственные товары" });
+            typeSelectorItems.Add(new PurchaseType { Id = 2, Name = "Автомобиль" });
+            typeSelectorItems.Add(new PurchaseType { Id = 3, Name = "Квартира" });
+            typeSelectorItems.Add(new PurchaseType { Id = 4, Name = "Снаряжение" });
         }
 
         private void SaveCommandExecute(object obj)
@@ -37,7 +45,14 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        public IObservable<PurchaseType> TypeSelectorItems { get; set; }
+        private IList<PurchaseType> typeSelectorItems;
+        public ObservableCollection<PurchaseType> TypeSelectorItems
+        { 
+            get
+            {
+                return new ObservableCollection<PurchaseType>(typeSelectorItems); 
+            }
+        }
 
         public string PurchaseName { get; set; }
         public string Count { get; set; }

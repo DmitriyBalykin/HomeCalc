@@ -60,21 +60,28 @@
             Grid.Row="1" Grid.Column="0"
             SelectedDate="{Binding DateToStore}"
             />
-        <ListBox
+        <ComboBox
             Grid.Row="1" Grid.Column="1"
             ItemsSource="{Binding TypeSelectorItems}"
+            DisplayMemberPath="Name"
             />
-        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding PurchaseName}" />
+        <ToggleButton Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding CalcItemsCount}">
+            <TextBlock Text="Считать"  Margin="0,8" />
+        </ToggleButton>
+
+        <ToggleButton Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding CalcItemCost}">
+            <TextBlock Text="Считать"  Margin="0,8" />
+        </ToggleButton>
+
+        <ComboBox Grid.Row="1" Grid.Column="2"
+                  Text="{Binding PurchaseName}"
+                  IsEditable="True"
+                  MaxDropDownHeight="200"/>
         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count}" />
-        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCount}" />
+        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCount}"  />
         <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost}" />
         <Button Grid.Row="1" Grid.Column="6" Content="Сохранить" Command="{Binding Save}" />
 
-        <ToggleButton Grid.Row="2" Grid.Column="3"
-                     Content="Считать"
-                     IsChecked="{Binding CalcItemsCount}"/>
-        <ToggleButton Grid.Row="2" Grid.Column="4"
-                     Content="Считать"
-                     IsChecked="{Binding CalcItemCost}"/>
+        
     </Grid>
 </UserControl>
