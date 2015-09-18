@@ -65,11 +65,11 @@
             ItemsSource="{Binding TypeSelectorItems}"
             DisplayMemberPath="Name"
             />
-        <ToggleButton Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding CalcItemsCount}">
+        <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding CalcItemsCount}">
             <TextBlock Text="Считать"  Margin="0,8" />
         </ToggleButton>
 
-        <ToggleButton Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding CalcItemCost}">
+        <ToggleButton x:Name="CalcItemToggle" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding CalcItemCost}">
             <TextBlock Text="Считать"  Margin="0,8" />
         </ToggleButton>
 
@@ -77,9 +77,9 @@
                   Text="{Binding PurchaseName}"
                   IsEditable="True"
                   MaxDropDownHeight="200"/>
-        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count}" />
-        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCount}"  />
-        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost}" />
+        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count}" IsEnabled="{Binding ElementName=CalcNumberToggle, Path=IsChecked, Converter={StaticResource inverseBooleanConverter}}" />
+        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCount}"  IsEnabled="{Binding ElementName=CalcItemToggle, Path=IsChecked, Converter={StaticResource inverseBooleanConverter}}"  />
+        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost}" IsEnabled="{Binding CalcByTotal}"/>
         <Button Grid.Row="1" Grid.Column="6" Content="Сохранить" Command="{Binding Save}" />
 
         

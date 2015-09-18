@@ -3,6 +3,7 @@
                     xmlns:converters="clr-namespace:HomeCalc.Core.Presentation.Converters;assembly=HomeCalc.Core">
 
     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
+    <converters:InverseBooleanConverter x:Key="inverseBooleanConverter" />
     
     <SolidColorBrush x:Key="LightBackground" Color="#FFD2ECF3" />
     <SolidColorBrush x:Key="SelectedBackground" Color="#FFEBFAFF" />

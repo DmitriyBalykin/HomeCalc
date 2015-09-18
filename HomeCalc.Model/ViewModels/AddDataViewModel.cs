@@ -59,7 +59,7 @@ namespace HomeCalc.Presentation.ViewModels
         public string ItemCount { get; set; }
         public string TotalCost { get; set; }
 
-        private bool calcTotalCost = true;
+        
         private bool calcItemCost = false;
         public bool CalcItemCost
         {
@@ -77,12 +77,8 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value)
                 {
                     CalcItemsCount = false;
-                    calcTotalCost = false;
                 }
-                else
-                {
-                    setTotalCalc();
-                }
+                setTotalCalc();
             }
         }
         private bool calcItemsCount = false;
@@ -102,19 +98,28 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value)
                 {
                     CalcItemCost = false;
-                    calcTotalCost = false;
                 }
-                else
-                {
-                    setTotalCalc();
-                }
+                setTotalCalc();
             }
         }
         private void setTotalCalc()
         {
-            if (!calcItemsCount && !calcItemCost)
+            CalcByTotal = !(calcItemsCount || calcItemCost);
+        }
+        private bool calcTotalCost = true;
+        public bool CalcByTotal
+        {
+            get
             {
-                calcTotalCost = true;
+                return !calcTotalCost;
+            }
+            set
+            {
+                if (value != calcTotalCost)
+                {
+                    calcTotalCost = value;
+                }
+                OnPropertyChanged(() => CalcByTotal);
             }
         }
     }
