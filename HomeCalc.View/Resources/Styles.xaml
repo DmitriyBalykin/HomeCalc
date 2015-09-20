@@ -8,8 +8,10 @@
     <SolidColorBrush x:Key="LightBackground" Color="#FFD2ECF3" />
     <SolidColorBrush x:Key="SelectedBackground" Color="#FFEBFAFF" />
     <SolidColorBrush x:Key="ButtonColor" Color="#FFC0D7E6" />
-    <SolidColorBrush x:Key="CheckedButtonColor" Color="#FF86A7BD" />
+    <SolidColorBrush x:Key="CheckedButtonColor" Color="#FFCCEBFF" />
+    <SolidColorBrush x:Key="FocusedButtonColor" Color="#FFDCF5FF" />
     <SolidColorBrush x:Key="GlobalBackground" Color="LightBlue" />
+    <SolidColorBrush x:Key="DisabledTextBox" Color="#FFEFEFEF" />
     <LinearGradientBrush
         x:Key="WindowTitleGradient"
         StartPoint="0,0"
@@ -103,6 +105,11 @@
                     <Setter Property="BorderBrush" Value="{StaticResource GlobalBackground}" />
                     <Setter Property="BorderThickness" Value="2" />
                 </Style.Setters>
+                <Style.Triggers>
+                    <Trigger Property="IsReadOnly" Value="True">
+                        <Setter Property="Background" Value="{StaticResource DisabledTextBox}" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
             <Style TargetType="ListBox">
                 <Style.Setters>
@@ -134,6 +141,11 @@
                 <Style.Triggers>
                     <Trigger Property="IsChecked" Value="true">
                         <Setter Property="Background" Value="{StaticResource CheckedButtonColor}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource GlobalBackground}" />
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="true">
+                        <Setter Property="Background" Value="{StaticResource FocusedButtonColor}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource GlobalBackground}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>

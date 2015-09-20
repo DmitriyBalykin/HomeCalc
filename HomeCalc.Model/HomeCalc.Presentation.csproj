@@ -46,11 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicModels\ViewModel.cs" />
+    <Compile Include="DataModels\Purchase.cs" />
     <Compile Include="DataModels\PurchaseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AddDataViewModel.cs" />
     <Compile Include="ViewModels\ReadDataViewModel.cs" />
     <Compile Include="ViewModels\OperationsViewModel.cs" />
+    <Compile Include="ViewModels\SearchComboViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

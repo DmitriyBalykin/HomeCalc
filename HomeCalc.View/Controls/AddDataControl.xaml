@@ -77,9 +77,9 @@
                   Text="{Binding PurchaseName}"
                   IsEditable="True"
                   MaxDropDownHeight="200"/>
-        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count}" IsEnabled="{Binding ElementName=CalcNumberToggle, Path=IsChecked, Converter={StaticResource inverseBooleanConverter}}" />
-        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCount}"  IsEnabled="{Binding ElementName=CalcItemToggle, Path=IsChecked, Converter={StaticResource inverseBooleanConverter}}"  />
-        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost}" IsEnabled="{Binding CalcByTotal}"/>
+        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
+        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCount}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
+        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost}" IsReadOnly="{Binding CalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
         <Button Grid.Row="1" Grid.Column="6" Content="Сохранить" Command="{Binding Save}" />
 
         
