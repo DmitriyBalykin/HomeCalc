@@ -142,7 +142,7 @@
       <Project>{466144d4-3b44-4bb1-948a-1411ab4dfe46}</Project>
       <Name>HomeCalc.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HomeCalc.Model\HomeCalc.Presentation.csproj">
+    <ProjectReference Include="..\HomeCalc.Presentation\HomeCalc.Presentation.csproj">
       <Project>{5580f859-48d3-4eee-b469-7c9e174cdc3d}</Project>
       <Name>HomeCalc.Presentation</Name>
     </ProjectReference>

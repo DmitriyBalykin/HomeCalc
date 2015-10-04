@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HomeCalc.Model")]
+[assembly: AssemblyTitle("HomeCalc.Data")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("HomeCalc.Model")]
+[assembly: AssemblyProduct("HomeCalc.Data")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("160ae555-2782-4f75-bf08-7234f1e02070")]
+[assembly: Guid("b409595e-1f66-4227-9ddd-32f513b683b0")]
 
 // Version information for an assembly consists of the following four values:
 //
