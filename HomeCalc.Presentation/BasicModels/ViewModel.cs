@@ -1,5 +1,6 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
+using HomeCalc.Data.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,8 @@ namespace HomeCalc.Presentation.BasicModels
     {
         protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
+
+        protected DataService DataService;
 
         protected void OnPropertyChanged(string propertyName)
         {
