@@ -15,7 +15,7 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public AddDataViewModel()
         {
-            logger = LogService.GetLogger();
+        //    logger = LogService.GetLogger();
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
 
             typeSelectorItems = new List<PurchaseTypeModel>();
@@ -24,11 +24,29 @@ namespace HomeCalc.Presentation.ViewModels
             typeSelectorItems.Add(new PurchaseTypeModel { Id = 2, Name = "Автомобиль" });
             typeSelectorItems.Add(new PurchaseTypeModel { Id = 3, Name = "Квартира" });
             typeSelectorItems.Add(new PurchaseTypeModel { Id = 4, Name = "Снаряжение" });
+
+            Status.Post("Загружено");
         }
 
         private void SaveCommandExecute(object obj)
         {
-            //throw new NotImplementedException();
+            if (DBService.SavePurchase(
+                new PurchaseModel {
+                    Date = DateTime.Now,
+                    ItemCost = double.Parse(ItemCost),
+                    ItemsNumber = double.Parse(Count),
+                    Name = PurchaseName,
+                    Type = PurchaseType
+                }))
+            {
+                logger.Info("Purchase saved");
+                Status.Post("Purchase {0} saved", PurchaseName);
+            }
+            else
+            {
+                logger.Warn("Purchase not saved");
+                Status.Post("Purchase not {0} saved", PurchaseName);
+            }
         }
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
@@ -56,9 +74,9 @@ namespace HomeCalc.Presentation.ViewModels
 
         public string PurchaseName { get; set; }
         public string Count { get; set; }
-        public string ItemCount { get; set; }
+        public string ItemCost { get; set; }
         public string TotalCost { get; set; }
-
+        public PurchaseTypeModel PurchaseType { get; set; }
         
         private bool calcItemCost = false;
         public bool CalcItemCost

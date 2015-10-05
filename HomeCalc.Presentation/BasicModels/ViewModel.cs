@@ -1,6 +1,7 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core;
+using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
-using HomeCalc.Data.Services;
+using HomeCalc.Model.DbService;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,8 +19,14 @@ namespace HomeCalc.Presentation.BasicModels
         protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected DataService DataService;
-
+        protected DataService DBService;
+        protected StatusService Status;
+        public ViewModel()
+        {
+            logger = new Logger(this.GetType().ToString());
+            DBService = DataService.GetInstance();
+            Status = StatusService.GetInstance();
+        }
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

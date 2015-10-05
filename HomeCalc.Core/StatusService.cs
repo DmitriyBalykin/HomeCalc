@@ -8,30 +8,17 @@ namespace HomeCalc.Core
 {
     public class StatusService
     {
-        private StatusService ()
-        {
-            Status = "Загружено";
-        }
         private static StatusService instance;
         public event EventHandler<StatusChangedEventArgs> StatusChanged;
         private string status;
-        public string Status {
-            get
+        public void Post(string msg, params object[] args)
+        {
+            if (StatusChanged != null)
             {
-                return status;
-            }
-            set
-            {
-                if (value != status)
-                {
-                    status = value;
-                    if (StatusChanged != null)
-                    {
-                        StatusChanged.Invoke(null, new StatusChangedEventArgs { Status = status });
-                    }
-                }
+                StatusChanged.Invoke(null, new StatusChangedEventArgs { Status = string.Format(msg, args) });
             }
         }
+
         public static StatusService GetInstance()
         {
             if (instance == null)

@@ -9,6 +9,21 @@ namespace HomeCalc.Model.DbService
 {
     public class DataService
     {
+        private static DataService instance;
+        private static object monitor = new object();
+        private DataService()
+        { }
+        public static DataService GetInstance()
+        {
+            lock (monitor)
+            {
+                if (instance == null)
+                {
+                    instance = new DataService();
+                }
+            }
+            return instance;
+        }
         public bool SaveSettings(SettingsModel settings)
         {
             using (var db = new StorageContext())
