@@ -45,8 +45,9 @@ HomeCalc.View/obj/
 HomeCalc.View/bin/
 HomeCalc.Model/obj/
 HomeCalc.Model/bin/
-HomeCalc.Data/obj/
-HomeCalc.Data/bin/
+HomeCalc.Presentation/obj/
+HomeCalc.Presentation/bin/
 HomeCalc.Core/obj/
 HomeCalc.Core/bin/
 packages/
+HomeCalc.v12.suo
