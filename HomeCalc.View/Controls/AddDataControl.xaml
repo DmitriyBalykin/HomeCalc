@@ -65,11 +65,11 @@
             ItemsSource="{Binding TypeSelectorItems}"
             DisplayMemberPath="Name"
             />
-        <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding CalcItemsCount}">
+        <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemsCount}">
             <TextBlock Text="Считать"  Margin="0,8" />
         </ToggleButton>
 
-        <ToggleButton x:Name="CalcItemToggle" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding CalcItemCost}">
+        <ToggleButton x:Name="CalcItemToggle" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemCost}">
             <TextBlock Text="Считать"  Margin="0,8" />
         </ToggleButton>
 
@@ -77,9 +77,9 @@
                   Text="{Binding PurchaseName}"
                   IsEditable="True"
                   MaxDropDownHeight="200"/>
-        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
-        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCount}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
-        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost}" IsReadOnly="{Binding CalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
+        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
+        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
+        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsCalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
         <Button Grid.Row="1" Grid.Column="6" Content="Сохранить" Command="{Binding Save}" />
 
         

@@ -25,6 +25,8 @@ namespace HomeCalc.Presentation.ViewModels
             typeSelectorItems.Add(new PurchaseTypeModel { Id = 3, Name = "Квартира" });
             typeSelectorItems.Add(new PurchaseTypeModel { Id = 4, Name = "Снаряжение" });
 
+            actualCalculation = CalcTotalCost;
+
             Status.Post("Загружено");
         }
 
@@ -35,6 +37,7 @@ namespace HomeCalc.Presentation.ViewModels
                     Date = DateTime.Now,
                     ItemCost = double.Parse(ItemCost),
                     ItemsNumber = double.Parse(Count),
+                    TotalCost = double.Parse(TotalCost),
                     Name = PurchaseName,
                     Type = PurchaseType
                 }))
@@ -73,13 +76,52 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         public string PurchaseName { get; set; }
-        public string Count { get; set; }
-        public string ItemCost { get; set; }
-        public string TotalCost { get; set; }
+        private string count;
+        private string itemCost;
+        private string totalCost;
+        public string Count
+        {
+            get { return count; }
+            set
+            {
+                if (value != count)
+                {
+                    count = value;
+                    OnPropertyChanged(() => Count);
+                    actualCalculation.Invoke();
+                }
+            }
+        }
+        public string ItemCost
+        {
+            get { return itemCost; }
+            set
+            {
+                if (value != itemCost)
+                {
+                    itemCost = value;
+                    OnPropertyChanged(() => ItemCost);
+                    actualCalculation.Invoke();
+                }
+            }
+        }
+        public string TotalCost
+        {
+            get { return totalCost; }
+            set
+            {
+                if (value != totalCost)
+                {
+                    totalCost = value;
+                    OnPropertyChanged(() => TotalCost);
+                    actualCalculation.Invoke();
+                }
+            }
+        }
         public PurchaseTypeModel PurchaseType { get; set; }
         
         private bool calcItemCost = false;
-        public bool CalcItemCost
+        public bool IsCalcItemCost
         {
             get
             {
@@ -90,17 +132,18 @@ namespace HomeCalc.Presentation.ViewModels
                 if (calcItemCost != value)
                 {
                     calcItemCost = value;
-                    OnPropertyChanged(() => CalcItemCost);
+                    OnPropertyChanged(() => IsCalcItemCost);
                 }
                 if (value)
                 {
-                    CalcItemsCount = false;
+                    IsCalcItemsCount = false;
+                    actualCalculation = CalcItemCost;
                 }
                 setTotalCalc();
             }
         }
         private bool calcItemsCount = false;
-        public bool CalcItemsCount
+        public bool IsCalcItemsCount
         {
             get
             {
@@ -111,21 +154,22 @@ namespace HomeCalc.Presentation.ViewModels
                 if (calcItemsCount != value)
                 {
                     calcItemsCount = value;
-                    OnPropertyChanged(() => CalcItemsCount);
+                    OnPropertyChanged(() => IsCalcItemsCount);
                 }
                 if (value)
                 {
-                    CalcItemCost = false;
+                    IsCalcItemCost = false;
+                    actualCalculation = CalcItemCount;
                 }
                 setTotalCalc();
             }
         }
         private void setTotalCalc()
         {
-            CalcByTotal = !(calcItemsCount || calcItemCost);
+            IsCalcByTotal = !(calcItemsCount || calcItemCost);
         }
         private bool calcTotalCost = true;
-        public bool CalcByTotal
+        public bool IsCalcByTotal
         {
             get
             {
@@ -137,8 +181,42 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     calcTotalCost = value;
                 }
-                OnPropertyChanged(() => CalcByTotal);
+                if (value)
+                {
+                    actualCalculation = CalcTotalCost;
+                }
+                OnPropertyChanged(() => IsCalcByTotal);
             }
         }
+
+        private void CalcItemCount() {
+            if (!calcInProgress && !(string.IsNullOrEmpty(TotalCost) || string.IsNullOrEmpty(ItemCost)))
+            {
+                calcInProgress = true;
+                Count = (double.Parse(TotalCost) / double.Parse(ItemCost)).ToString();
+                calcInProgress = false;
+            }
+        }
+        private void CalcItemCost()
+        {
+            if (!calcInProgress && !(string.IsNullOrEmpty(Count) || string.IsNullOrEmpty(TotalCost)))
+            {
+                calcInProgress = true;
+                ItemCost = (double.Parse(TotalCost) / double.Parse(Count)).ToString();
+                calcInProgress = false;
+            }
+        }
+        private void CalcTotalCost()
+        {
+            if (!calcInProgress && !(string.IsNullOrEmpty(Count) || string.IsNullOrEmpty(ItemCost)))
+            {
+                calcInProgress = true;
+                TotalCost = (double.Parse(Count) * double.Parse(ItemCost)).ToString();
+                calcInProgress = false;
+            }
+        }
+
+        private Action actualCalculation;
+        private bool calcInProgress = false;
     }
 }
