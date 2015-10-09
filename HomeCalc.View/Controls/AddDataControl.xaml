@@ -63,6 +63,7 @@
         <ComboBox
             Grid.Row="1" Grid.Column="1"
             ItemsSource="{Binding TypeSelectorItems}"
+            SelectedItem="{Binding PurchaseType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             DisplayMemberPath="Name"
             />
         <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemsCount}">

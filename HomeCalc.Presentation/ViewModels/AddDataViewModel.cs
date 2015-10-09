@@ -118,7 +118,18 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        public PurchaseTypeModel PurchaseType { get; set; }
+        private PurchaseTypeModel purchaseType;
+        public PurchaseTypeModel PurchaseType
+        {
+            get
+            {
+                return purchaseType; 
+            }
+            set
+            {
+                purchaseType = value;
+            }
+        }
         
         private bool calcItemCost = false;
         public bool IsCalcItemCost
