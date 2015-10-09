@@ -41,13 +41,6 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-HomeCalc.View/obj/
-HomeCalc.View/bin/
-HomeCalc.Model/obj/
-HomeCalc.Model/bin/
-HomeCalc.Presentation/obj/
-HomeCalc.Presentation/bin/
-HomeCalc.Core/obj/
-HomeCalc.Core/bin/
+obj/
+bin/
 packages/
-HomeCalc.v12.suo
