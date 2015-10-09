@@ -75,7 +75,7 @@
             <DockPanel
                 Grid.Row="2"
                 Background="{StaticResource TitlePanelGradient}">
-                <TextBlock  Text="{Binding Status}" VerticalAlignment="Center" TextElement.FontWeight="Bold" Width="100" TextAlignment="Justify" HorizontalAlignment="Left" Margin="10,0"/>
+                <TextBlock  Text="{Binding Status}" VerticalAlignment="Center" TextElement.FontWeight="Bold" TextAlignment="Justify" HorizontalAlignment="Stretch" Margin="10,8"/>
             </DockPanel>
         </Grid>
     </Border>
