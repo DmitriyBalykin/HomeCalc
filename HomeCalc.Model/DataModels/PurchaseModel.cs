@@ -12,13 +12,14 @@ namespace HomeCalc.Model.DataModels
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public Int64 PurchaseId { get; set; }
         public string Name { get; set; }
-        public DateTime Date { get; set; }
+        public string Timestamp { get; set; }
         public double TotalCost { get; set; }
         public double ItemCost { get; set; }
         public double ItemsNumber { get; set; }
-        [ForeignKey("PurchaseTypeModel")]
+        public Int64 TypeId { get; set; }
+        [ForeignKey("TypeId")]
         public PurchaseTypeModel Type { get; set; }
     }
 }

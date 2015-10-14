@@ -17,11 +17,11 @@ namespace HomeCalc.Presentation.ViewModels
             logger = LogService.GetLogger();
 
             List<PurchaseTypeModel> types = new List<PurchaseTypeModel>();
-            types.Add(new PurchaseTypeModel { Id = 0, Name = "Еда" });
-            types.Add(new PurchaseTypeModel { Id = 1, Name = "Хозяйственные товары" });
-            types.Add(new PurchaseTypeModel { Id = 2, Name = "Автомобиль" });
-            types.Add(new PurchaseTypeModel { Id = 3, Name = "Квартира" });
-            types.Add(new PurchaseTypeModel { Id = 4, Name = "Снаряжение" });
+            types.Add(new PurchaseTypeModel { TypeId = 0, Name = "Еда" });
+            types.Add(new PurchaseTypeModel { TypeId = 1, Name = "Хозяйственные товары" });
+            types.Add(new PurchaseTypeModel { TypeId = 2, Name = "Автомобиль" });
+            types.Add(new PurchaseTypeModel { TypeId = 3, Name = "Квартира" });
+            types.Add(new PurchaseTypeModel { TypeId = 4, Name = "Снаряжение" });
 
             searchResultList = new List<PurchaseModel>();
            // searchResultList.Add(new Purchase { Id = 0, Ty });

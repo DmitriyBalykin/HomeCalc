@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HomeCalc.Presentation.Models;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -18,12 +19,7 @@ namespace HomeCalc.Presentation.ViewModels
         //    logger = LogService.GetLogger();
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
 
-            typeSelectorItems = new List<PurchaseTypeModel>();
-            typeSelectorItems.Add(new PurchaseTypeModel { Id = 0, Name = "Еда" });
-            typeSelectorItems.Add(new PurchaseTypeModel { Id = 1, Name = "Хозяйственные товары" });
-            typeSelectorItems.Add(new PurchaseTypeModel { Id = 2, Name = "Автомобиль" });
-            typeSelectorItems.Add(new PurchaseTypeModel { Id = 3, Name = "Квартира" });
-            typeSelectorItems.Add(new PurchaseTypeModel { Id = 4, Name = "Снаряжение" });
+            typeSelectorItems = StoreService.LoadPurchaseTypeList();
 
             actualCalculation = CalcTotalCost;
 
@@ -32,8 +28,8 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void SaveCommandExecute(object obj)
         {
-            if (DBService.SavePurchase(
-                new PurchaseModel {
+            if (StoreService.SavePurchase(
+                new Purchase {
                     Date = DateTime.Now,
                     ItemCost = double.Parse(ItemCost),
                     ItemsNumber = double.Parse(Count),
@@ -48,7 +44,7 @@ namespace HomeCalc.Presentation.ViewModels
             else
             {
                 logger.Warn("Purchase not saved");
-                Status.Post("Purchase not {0} saved", PurchaseName);
+                Status.Post("Purchase {0} not saved", PurchaseName);
             }
         }
         private DateTime dateToStore = DateTime.Now;
@@ -66,12 +62,12 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        private IList<PurchaseTypeModel> typeSelectorItems;
-        public ObservableCollection<PurchaseTypeModel> TypeSelectorItems
+        private IList<PurchaseType> typeSelectorItems;
+        public ObservableCollection<PurchaseType> TypeSelectorItems
         { 
             get
             {
-                return new ObservableCollection<PurchaseTypeModel>(typeSelectorItems); 
+                return new ObservableCollection<PurchaseType>(typeSelectorItems); 
             }
         }
 
@@ -118,8 +114,8 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        private PurchaseTypeModel purchaseType;
-        public PurchaseTypeModel PurchaseType
+        private PurchaseType purchaseType;
+        public PurchaseType PurchaseType
         {
             get
             {

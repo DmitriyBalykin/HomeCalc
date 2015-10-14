@@ -12,7 +12,7 @@ namespace HomeCalc.Model.DataModels
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public Int64 TypeId { get; set; }
         public string Name { get; set; }
     }
 }

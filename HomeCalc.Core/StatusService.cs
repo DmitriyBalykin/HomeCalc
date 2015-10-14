@@ -10,7 +10,6 @@ namespace HomeCalc.Core
     {
         private static StatusService instance;
         public event EventHandler<StatusChangedEventArgs> StatusChanged;
-        private string status;
         public void Post(string msg, params object[] args)
         {
             if (StatusChanged != null)

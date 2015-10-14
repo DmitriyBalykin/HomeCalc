@@ -10,23 +10,26 @@ namespace HomeCalc.Model.DbService
     public class DataService
     {
         private static DataService instance;
+        private IDatabaseManager dbManager;
         private static object monitor = new object();
-        private DataService()
-        { }
+        private DataService(IDatabaseManager dbManager)
+        {
+            this.dbManager = dbManager;
+        }
         public static DataService GetInstance()
         {
             lock (monitor)
             {
                 if (instance == null)
                 {
-                    instance = new DataService();
+                    instance = new DataService(new SQLiteManager());
                 }
             }
             return instance;
         }
         public bool SaveSettings(SettingsModel settings)
         {
-            using (var db = new StorageContext())
+            using (var db = dbManager.GetContext())
             {
 
             }
@@ -35,7 +38,7 @@ namespace HomeCalc.Model.DbService
         public SettingsModel LoadSettings()
         {
             SettingsModel settings = null;
-            using (var db = new StorageContext())
+            using (var db = dbManager.GetContext())
             {
 
             }
@@ -44,7 +47,7 @@ namespace HomeCalc.Model.DbService
         public bool SavePurchase(PurchaseModel purchase)
         {
             bool result = false;
-            using (var db = new StorageContext())
+            using (var db = dbManager.GetContext())
             {
                 try
                 {
@@ -62,7 +65,7 @@ namespace HomeCalc.Model.DbService
         }
         public bool SavePurchaseType(PurchaseTypeModel purchaseType)
         {
-            using (var db = new StorageContext())
+            using (var db = dbManager.GetContext())
             {
 
             }
@@ -71,7 +74,7 @@ namespace HomeCalc.Model.DbService
         public PurchaseModel LoadPurchase(int id)
         {
             PurchaseModel purchase = null;
-            using (var db = new StorageContext())
+            using (var db = dbManager.GetContext())
             {
 
             }
@@ -80,7 +83,7 @@ namespace HomeCalc.Model.DbService
         public IEnumerable<PurchaseModel> LoadPurchaseList(object filter)
         {
             IEnumerable<PurchaseModel> list = null;
-            using (var db = new StorageContext())
+            using (var db = dbManager.GetContext())
             {
 
             }
@@ -89,9 +92,17 @@ namespace HomeCalc.Model.DbService
         public IEnumerable<PurchaseTypeModel> LoadPurchaseTypeList()
         {
             IEnumerable<PurchaseTypeModel> list = null;
-            using (var db = new StorageContext())
+            using (var db = dbManager.GetContext())
             {
-
+                try
+                {
+                    list = db.PurchaseType.ToList();
+                }
+                catch (Exception)
+                {
+                    
+                    throw;
+                }
             }
             return list;
         }
