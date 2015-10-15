@@ -76,7 +76,7 @@ namespace HomeCalc.Model.DbService
             PurchaseModel purchase = null;
             using (var db = dbManager.GetContext())
             {
-
+                purchase = db.Purchase.Find(id);
             }
             return purchase;
         }
@@ -105,6 +105,98 @@ namespace HomeCalc.Model.DbService
                 }
             }
             return list;
+        }
+        public bool UpdatePurchase(PurchaseModel purchase)
+        {
+            bool result = false;
+            using (var db = dbManager.GetContext())
+            {
+                try
+                {
+                    var storedPurchase = db.Purchase.Find(purchase.PurchaseId);
+                    if (storedPurchase != null)
+                    {
+                        storedPurchase.Name = purchase.Name;
+                        storedPurchase.ItemsNumber = purchase.ItemsNumber;
+                        storedPurchase.ItemCost = purchase.ItemCost;
+                        storedPurchase.TotalCost = purchase.TotalCost;
+                        storedPurchase.Timestamp = purchase.Timestamp;
+                        db.SaveChanges();
+                        result = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+        public bool DeletePurchase(long purchaseId)
+        {
+            bool result = false;
+            using (var db = dbManager.GetContext())
+            {
+                try
+                {
+                    var storedPurchase = db.Purchase.Find(purchaseId);
+                    if (storedPurchase != null)
+                    {
+                        db.Purchase.Remove(storedPurchase);
+                        db.SaveChanges();
+                        result = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+        public bool UpdatePurchaseType(PurchaseTypeModel type)
+        {
+            bool result = false;
+            using (var db = dbManager.GetContext())
+            {
+                try
+                {
+                    var storedType = db.PurchaseType.Find(type.TypeId);
+                    if (storedType != null)
+                    {
+                        storedType.Name = type.Name;
+                        db.SaveChanges();
+                        result = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+        public bool DeletePurchaseType(PurchaseTypeModel type)
+        {
+            bool result = false;
+            using (var db = dbManager.GetContext())
+            {
+                try
+                {
+                    var storedType = db.PurchaseType.Find(type.TypeId);
+                    if (storedType != null)
+                    {
+                        db.PurchaseType.Remove(storedType);
+                        db.SaveChanges();
+                        result = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+            }
+            return result;
         }
     }
 }

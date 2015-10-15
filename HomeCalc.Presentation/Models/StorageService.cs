@@ -28,76 +28,32 @@ namespace HomeCalc.Presentation.Models
 
         public bool SaveSettings(SettingsModel settings)
         {
-            //using (var db = dbManager.GetContext())
-            //{
-
-            //}
-            return false;
+            return DBService.SaveSettings(settings);
         }
         public SettingsModel LoadSettings()
         {
-            SettingsModel settings = null;
-            //using (var db = dbManager.GetContext())
-            //{
-
-            //}
-            return settings;
+            return DBService.LoadSettings();
         }
         public bool SavePurchase(Purchase purchase)
         {
-            try
-            {
-                DBService.SavePurchase(PurchaseToModel(purchase));
-                return true;
-            }
-            catch (Exception)
-            {
-                
-                return false;
-            }
+            return DBService.SavePurchase(PurchaseToModel(purchase));
         }
         public bool SavePurchaseType(PurchaseType purchaseType)
         {
-            try
-            {
-                DBService.SavePurchaseType(new PurchaseTypeModel 
-                {
-                    Name = purchaseType.Name
-                });
-                return true;
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
+            return DBService.SavePurchaseType(TypeToModel(purchaseType));
         }
         public Purchase LoadPurchase(int id)
         {
-            Purchase purchase = null;
-
-            return purchase;
+            return ModelToPurchase(DBService.LoadPurchase(id));
         }
-        public IEnumerable<PurchaseModel> LoadPurchaseList(object filter)
+        public IEnumerable<Purchase> LoadPurchaseList(object filter)
         {
-            IEnumerable<PurchaseModel> list = null;
-
-            return list;
+            return DBService.LoadPurchaseList(filter).Select(p => ModelToPurchase(p));
         }
         public IList<PurchaseType> LoadPurchaseTypeList()
         {
-            IList<PurchaseType> list = new List<PurchaseType>();
-            try
-            {
-                return list = DBService.LoadPurchaseTypeList().Select(p => ModelToType(p)).ToList();
-            }
-            catch (Exception)
-            {
-                //Logger.Warn();
-            }
-            return list;
+            return DBService.LoadPurchaseTypeList().Select(p => ModelToType(p)).ToList();
         }
-
         private PurchaseType ModelToType(PurchaseTypeModel model)
         {
             return new PurchaseType { TypeId = (int)model.TypeId, Name = model.Name };
@@ -108,13 +64,20 @@ namespace HomeCalc.Presentation.Models
         }
         private Purchase ModelToPurchase(PurchaseModel model)
         {
-            return new Purchase {  };
+            return new Purchase {
+                Date = new DateTime(model.Timestamp),
+                ItemCost = model.ItemCost,
+                ItemsNumber = model.ItemsNumber,
+                Name = model.Name,
+                TotalCost = model.TotalCost,
+                Type = ModelToType(model.Type)
+            };
         }
         private PurchaseModel PurchaseToModel(Purchase purchase)
         {
             return new PurchaseModel
             {
-                Timestamp = (purchase.Date.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds.ToString(),
+                Timestamp = purchase.Date.Ticks,
                 Name = purchase.Name,
                 ItemsNumber = purchase.ItemsNumber,
                 ItemCost = purchase.ItemCost,

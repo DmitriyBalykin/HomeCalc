@@ -13,7 +13,7 @@ namespace HomeCalc.Model.DbService
         {
             return new Dictionary<string,string>{
                 {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY, Name TEXT)"},
-                {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY, Name TEXT, Timestamp TEXT, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId))"}
+                {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY, Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"}
             };
         } }
         public static List<DbItem<PurchaseTypeModel>> Values

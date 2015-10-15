@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataModels\SettingsModel.cs" />
+    <Compile Include="DbConnectionWrappers\StorageConnection.cs" />
     <Compile Include="DbService\DataService.cs" />
     <Compile Include="DbService\DefaultDbContent.cs" />
     <Compile Include="DbService\IDatabaseManager.cs" />

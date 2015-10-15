@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HomeCalc.Model.DbConnectionWrappers;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -18,7 +19,7 @@ namespace HomeCalc.Model.DbService
     {
         private static string dbFilePath = "HomeCalc\\DataStorage.sqlite";
 
-        private DbConnection GetConnection()
+        private StorageConnection GetConnection()
         {
             string dataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string fullPath = Path.Combine(dataFolder, dbFilePath);
@@ -28,8 +29,7 @@ namespace HomeCalc.Model.DbService
             {
                 SQLiteConnection.CreateFile(fullPath);
             }
-            SQLiteConnection connection = new SQLiteConnection(connString);
-            connection.Open();
+            StorageConnection connection = new StorageConnection(connString);
             if (connection != null && (connection.State == System.Data.ConnectionState.Connecting || connection.State == System.Data.ConnectionState.Open))
             {
                 InitializeDb(connection);
@@ -44,9 +44,12 @@ namespace HomeCalc.Model.DbService
         {
             try
             {
-                DbConnection connection = GetConnection();
-                StorageContext context = new StorageContext(connection);
-                InitializeContext(context);
+                StorageConnection connection = GetConnection();
+                StorageContext context = new StorageContext(connection.Connection);
+                if (connection.RecentlyInitiated)
+                {
+                    InitializeContext(context);    
+                }
                 return context;
             }
             catch (Exception)
@@ -85,14 +88,15 @@ namespace HomeCalc.Model.DbService
                 }
             }
         }
-        
-        private void InitializeDb(SQLiteConnection connection)
+
+        private void InitializeDb(StorageConnection connection)
         {
             foreach (var table in DefaultDbContent.Tables.Keys)
             {
-                if (!IsTableExists(connection, table))
+                if (!IsTableExists(connection.Connection, table))
                 {
-                    new SQLiteCommand(string.Format("create table {0} {1}", table, DefaultDbContent.Tables[table]), connection).ExecuteNonQuery();
+                    connection.RecentlyInitiated = true;
+                    new SQLiteCommand(string.Format("create table {0} {1}", table, DefaultDbContent.Tables[table]), connection.Connection).ExecuteNonQuery();
                 }
             }
         }
