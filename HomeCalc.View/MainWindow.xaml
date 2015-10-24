@@ -71,6 +71,10 @@
                     Header="Операции">
                     <controls:OperationsControl/>
                 </TabItem>
+                <TabItem
+                    Header="Аналитика">
+                    <controls:AnalyticsControl/>
+                </TabItem>
             </TabControl>
             <DockPanel
                 Grid.Row="2"
