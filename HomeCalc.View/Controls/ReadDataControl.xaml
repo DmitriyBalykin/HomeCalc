@@ -6,7 +6,8 @@
              
              mc:Ignorable="d" 
              Width="850"
-             Height="Auto">
+             Height="Auto"
+             MaxHeight="1000">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -63,7 +64,8 @@
                      Text="{Binding PurchaseName}" />
             
                 <ListBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
-                     ItemsSource="{Binding PurchaseTypesList}" />
+                     ItemsSource="{Binding PurchaseTypesList}"
+                     SelectedItem="{Binding PurchaseType}"/>
 
                 <DockPanel Grid.Row="3" Grid.Column="2">
                     <TextBlock Text="от"/>
@@ -86,7 +88,20 @@
             <ListBox
                 Visibility="{Binding SearchSucceded, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}"
                 ItemsSource="{Binding SearchResultList}"
-                ></ListBox>
+                >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel>
+                            <TextBlock Width="150" Text="{Binding Date}"/>
+                            <TextBlock Width="300" Text="{Binding Name}" />
+                            <TextBlock Width="150" Text="{Binding Type}" />
+                            <TextBlock Width="50" Text="{Binding ItemsNumber}" />
+                            <TextBlock Width="50" Text="{Binding ItemCost}" />
+                            <TextBlock Width="50" Text="{Binding TotalCost}" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Border>
     </Grid>
 </UserControl>

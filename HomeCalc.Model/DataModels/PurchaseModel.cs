@@ -20,6 +20,6 @@ namespace HomeCalc.Model.DataModels
         public double ItemsNumber { get; set; }
         public Int64 TypeId { get; set; }
         [ForeignKey("TypeId")]
-        public PurchaseTypeModel Type { get; set; }
+        public virtual PurchaseTypeModel Type { get; set; }
     }
 }

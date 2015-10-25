@@ -46,9 +46,14 @@ namespace HomeCalc.Presentation.Models
         {
             return ModelToPurchase(DBService.LoadPurchase(id));
         }
-        public IEnumerable<Purchase> LoadPurchaseList(object filter)
+        public IList<Purchase> LoadPurchaseList(SearchRequest filter)
         {
-            return DBService.LoadPurchaseList(filter).Select(p => ModelToPurchase(p));
+            return DBService.LoadPurchaseList(
+                p => (!filter.SearchByName || p.Name.Contains(filter.NameFilter)) &&
+                     (!filter.SearchByType || p.Type == TypeToModel(filter.Type)) &&
+                     (!filter.SearchByDate || (p.Timestamp > filter.DateStart.Ticks) && (p.Timestamp <= filter.DateEnd.Ticks)) &&
+                     (!filter.SearchByCost || (p.TotalCost >= filter.CostStart) && (p.TotalCost <= filter.CostEnd))
+                ).Select(p => ModelToPurchase(p)).ToList();
         }
         public IList<PurchaseType> LoadPurchaseTypeList()
         {

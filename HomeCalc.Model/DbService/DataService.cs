@@ -80,12 +80,12 @@ namespace HomeCalc.Model.DbService
             }
             return purchase;
         }
-        public IEnumerable<PurchaseModel> LoadPurchaseList(object filter)
+        public IList<PurchaseModel> LoadPurchaseList(Func<PurchaseModel, bool> request)
         {
-            IEnumerable<PurchaseModel> list = null;
+            IList<PurchaseModel> list = null;
             using (var db = dbManager.GetContext())
             {
-
+                list = db.Purchase.Where(request).ToList();
             }
             return list;
         }

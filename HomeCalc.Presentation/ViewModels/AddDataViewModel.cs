@@ -23,7 +23,7 @@ namespace HomeCalc.Presentation.ViewModels
 
             actualCalculation = CalcTotalCost;
 
-            Status.Post("Загружено");
+            Status.Post("Завантажено");
         }
 
         private void SaveCommandExecute(object obj)
@@ -39,12 +39,12 @@ namespace HomeCalc.Presentation.ViewModels
                 }))
             {
                 logger.Info("Purchase saved");
-                Status.Post("Purchase {0} saved", PurchaseName);
+                Status.Post("Покупка \"{0}\" збережена", PurchaseName);
             }
             else
             {
                 logger.Warn("Purchase not saved");
-                Status.Post("Purchase {0} not saved", PurchaseName);
+                Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
             }
         }
         private DateTime dateToStore = DateTime.Now;
