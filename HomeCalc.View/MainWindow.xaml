@@ -76,11 +76,23 @@
                     <controls:AnalyticsControl/>
                 </TabItem>
             </TabControl>
-            <DockPanel
+            <StackPanel
                 Grid.Row="2"
                 Background="{StaticResource TitlePanelGradient}">
-                <TextBlock  Text="{Binding Status}" VerticalAlignment="Center" TextElement.FontWeight="Bold" TextAlignment="Justify" HorizontalAlignment="Stretch" Margin="10,8"/>
-            </DockPanel>
+                <Grid>
+                    <ProgressBar Grid.Row="0" Grid.Column="0"
+                                 Visibility="{Binding ShowProgress, Converter={StaticResource boolToVisibilityConverter}}"
+                        Opacity="0.3"
+                        Value="{Binding ProgressValue}" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                        Text="{Binding Status}"
+                        VerticalAlignment="Center"
+                        TextElement.FontWeight="Bold"
+                        TextAlignment="Justify"
+                        HorizontalAlignment="Stretch"
+                        Margin="10,8"/>
+                </Grid>
+            </StackPanel>
         </Grid>
     </Border>
 

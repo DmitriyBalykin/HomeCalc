@@ -23,6 +23,9 @@ namespace HomeCalc.View
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         StatusService statusService;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -31,6 +34,14 @@ namespace HomeCalc.View
 
             statusService = StatusService.GetInstance();
             statusService.StatusChanged += statusService_StatusChanged;
+            statusService.ProgressUpdated += statusService_ProgressUpdated;
+
+            Status = statusService.GetStatus();
+        }
+
+        void statusService_ProgressUpdated(object sender, ProgressUpdatedEventArgs e)
+        {
+            ProgressValue = e.Progress.ToString();
         }
 
         void statusService_StatusChanged(object sender, StatusChangedEventArgs e)
@@ -65,6 +76,40 @@ namespace HomeCalc.View
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        private string progressValue;
+        public string ProgressValue
+        {
+            get
+            {
+                return progressValue;
+            }
+            set
+            {
+                if (value != progressValue)
+                {
+                    progressValue = value;
+                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs("ProgressValue"));
+                }
+            }
+        }
+
+        private bool showProgress = true;
+        public bool ShowProgress
+        {
+            get
+            {
+                return showProgress;
+            }
+            set
+            {
+                if (value != showProgress)
+                {
+                    showProgress = value;
+                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs("ShowProgress"));
+                }
+            }
+        }
+
+        
     }
 }
