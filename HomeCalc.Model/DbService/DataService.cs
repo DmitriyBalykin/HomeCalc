@@ -67,7 +67,8 @@ namespace HomeCalc.Model.DbService
         {
             using (var db = dbManager.GetContext())
             {
-
+                db.PurchaseType.Add(purchaseType);
+                db.SaveChanges();
             }
             return false;
         }

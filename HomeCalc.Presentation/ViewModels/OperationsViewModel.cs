@@ -2,9 +2,11 @@
 using HomeCalc.Core.Presentation;
 using HomeCalc.Core.Utilities;
 using HomeCalc.Presentation.BasicModels;
+using HomeCalc.Presentation.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,11 +49,22 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void ImportDataCommandExecute(object obj)
         {
-            FileUtilities.ImportDataFromFile(ExistingPath);
+            Status.ResetProgressBar();
+            var result = Migrator.MigrateFromCsv(ExistingPath, DataMigrationStatusUpdated).Result;
+
+            Status.Post("Міграцію даних виконано. Записів перенесено: {0}, помилок: {1}", result.SucceededLines, result.FailedLines);
+        }
+        private void DataMigrationStatusUpdated(object sender, MigrationResultArgs e)
+        {
+            Status.UpdateProgress(e.Processed);
         }
         private bool CanImportData(object obj)
         {
-            return FileUtilities.FileExists(ExistingPath);
+            if (ExistingPath == null)
+            {
+                return false;
+            }
+            return FileUtilities.FileExists(Path.Combine(ExistingPath, FileUtilities.HOMEEX_DATA_FILE));
         }
 
         private string existingPath;

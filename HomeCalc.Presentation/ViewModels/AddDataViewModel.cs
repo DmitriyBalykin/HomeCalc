@@ -19,11 +19,18 @@ namespace HomeCalc.Presentation.ViewModels
         //    logger = LogService.GetLogger();
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
 
+            StoreService.TypesUpdated += StoreService_TypesUpdated;
+
             typeSelectorItems = StoreService.LoadPurchaseTypeList();
 
             actualCalculation = CalcTotalCost;
 
             Status.Post("Завантажено");
+        }
+
+        void StoreService_TypesUpdated(object sender, EventArgs e)
+        {
+            typeSelectorItems = StoreService.LoadPurchaseTypeList();
         }
 
         private void SaveCommandExecute(object obj)

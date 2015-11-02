@@ -11,24 +11,10 @@ namespace HomeCalc.Core.Utilities
     public class FileUtilities
     {
         private static Logger logger = LogService.LogService.GetLogger();
-        static string fileName = "Data.csv";
-        public static bool ImportDataFromFile(string folderPath)
+        public static string HOMEEX_DATA_FILE = "homeexData.csv";
+        public static bool FileExists(string filePath)
         {
-            string filePath = Path.Combine(folderPath, fileName);
-            if (!FileExists(folderPath))
-            {
-                logger.Warn("File with data absent at path: {0}", filePath);
-                return false;
-            }
-            var content = File.ReadAllLines(filePath);
-
-
-
-            return true;
-        }
-        public static bool FileExists(string folderPath)
-        {
-            return !string.IsNullOrEmpty(folderPath) && File.Exists(Path.Combine(folderPath, fileName));
+            return !string.IsNullOrEmpty(filePath) && File.Exists(filePath);
         }
     }
 }
