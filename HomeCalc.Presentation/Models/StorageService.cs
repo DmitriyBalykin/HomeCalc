@@ -41,6 +41,11 @@ namespace HomeCalc.Presentation.Models
         {
             return DBService.SavePurchase(PurchaseToModel(purchase));
         }
+        public bool SavePurchaseBulk(List<Purchase> purchases)
+        {
+
+            return DBService.SavePurchaseBulk(purchases.Select(p => PurchaseToModel(p)));
+        }
         public bool SavePurchaseType(PurchaseType purchaseType)
         {
             PurchaseTypesCache.IsActual = false;

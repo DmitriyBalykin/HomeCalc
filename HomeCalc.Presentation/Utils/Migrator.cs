@@ -15,7 +15,7 @@ namespace HomeCalc.Presentation.Utils
     public class Migrator
     {
         private static Logger logger = LogService.GetLogger();
-        public static async Task<MigrationResult> MigrateFromCsv(string folderPath, EventHandler<MigrationResultArgs> progressResult)
+        public static async Task<MigrationResult> MigrateFromCsv(string folderPath, Action<MigrationResultArgs> DataMigrationStatusUpdated)
         {
             string filePath = Path.Combine(folderPath, FileUtilities.HOMEEX_DATA_FILE);
             if (!FileUtilities.FileExists(filePath))
@@ -25,8 +25,7 @@ namespace HomeCalc.Presentation.Utils
             }
 
             var ctsource = new CancellationTokenSource();
-            var progress = new Progress<MigrationResultArgs>();
-            progress.ProgressChanged += progressResult;
+            var progress = new Progress<MigrationResultArgs>(DataMigrationStatusUpdated);
             //TODO implement cancel
             return await StartMigrationTask(filePath, progress, ctsource.Token);
         }
@@ -41,13 +40,14 @@ namespace HomeCalc.Presentation.Utils
             var content = File.ReadAllLines(sourceFilePath);
 
             int totalCount = content.Length;
-            MigrationResult taskResult = null;
+            MigrationResult migrationResult = null;
             try
             {
-                taskResult = await Task.Run<MigrationResult>(() =>
+                migrationResult = await Task.Run<MigrationResult>(() =>
                 {
-                    MigrationResult internalResult = null;
+                    var taskResult = new MigrationResult();
                     var storageService = StorageService.GetInstance();
+                    var purchaseList = new List<Purchase>(totalCount);
 
                     foreach (var line in File.ReadAllLines(sourceFilePath).Skip(1))
                     {
@@ -59,7 +59,7 @@ namespace HomeCalc.Presentation.Utils
                         {
                             var columns = line.Split(';');
 
-                            if (storageService.SavePurchase(
+                            purchaseList.Add(
                                 new Purchase
                                 {
                                     Date = DateTime.ParseExact(columns[1], "yyyyMMdd", CultureInfo.InvariantCulture),
@@ -68,43 +68,35 @@ namespace HomeCalc.Presentation.Utils
                                     TotalCost = double.Parse(columns[6].Replace('.', ',')),
                                     Name = columns[3],
                                     Type = storageService.ResolvePurchaseType(name: columns[2])
-                                }))
-                            {
-                                internalResult.AddSucceededLine();
-                            }
-                            else
-                            {
-                                internalResult.AddFailedLine();
-                            }
+                                });
+                            taskResult.AddSucceededLine();
                         }
                         catch (Exception)
                         {
-                            internalResult.AddFailedLine();
+                            taskResult.AddFailedLine();
                         }
-                        progress.Report(new MigrationResultArgs { Processed = taskResult.ResultProcessed });
+                        progress.Report(new MigrationResultArgs { Total = totalCount, Processed = taskResult.ResultProcessed });
                     }
-                    return internalResult;
+                    storageService.SavePurchaseBulk(purchaseList);
+                    return taskResult;
                 });
             }
             catch (TaskCanceledException)
             { }
 
-            return taskResult;
+            return migrationResult;
         }
     }
     public class MigrationResult
     {
-        private int resultProcessed;
         public int ResultProcessed
         {
             get
             {
-                return resultProcessed;
+                return SucceededLines + FailedLines;
             }
             set
-            {
-                resultProcessed = SucceededLines + FailedLines;
-            }
+            { }
         }
         public int TotalLinesExpected { get; set; }
         public int SucceededLines { get; set; }
@@ -127,6 +119,14 @@ namespace HomeCalc.Presentation.Utils
     }
     public class MigrationResultArgs : EventArgs
     {
+        public int Total { get; set; }
         public int Processed { get; set; }
+        public int Percent
+        {
+            get
+            {
+                return 100 * Processed / Total;
+            }
+        }
     }
 }

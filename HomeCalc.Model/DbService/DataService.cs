@@ -63,6 +63,25 @@ namespace HomeCalc.Model.DbService
             }
             return result;
         }
+        public bool SavePurchaseBulk(IEnumerable<PurchaseModel> purchases)
+        {
+            bool result = false;
+            using (var db = dbManager.GetContext())
+            {
+                try
+                {
+                    db.Purchase.AddRange(purchases);
+                    db.SaveChanges();
+                    result = true;
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+
+            }
+            return result;
+        }
         public bool SavePurchaseType(PurchaseTypeModel purchaseType)
         {
             using (var db = dbManager.GetContext())

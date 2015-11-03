@@ -47,16 +47,20 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        private void ImportDataCommandExecute(object obj)
+        private async void ImportDataCommandExecute(object obj)
         {
-            Status.ResetProgressBar();
-            var result = Migrator.MigrateFromCsv(ExistingPath, DataMigrationStatusUpdated).Result;
-
-            Status.Post("Міграцію даних виконано. Записів перенесено: {0}, помилок: {1}", result.SucceededLines, result.FailedLines);
+            Status.StartProgress();
+            await Migrator.MigrateFromCsv(ExistingPath, DataMigrationStatusUpdated).ContinueWith(t => DataMigrationFinished(t.Result));
         }
-        private void DataMigrationStatusUpdated(object sender, MigrationResultArgs e)
+        private void DataMigrationStatusUpdated(MigrationResultArgs e)
         {
-            Status.UpdateProgress(e.Processed);
+            Status.UpdateProgress(e.Percent);
+            Status.Post("Виконується міграцію даних. Записів зчитано: {0}", e.Processed);
+        }
+        private void DataMigrationFinished(MigrationResult result)
+        {
+            Status.StopProgress();
+            Status.Post("Міграцію даних виконано. Записів перенесено: {0}, помилок: {1}", result.SucceededLines, result.FailedLines);
         }
         private bool CanImportData(object obj)
         {

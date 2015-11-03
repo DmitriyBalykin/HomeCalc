@@ -13,6 +13,8 @@ namespace HomeCalc.Core
         private string status;
         public event EventHandler<StatusChangedEventArgs> StatusChanged;
         public event EventHandler<ProgressUpdatedEventArgs> ProgressUpdated;
+        public event EventHandler ProgressStarted;
+        public event EventHandler ProgressStopped;
 
         public void Post(string msg, params object[] args)
         {
@@ -32,13 +34,26 @@ namespace HomeCalc.Core
             return instance;
         }
 
-        public void ResetProgressBar()
+        public void StartProgress()
         {
-            throw new NotImplementedException();
+            UpdateProgress(0);
+            
+            if (ProgressStarted != null)
+            {
+                ProgressStarted(null, EventArgs.Empty);
+            }
+        }
+        public void StopProgress()
+        {
+            if (ProgressStopped != null)
+            {
+                ProgressStopped(null, EventArgs.Empty);
+            }
         }
 
         public void UpdateProgress(int progress)
         {
+            
             if (ProgressUpdated != null)
             {
                 ProgressUpdated(null, new ProgressUpdatedEventArgs { Progress = progress });
