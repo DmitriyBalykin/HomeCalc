@@ -78,19 +78,27 @@
             </TabControl>
             <StackPanel
                 Grid.Row="2"
-                Background="{StaticResource TitlePanelGradient}">
+                Background="{StaticResource TitlePanelGradient}"
+                >
                 <Grid>
-                    <ProgressBar Grid.Row="0" Grid.Column="0"
+                    <ProgressBar
                                  Visibility="{Binding ShowProgress, Converter={StaticResource boolToVisibilityConverter}}"
-                        Opacity="0.3"
-                        Value="{Binding ProgressValue}" />
-                    <TextBlock Grid.Row="0" Grid.Column="0" 
-                        Text="{Binding Status}"
-                        VerticalAlignment="Center"
-                        TextElement.FontWeight="Bold"
-                        TextAlignment="Justify"
-                        HorizontalAlignment="Stretch"
-                        Margin="10,8"/>
+                                 Background="Transparent"
+                                 Foreground="SteelBlue"
+                                 BorderBrush="Transparent"
+                                Value="{Binding ProgressValue}"
+                                 />
+                    <TextBlock 
+                            Background="{StaticResource TitlePanelGradient}"
+                            Text="{Binding Status}"
+                        Opacity="1"
+                        Foreground="Gray"
+                            TextElement.FontWeight="Bold"
+                            TextAlignment="Justify"
+                        Margin="10,8"
+                        
+                            />
+
                 </Grid>
             </StackPanel>
         </Grid>

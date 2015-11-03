@@ -35,8 +35,20 @@ namespace HomeCalc.View
             statusService = StatusService.GetInstance();
             statusService.StatusChanged += statusService_StatusChanged;
             statusService.ProgressUpdated += statusService_ProgressUpdated;
+            statusService.ProgressStarted += statusService_ProgressStarted;
+            statusService.ProgressStopped += statusService_ProgressStopped;
 
             Status = statusService.GetStatus();
+        }
+
+        void statusService_ProgressStopped(object sender, EventArgs e)
+        {
+            ShowProgress = false;
+        }
+
+        void statusService_ProgressStarted(object sender, EventArgs e)
+        {
+            ShowProgress = true;
         }
 
         void statusService_ProgressUpdated(object sender, ProgressUpdatedEventArgs e)
@@ -71,7 +83,7 @@ namespace HomeCalc.View
                 if (value != status)
                 {
                     status = value;
-                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Status"));
+                    OnUpdateProperty("Status");
                 }
             }
         }
@@ -88,7 +100,7 @@ namespace HomeCalc.View
                 if (value != progressValue)
                 {
                     progressValue = value;
-                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs("ProgressValue"));
+                    OnUpdateProperty("ProgressValue");
                 }
             }
         }
@@ -105,11 +117,17 @@ namespace HomeCalc.View
                 if (value != showProgress)
                 {
                     showProgress = value;
-                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs("ShowProgress"));
+                    OnUpdateProperty("ShowProgress");
                 }
             }
         }
 
-        
+        private void OnUpdateProperty(string propName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propName));
+            }
+        }
     }
 }
