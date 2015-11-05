@@ -14,14 +14,17 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
+        private IList<Purchase> purchaseHistory;
         public AddDataViewModel()
         {
-        //    logger = LogService.GetLogger();
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
 
             StoreService.TypesUpdated += StoreService_TypesUpdated;
 
             typeSelectorItems = StoreService.LoadPurchaseTypeList();
+            purchaseHistory = StoreService.LoadPurchaseList(SearchRequest.Requests.Empty);
+
+            PurchaseType = TypeSelectorItems.FirstOrDefault();
 
             actualCalculation = CalcTotalCost;
 

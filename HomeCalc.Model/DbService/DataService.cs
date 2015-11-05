@@ -109,6 +109,15 @@ namespace HomeCalc.Model.DbService
             }
             return list;
         }
+        public IList<PurchaseModel> LoadCompletePurchaseList()
+        {
+            IList<PurchaseModel> list = null;
+            using (var db = dbManager.GetContext())
+            {
+                list = db.Purchase.ToList();
+            }
+            return list;
+        }
         public IEnumerable<PurchaseTypeModel> LoadPurchaseTypeList()
         {
             IEnumerable<PurchaseTypeModel> list = null;

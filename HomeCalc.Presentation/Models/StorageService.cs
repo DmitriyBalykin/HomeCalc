@@ -60,6 +60,17 @@ namespace HomeCalc.Presentation.Models
         {
             return ModelToPurchase(DBService.LoadPurchase(id));
         }
+        public IList<Purchase> LoadPurchaseList(SearchRequest.Requests enumFilter)
+        {
+            IList<Purchase> list = new List<Purchase>();
+            switch (enumFilter)
+            {
+                case SearchRequest.Requests.Empty:
+                    list = DBService.LoadCompletePurchaseList().Select(p => ModelToPurchase(p)).ToList();
+                    break;
+            }
+            return list;
+        }
         public IList<Purchase> LoadPurchaseList(SearchRequest filter)
         {
             return DBService.LoadPurchaseList(

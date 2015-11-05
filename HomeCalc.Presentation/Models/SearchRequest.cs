@@ -28,5 +28,10 @@ namespace HomeCalc.Presentation.Models
         public bool SearchByDate { get; set; }
 
         public bool SearchByCost { get; set; }
+
+        public enum Requests
+        {
+            Empty
+        }
     }
 }
