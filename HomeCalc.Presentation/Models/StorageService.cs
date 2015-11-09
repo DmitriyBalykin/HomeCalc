@@ -14,6 +14,7 @@ namespace HomeCalc.Presentation.Models
         private static StorageService instance;
 
         public event EventHandler TypesUpdated;
+        public event EventHandler HistoryUpdated;
         
         public StorageService()
         {
@@ -43,8 +44,12 @@ namespace HomeCalc.Presentation.Models
         }
         public bool SavePurchaseBulk(List<Purchase> purchases)
         {
-
-            return DBService.SavePurchaseBulk(purchases.Select(p => PurchaseToModel(p)));
+            var result = DBService.SavePurchaseBulk(purchases.Select(p => PurchaseToModel(p)));
+            if (result)
+            {
+                HistoryUpdated(null, EventArgs.Empty);
+            }
+            return result;
         }
         public bool SavePurchaseType(PurchaseType purchaseType)
         {

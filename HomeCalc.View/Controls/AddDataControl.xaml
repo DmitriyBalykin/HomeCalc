@@ -76,9 +76,19 @@
 
         <ComboBox Grid.Row="1" Grid.Column="2"
                   Text="{Binding PurchaseName}"
-                  
-                  IsEditable="True"
-                  MaxDropDownHeight="200"/>
+                  SelectedValuePath="Name"
+                  ItemsSource="{Binding PurchaseHistoryItems}"
+                  IsDropDownOpen="{Binding ShowPurchaseHistory}"
+                  IsEditable="True">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel LastChildFill="True">
+                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Width="200"/>
+                        <TextBlock Text="{Binding Date, StringFormat={}{0:yyyy:MM:dd}}" HorizontalAlignment="Right" Margin="0,0,0,10" />
+                    </DockPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
         <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
         <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsCalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>

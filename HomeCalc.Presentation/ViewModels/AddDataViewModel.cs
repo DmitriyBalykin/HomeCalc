@@ -9,20 +9,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HomeCalc.Presentation.Models;
+using System.Globalization;
 
 namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
-        private IList<Purchase> purchaseHistory;
+        IList<Purchase> purchaseHistory;
         public AddDataViewModel()
         {
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
 
             StoreService.TypesUpdated += StoreService_TypesUpdated;
+            StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
-            typeSelectorItems = StoreService.LoadPurchaseTypeList();
-            purchaseHistory = StoreService.LoadPurchaseList(SearchRequest.Requests.Empty);
+            typeSelectorItems = new ObservableCollection<PurchaseType>( StoreService.LoadPurchaseTypeList());
+            UpdatePurchaseHistory();
 
             PurchaseType = TypeSelectorItems.FirstOrDefault();
 
@@ -31,23 +33,33 @@ namespace HomeCalc.Presentation.ViewModels
             Status.Post("Завантажено");
         }
 
+        void UpdatePurchaseHistory(object sender, EventArgs e)
+        {
+            UpdatePurchaseHistory();
+        }
+        void UpdatePurchaseHistory()
+        {
+            purchaseHistory = StoreService.LoadPurchaseList(SearchRequest.Requests.Empty);
+        }
         void StoreService_TypesUpdated(object sender, EventArgs e)
         {
-            typeSelectorItems = StoreService.LoadPurchaseTypeList();
+            typeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
         }
 
         private void SaveCommandExecute(object obj)
         {
-            if (StoreService.SavePurchase(
-                new Purchase {
-                    Date = DateTime.Now,
-                    ItemCost = double.Parse(ItemCost),
-                    ItemsNumber = double.Parse(Count),
-                    TotalCost = double.Parse(TotalCost),
-                    Name = PurchaseName,
-                    Type = PurchaseType
-                }))
+            var purchase = new Purchase
             {
+                Date = DateTime.Now,
+                ItemCost = double.Parse(ItemCost),
+                ItemsNumber = double.Parse(Count),
+                TotalCost = double.Parse(TotalCost),
+                Name = PurchaseName,
+                Type = PurchaseType
+            };
+            if (StoreService.SavePurchase(purchase))
+            {
+                purchaseHistory.Add(purchase);
                 logger.Info("Purchase saved");
                 Status.Post("Покупка \"{0}\" збережена", PurchaseName);
             }
@@ -57,6 +69,22 @@ namespace HomeCalc.Presentation.ViewModels
                 Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
             }
         }
+
+        private void SearchPurchase()
+        {
+            var exactPurchases = purchaseHistory.Where(p => p.Name == purchaseName);
+            IEnumerable<Purchase> resultList;
+            if (exactPurchases.Count() > 0)
+            {
+                resultList = exactPurchases.Take(10);
+            }
+            else
+            {
+                resultList = purchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture)).Take(10);
+            }
+            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date);
+        }
+
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
             get
@@ -71,17 +99,66 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-
-        private IList<PurchaseType> typeSelectorItems;
+        private IEnumerable<Purchase> PurchaseHistoryItemsWrapper
+        {
+            set
+            {
+                PurchaseHistoryItems = new ObservableCollection<Purchase>(value);
+                ShowPurchaseHistory = true;
+            }
+        }
+        private ObservableCollection<Purchase> purchaseHistoryItems;
+        public ObservableCollection<Purchase> PurchaseHistoryItems
+        {
+            get
+            {
+                return purchaseHistoryItems;
+            }
+            set
+            {
+                if (purchaseHistoryItems != value)
+                {
+                    purchaseHistoryItems = value;
+                    OnPropertyChanged(() => PurchaseHistoryItems);
+                }
+            }
+        }
+        private ObservableCollection<PurchaseType> typeSelectorItems;
         public ObservableCollection<PurchaseType> TypeSelectorItems
         { 
             get
             {
-                return new ObservableCollection<PurchaseType>(typeSelectorItems); 
+                return typeSelectorItems; 
+            }
+            set
+            {
+                if (typeSelectorItems != value)
+                {
+                    typeSelectorItems = value;
+                    OnPropertyChanged(() => TypeSelectorItems);
+                }
             }
         }
 
-        public string PurchaseName { get; set; }
+        private string purchaseName;
+        public string PurchaseName
+        {
+            get
+            {
+                return purchaseName;
+            }
+            set
+            {
+                if (value != purchaseName)
+                {
+                    purchaseName = value;
+                    OnPropertyChanged(() => PurchaseName);
+                    SearchPurchase();
+                }
+            }
+        }
+
+
         private string count;
         private string itemCost;
         private string totalCost;
@@ -197,15 +274,31 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != calcTotalCost)
                 {
                     calcTotalCost = value;
+                    OnPropertyChanged(() => IsCalcByTotal);
                 }
                 if (value)
                 {
                     actualCalculation = CalcTotalCost;
                 }
-                OnPropertyChanged(() => IsCalcByTotal);
             }
         }
 
+        private bool showPurchaseHistory;
+        public bool ShowPurchaseHistory
+        {
+            get
+            {
+                return showPurchaseHistory;
+            }
+            set
+            {
+                if (value != showPurchaseHistory)
+                {
+                    showPurchaseHistory = value;
+                    OnPropertyChanged(() => ShowPurchaseHistory);
+                }
+            }
+        }
         private void CalcItemCount() {
             if (!calcInProgress && !(string.IsNullOrEmpty(TotalCost) || string.IsNullOrEmpty(ItemCost)))
             {
