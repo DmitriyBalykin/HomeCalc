@@ -76,13 +76,13 @@ namespace HomeCalc.Presentation.ViewModels
             IEnumerable<Purchase> resultList;
             if (exactPurchases.Count() > 0)
             {
-                resultList = exactPurchases.Take(10);
+                resultList = exactPurchases;
             }
             else
             {
-                resultList = purchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture)).Take(10);
+                resultList = purchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture));
             }
-            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date);
+            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date).Take(10);
         }
 
         private DateTime dateToStore = DateTime.Now;
@@ -157,7 +157,6 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-
 
         private string count;
         private string itemCost;

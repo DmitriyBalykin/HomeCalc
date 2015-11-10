@@ -76,16 +76,17 @@
 
         <ComboBox Grid.Row="1" Grid.Column="2"
                   Text="{Binding PurchaseName}"
-                  SelectedValuePath="Name"
+                  TextSearch.TextPath="Name"
+                  IsTextSearchEnabled="False"
                   ItemsSource="{Binding PurchaseHistoryItems}"
                   IsDropDownOpen="{Binding ShowPurchaseHistory}"
                   IsEditable="True">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <DockPanel LastChildFill="True">
-                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Width="200"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Width="210"/>
                         <TextBlock Text="{Binding Date, StringFormat={}{0:yyyy:MM:dd}}" HorizontalAlignment="Right" Margin="0,0,0,10" />
-                    </DockPanel>
+                    </StackPanel>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
