@@ -85,23 +85,23 @@
             </Grid>
     </Border>
         <Border Grid.Row="1">
-            <ListBox
+            <DataGrid
                 Visibility="{Binding SearchSucceded, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}"
                 ItemsSource="{Binding SearchResultList}"
+                AutoGenerateColumns="False"
+                SelectionMode="Single"
+                CanUserSortColumns="True"
+                CanUserAddRows="False"
                 >
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <DockPanel>
-                            <TextBlock Width="150" Text="{Binding Date}"/>
-                            <TextBlock Width="300" Text="{Binding Name}" />
-                            <TextBlock Width="150" Text="{Binding Type}" />
-                            <TextBlock Width="50" Text="{Binding ItemsNumber}" />
-                            <TextBlock Width="50" Text="{Binding ItemCost}" />
-                            <TextBlock Width="50" Text="{Binding TotalCost}" />
-                        </DockPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding Date}" Width="100"/>
+                    <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
+                    <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" />
+                    <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="80" />
+                    <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost}" Width="110" />
+                    <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost}" Width="140" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Border>
     </Grid>
 </UserControl>

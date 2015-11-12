@@ -26,7 +26,21 @@
         <GradientStop Color="White" Offset="0.7"/>
         <GradientStop Color="LightBlue" Offset="1"/>
     </LinearGradientBrush>
-    
+
+    <Style TargetType="DataGrid">
+        <Style.Setters>
+            <Setter Property="AlternatingRowBackground" Value="{StaticResource SelectedBackground}"/>
+        </Style.Setters>
+        <Style.Triggers>
+        </Style.Triggers>
+        <Style.Resources>
+            <Style TargetType="DataGridColumnHeader">
+                <Style.Setters>
+                    <Setter Property="Background" Value="{StaticResource ButtonColor}" />
+                </Style.Setters>
+            </Style>
+        </Style.Resources>
+    </Style>
     <Style TargetType="TabItem">
         <Style.Setters>
             <Setter Property="TextElement.FontWeight" Value="Bold"/>
