@@ -49,7 +49,10 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByDate = searchByDate,
                 SearchByCost = searchByCost,
             };
-            SearchResultList = new ObservableCollection<Purchase>(StoreService.LoadPurchaseList(searchRequest));
+            IList<Purchase> results = StoreService.LoadPurchaseList(searchRequest);
+            TotalCount = results.Sum(p => p.ItemsNumber).ToString();
+            TotalCost = results.Sum(p => p.TotalCost).ToString();
+            SearchResultList = new ObservableCollection<Purchase>(results);
             Status.Post("Пошук завершено, знайдено {0} записів", searchResultList.Count);
         }
         public ObservableCollection<PurchaseType> PurchaseTypesList { get; set; }
@@ -232,6 +235,39 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     searchSucceded = value;
                     OnPropertyChanged(() => SearchSucceded);
+                }
+            }
+        }
+
+        private string totalCount;
+        public string TotalCount
+        {
+            get
+            {
+                return totalCount;
+            }
+            set
+            {
+                if (value != totalCount)
+                {
+                    totalCount = value;
+                    OnPropertyChanged(() => TotalCount);
+                }
+            }
+        }
+        private string totalCost;
+        public string TotalCost
+        {
+            get
+            {
+                return totalCost;
+            }
+            set
+            {
+                if (value != totalCost)
+                {
+                    totalCost = value;
+                    OnPropertyChanged(() => TotalCost);
                 }
             }
         }

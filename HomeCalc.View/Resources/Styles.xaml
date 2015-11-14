@@ -44,6 +44,18 @@
             </Style>
         </Style.Resources>
     </Style>
+    <Style TargetType="StackPanel" x:Key="TextStaskStyle">
+        <Style.Setters>
+            <Setter Property="Orientation" Value="Horizontal"/>
+        </Style.Setters>
+        <Style.Resources>
+            <Style TargetType="TextBlock">
+                <Style.Setters>
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style.Setters>
+            </Style>
+        </Style.Resources>
+    </Style>
     <Style TargetType="TabItem">
         <Style.Setters>
             <Setter Property="TextElement.FontWeight" Value="Bold"/>

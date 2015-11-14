@@ -85,23 +85,40 @@
             </Grid>
     </Border>
         <Border Grid.Row="1">
-            <DataGrid
-                Visibility="{Binding SearchSucceded, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}"
+            <Grid Visibility="{Binding SearchSucceded, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="25" />
+                </Grid.RowDefinitions>
+                <DataGrid
+                Grid.Row="0"
                 ItemsSource="{Binding SearchResultList}"
                 AutoGenerateColumns="False"
                 SelectionMode="Single"
                 CanUserSortColumns="True"
                 CanUserAddRows="False"
                 >
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100"/>
-                    <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
-                    <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" />
-                    <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
-                    <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost}" Width="110" />
-                    <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost}" Width="120" />
-                </DataGrid.Columns>
-            </DataGrid>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100"/>
+                        <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
+                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" />
+                        <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
+                        <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost}" Width="110" />
+                        <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost}" Width="120" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <StackPanel
+                        Grid.Row="1"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource TextStaskStyle}">
+                    <TextBlock Text="Загальна кількість товарів:" />
+                    <TextBlock Text="{Binding TotalCount}" Margin="30,0" />
+                    <TextBlock Text="Загальна вартість товарів:" />
+                    <TextBlock Text="{Binding TotalCost}" Margin="30,0" />
+                </StackPanel>
+            </Grid>
+            
         </Border>
+        
     </Grid>
 </UserControl>
