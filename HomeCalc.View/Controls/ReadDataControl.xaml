@@ -94,12 +94,12 @@
                 CanUserAddRows="False"
                 >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Дата" Binding="{Binding Date}" Width="100"/>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100"/>
                     <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
                     <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" />
-                    <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="80" />
+                    <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
                     <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost}" Width="110" />
-                    <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost}" Width="140" />
+                    <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost}" Width="120" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

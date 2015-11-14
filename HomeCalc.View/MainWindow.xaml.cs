@@ -129,5 +129,10 @@ namespace HomeCalc.View
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
             }
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
     }
 }

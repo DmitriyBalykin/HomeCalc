@@ -7,7 +7,9 @@
         WindowStyle="None"
         BorderThickness="0"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen">
+        MaxHeight="800"
+        WindowStartupLocation="CenterScreen"
+        SizeChanged="Window_SizeChanged">
 
     <Window.Resources>
         <ResourceDictionary>

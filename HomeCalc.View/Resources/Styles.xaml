@@ -30,6 +30,9 @@
     <Style TargetType="DataGrid">
         <Style.Setters>
             <Setter Property="AlternatingRowBackground" Value="{StaticResource SelectedBackground}"/>
+            <Setter Property="VerticalGridLinesBrush" Value="Transparent" />
+            <Setter Property="HorizontalGridLinesBrush" Value="Transparent" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
         </Style.Setters>
         <Style.Triggers>
         </Style.Triggers>
