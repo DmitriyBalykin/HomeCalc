@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="HomeCalc.View.Controls.CalculationRequest"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Height="Auto"
+             Width="Auto">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/HomeCalc.View;component/Resources/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource BasicGridStyle}">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="100" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Розрахувати:" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="2"/>
+        <ToggleButton Content="Вартість одиниці" Checked="{Binding CalcItemCost}" Visibility="{Binding ShowCalcItemCost, Converter={StaticResource boolToVisibilityConverter}}" Grid.Row="1"  Grid.ColumnSpan="2"/>
+        <ToggleButton Content="Кількість одиниць" Checked="{Binding CalcItemNumber}" Visibility="{Binding ShowCalcItemNumber, Converter={StaticResource boolToVisibilityConverter}}" Grid.Row="2"  Grid.ColumnSpan="2"/>
+        <ToggleButton Content="Загальну вартість" Checked="{Binding CalcTotalCost}" Visibility="{Binding ShowCalcTotalCost, Converter={StaticResource boolToVisibilityConverter}}" Grid.Row="3" Grid.ColumnSpan="2" />
+        <Button Grid.Row="4" Grid.Column="0" Content="Так" Command="{Binding Calculate}"/>
+        <Button Grid.Row="4" Grid.Column="1" Content="Відміна" Command="{Binding Cancel}"/>
+    </Grid>
+</UserControl>

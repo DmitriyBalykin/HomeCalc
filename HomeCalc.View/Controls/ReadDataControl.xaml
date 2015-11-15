@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             
+             xmlns:controls="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
              Width="850"
              Height="Auto"
@@ -63,7 +63,7 @@
                 <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
                      Text="{Binding PurchaseName}" />
             
-                <ListBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
+                <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
                      ItemsSource="{Binding PurchaseTypesList}"
                      SelectedItem="{Binding PurchaseType}"/>
 
@@ -84,7 +84,7 @@
                 <Button Grid.Row="4" Grid.Column="3" Content="Открыть данные в HTML" Command="{Binding OpenInHTML}" />
             </Grid>
     </Border>
-        <Border Grid.Row="1">
+        <Border Grid.Row="1" IsEnabled="{Binding ShowDataCalcPopup, Converter={StaticResource inverseBooleanConverter}}">
             <Grid Visibility="{Binding SearchSucceded, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -92,16 +92,17 @@
                 </Grid.RowDefinitions>
                 <DataGrid
                 Grid.Row="0"
-                ItemsSource="{Binding SearchResultList}"
+                ItemsSource="{Binding SearchResultList, Mode=TwoWay}"
                 AutoGenerateColumns="False"
                 SelectionMode="Single"
                 CanUserSortColumns="True"
                 CanUserAddRows="False"
+                RowHeaderWidth="0"
                 >
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100"/>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
-                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" />
+                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" IsReadOnly="True" />
                         <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
                         <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost}" Width="110" />
                         <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost}" Width="120" />
@@ -119,6 +120,36 @@
             </Grid>
             
         </Border>
-        
+        <Popup
+            Placement="Center"
+            IsOpen="{Binding ShowDataCalcPopup}">
+            <Border
+                BorderThickness="1"
+                BorderBrush="DarkGray"
+                Background="{StaticResource SelectedBackground}">
+                <Grid Style="{StaticResource BasicGridStyle}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Розрахувати:" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="2"/>
+                <ToggleButton Content="Кількість одиниць" IsChecked="{Binding CalcItemNumber}" IsEnabled="{Binding ShowCalcItemNumber}" Grid.Row="1"  Grid.ColumnSpan="2"/>
+                <ToggleButton Content="Вартість одиниці" IsChecked="{Binding CalcItemCost}" IsEnabled="{Binding ShowCalcItemCost}" Grid.Row="2"  Grid.ColumnSpan="2"/>
+                <ToggleButton Content="Загальну вартість" IsChecked="{Binding CalcTotalCost}" IsEnabled="{Binding ShowCalcTotalCost}" Grid.Row="3" Grid.ColumnSpan="2" />
+                <Button Grid.Row="4" Grid.Column="0" Content="Так" Command="{Binding Calculate}"/>
+                <Button Grid.Row="4" Grid.Column="1" Content="Відміна" Command="{Binding Cancel}"/>
+                </Grid>
+            </Border>
+            
+
+        </Popup>
     </Grid>
 </UserControl>

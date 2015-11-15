@@ -10,12 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using HomeCalc.Presentation.Models;
 using System.Globalization;
+using HomeCalc.Presentation.Services;
 
 namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
-        IList<Purchase> purchaseHistory;
         public AddDataViewModel()
         {
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
@@ -24,42 +24,27 @@ namespace HomeCalc.Presentation.ViewModels
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
             typeSelectorItems = new ObservableCollection<PurchaseType>( StoreService.LoadPurchaseTypeList());
-            UpdatePurchaseHistory();
 
             PurchaseType = TypeSelectorItems.FirstOrDefault();
 
-            actualCalculation = CalcTotalCost;
+            actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
 
             Status.Post("Завантажено");
         }
 
         void UpdatePurchaseHistory(object sender, EventArgs e)
         {
-            UpdatePurchaseHistory();
-        }
-        void UpdatePurchaseHistory()
-        {
-            purchaseHistory = StoreService.LoadPurchaseList(SearchRequest.Requests.Empty);
+            PurchaseHistoryItems = new ObservableCollection<Purchase>(StoreService.PurchaseHistory);
         }
         void StoreService_TypesUpdated(object sender, EventArgs e)
         {
-            typeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
+            TypeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
         }
 
         private void SaveCommandExecute(object obj)
         {
-            var purchase = new Purchase
+            if (StoreService.AddPurchase(purchase))
             {
-                Date = DateTime.Now,
-                ItemCost = double.Parse(ItemCost),
-                ItemsNumber = double.Parse(Count),
-                TotalCost = double.Parse(TotalCost),
-                Name = PurchaseName,
-                Type = PurchaseType
-            };
-            if (StoreService.SavePurchase(purchase))
-            {
-                purchaseHistory.Add(purchase);
                 logger.Info("Purchase saved");
                 Status.Post("Покупка \"{0}\" збережена", PurchaseName);
             }
@@ -72,7 +57,7 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void SearchPurchase()
         {
-            var exactPurchases = purchaseHistory.Where(p => p.Name == purchaseName);
+            var exactPurchases = StoreService.PurchaseHistory.Where(p => p.Name == purchase.Name);
             IEnumerable<Purchase> resultList;
             if (exactPurchases.Count() > 0)
             {
@@ -80,11 +65,21 @@ namespace HomeCalc.Presentation.ViewModels
             }
             else
             {
-                resultList = purchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture));
+                resultList = StoreService.PurchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture));
             }
             PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date).Take(10);
         }
+        private void DoCalculations()
+        {
+            if (purchase != null)
+            {
+                DataService.PerformCalculation(purchase, actualCalculationTarget);
 
+                OnPropertyChanged(Count);
+                OnPropertyChanged(ItemCost);
+                OnPropertyChanged(TotalCost);
+            }
+        }
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
             get
@@ -140,63 +135,66 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        private string purchaseName;
+        private DataService.CalculationTargetProperty actualCalculationTarget;
+
+        private Purchase purchase = new Purchase();
         public string PurchaseName
         {
             get
             {
-                return purchaseName;
+                return purchase.Name;
             }
             set
             {
-                if (value != purchaseName)
+                if (value != purchase.Name)
                 {
-                    purchaseName = value;
+                    purchase.Name = value;
                     OnPropertyChanged(() => PurchaseName);
                     SearchPurchase();
                 }
             }
         }
 
-        private string count;
-        private string itemCost;
-        private string totalCost;
         public string Count
         {
-            get { return count; }
+            get { return purchase.ItemsNumber.ToString(); }
             set
             {
-                if (value != count)
+                double result;
+                if (Double.TryParse(value, out result))
                 {
-                    count = value;
-                    OnPropertyChanged(() => Count);
-                    actualCalculation.Invoke();
+                    purchase.ItemsNumber = result;
+
+                    DoCalculations();
                 }
             }
         }
+
         public string ItemCost
         {
-            get { return itemCost; }
+            get { return purchase.ItemCost.ToString(); }
             set
             {
-                if (value != itemCost)
+                double result;
+                if (double.TryParse(value, out result))
                 {
-                    itemCost = value;
-                    OnPropertyChanged(() => ItemCost);
-                    actualCalculation.Invoke();
+                    purchase.ItemCost = result;
+
+                    DoCalculations();
                 }
             }
         }
         public string TotalCost
         {
-            get { return totalCost; }
+            get { return purchase.TotalCost.ToString(); }
             set
             {
-                if (value != totalCost)
+                double result;
+                if (double.TryParse(value, out result))
                 {
-                    totalCost = value;
-                    OnPropertyChanged(() => TotalCost);
-                    actualCalculation.Invoke();
+                    purchase.TotalCost = result;
+
+                    DoCalculations();
                 }
             }
         }
@@ -230,7 +228,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value)
                 {
                     IsCalcItemsCount = false;
-                    actualCalculation = CalcItemCost;
+                    actualCalculationTarget = Services.DataService.CalculationTargetProperty.ItemCost;
                 }
                 setTotalCalc();
             }
@@ -252,7 +250,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value)
                 {
                     IsCalcItemCost = false;
-                    actualCalculation = CalcItemCount;
+                    actualCalculationTarget = Services.DataService.CalculationTargetProperty.ItemsNumber;
                 }
                 setTotalCalc();
             }
@@ -277,7 +275,7 @@ namespace HomeCalc.Presentation.ViewModels
                 }
                 if (value)
                 {
-                    actualCalculation = CalcTotalCost;
+                    actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
                 }
             }
         }
@@ -298,34 +296,7 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        private void CalcItemCount() {
-            if (!calcInProgress && !(string.IsNullOrEmpty(TotalCost) || string.IsNullOrEmpty(ItemCost)))
-            {
-                calcInProgress = true;
-                Count = (double.Parse(TotalCost) / double.Parse(ItemCost)).ToString();
-                calcInProgress = false;
-            }
-        }
-        private void CalcItemCost()
-        {
-            if (!calcInProgress && !(string.IsNullOrEmpty(Count) || string.IsNullOrEmpty(TotalCost)))
-            {
-                calcInProgress = true;
-                ItemCost = (double.Parse(TotalCost) / double.Parse(Count)).ToString();
-                calcInProgress = false;
-            }
-        }
-        private void CalcTotalCost()
-        {
-            if (!calcInProgress && !(string.IsNullOrEmpty(Count) || string.IsNullOrEmpty(ItemCost)))
-            {
-                calcInProgress = true;
-                TotalCost = (double.Parse(Count) * double.Parse(ItemCost)).ToString();
-                calcInProgress = false;
-            }
-        }
 
-        private Action actualCalculation;
-        private bool calcInProgress = false;
+        
     }
 }

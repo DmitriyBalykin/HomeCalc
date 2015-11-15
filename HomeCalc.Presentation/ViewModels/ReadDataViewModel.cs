@@ -9,6 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using HomeCalc.Presentation.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using HomeCalc.Presentation.Services;
+using System.Windows.Forms;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -20,10 +23,93 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("Search", new DelegateCommand(SearchCommandExecute));
             AddCommand("OpenInHTML", new DelegateCommand(OpenInHTMLCommandExecute, CanOpenInHTML));
 
+            AddCommand("Calculate", new DelegateCommand(CalculateCommandExecuted));
+            AddCommand("CancelCalculate", new DelegateCommand(CancelCalculateCommandExecuted));
+
             SearchFromDate = DateTime.Now.AddMonths(-1);
             SearchToDate = DateTime.Now;
+
+            PurchaseTypesList = new BindingList<PurchaseType>(StoreService.LoadPurchaseTypeList());
         }
 
+        void SearchResultList_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            Purchase purchase;
+            switch (e.ListChangedType)
+            {
+                case ListChangedType.ItemChanged:
+                    purchase = searchResultList.ElementAt(e.NewIndex);
+                    var referencePurchase = SearchResultListBackup.ElementAt(e.NewIndex);
+                    RecalculatePurchase(purchase, referencePurchase);
+                    break;
+                case ListChangedType.ItemDeleted:
+                    purchase = SearchResultListBackup.ElementAt(e.NewIndex);
+                    var result = MessageBox.Show(
+                        string.Format("Видалити запис \"{0}\"?", purchase.Name),
+                        "Видалення запису",
+                        MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Question);
+                    if (result == DialogResult.OK && StoreService.RemovePurchase(purchase.Id))
+                    {
+                        BackupSearchList(SearchResultList);
+                        Status.Post("Покупка \"{0}\" видалена", purchase.Name);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+        private Purchase editingPurchase;
+        private void RecalculatePurchase(Purchase purchase, Purchase referencePurchase)
+        {
+            if (ShowDataCalcPopup)
+            {
+                return;
+            }
+            bool calculationNeeded = false;
+            if (purchase.ItemCost != referencePurchase.ItemCost)
+            {
+                ShowCalcItemCost = false;
+                calculationNeeded = true;
+            }
+            else if (purchase.ItemsNumber != referencePurchase.ItemsNumber)
+            {
+                ShowCalcItemNumber = false;
+                calculationNeeded = true;
+            }
+            else if (purchase.TotalCost != referencePurchase.TotalCost)
+            {
+                ShowCalcTotalCost = false;
+                calculationNeeded = true;
+            }
+            editingPurchase = purchase;
+            ShowDataCalcPopup = calculationNeeded;
+        }
+        private void CancelCalculateCommandExecuted(object obj)
+        {
+            ShowDataCalcPopup = false;
+            SearchResultList = new BindingList<Purchase>(SearchResultListBackup);
+        }
+
+        private void CalculateCommandExecuted(object obj)
+        {
+            if (DataService.PerformCalculation(editingPurchase, actualCalculationTarget))
+            {
+                OnPropertyChanged(() => SearchResultList);
+                BackupSearchList(SearchResultList);
+                //SearchResultList = new BindingList<Purchase>(SearchResultListBackup);
+                if (StoreService.UpdatePurchase(editingPurchase))
+                {
+                    Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
+                }
+            }
+            else
+            {
+                SearchResultList = new BindingList<Purchase>(SearchResultListBackup);
+            }
+            ShowDataCalcPopup = false;
+        }
         private bool CanOpenInHTML(object obj)
         {
             return SearchSucceded;
@@ -49,15 +135,40 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByDate = searchByDate,
                 SearchByCost = searchByCost,
             };
-            IList<Purchase> results = StoreService.LoadPurchaseList(searchRequest);
+            List<Purchase> results = StoreService.LoadPurchaseList(searchRequest);
             TotalCount = results.Sum(p => p.ItemsNumber).ToString();
             TotalCost = results.Sum(p => p.TotalCost).ToString();
-            SearchResultList = new ObservableCollection<Purchase>(results);
+            BackupSearchList(results);
+            SearchResultList = new BindingList<Purchase>(results);
             Status.Post("Пошук завершено, знайдено {0} записів", searchResultList.Count);
         }
-        public ObservableCollection<PurchaseType> PurchaseTypesList { get; set; }
-        public ObservableCollection<Purchase> searchResultList;
-        public ObservableCollection<Purchase> SearchResultList
+        private BindingList<PurchaseType> purchaseTypesList;
+        public BindingList<PurchaseType> PurchaseTypesList {
+            get
+            {
+                return purchaseTypesList;
+            }
+            set
+            {
+                if (value != purchaseTypesList)
+                {
+                    purchaseTypesList = value;
+                    OnPropertyChanged(() => PurchaseTypesList);
+                }
+            }
+        }
+        private void BackupSearchList(IEnumerable<Purchase> list)
+        {
+            searchResultListBackup = list.Select(p => new Purchase(p)).ToList();
+        }
+        private List<Purchase> searchResultListBackup;
+        private List<Purchase> SearchResultListBackup
+        {
+            get
+            { return new List<Purchase>(searchResultListBackup); }
+        }
+        public BindingList<Purchase> searchResultList;
+        public BindingList<Purchase> SearchResultList
         {
             get
             {
@@ -68,6 +179,10 @@ namespace HomeCalc.Presentation.ViewModels
                 if (searchResultList != value)
                 {
                     searchResultList = value;
+                    if (SearchResultList != null)
+                    {
+                        SearchResultList.ListChanged += SearchResultList_ListChanged;
+                    }
                     OnPropertyChanged(() => SearchResultList);
                 }
                 SearchSucceded = searchResultList.Count > 0;
@@ -271,5 +386,115 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
+
+        private bool calcItemCost;
+        public bool CalcItemCost
+        {
+            get { return calcItemCost; }
+            set
+            {
+                calcItemCost = value;
+                if (value)
+                {
+                    actualCalculationTarget = Services.DataService.CalculationTargetProperty.ItemCost;
+                    CalcItemNumber = false;
+                    CalcTotalCost = false;
+                }
+                OnPropertyChanged(() => CalcItemCost);
+            }
+        }
+
+        private bool calcItemNumber;
+        public bool CalcItemNumber
+        {
+            get { return calcItemNumber; }
+            set
+            {
+                calcItemNumber = value;
+                if (value)
+                {
+                    actualCalculationTarget = Services.DataService.CalculationTargetProperty.ItemsNumber;
+                    CalcItemCost = false;
+                    CalcTotalCost = false;
+                }
+                OnPropertyChanged(() => CalcItemNumber);
+            }
+        }
+
+        private bool calcTotalCost = true;
+        public bool CalcTotalCost
+        {
+            get { return calcTotalCost; }
+            set
+            {
+                calcTotalCost = value;
+                if (value)
+                {
+                    actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
+                    CalcItemNumber = false;
+                    CalcItemCost = false;
+                }
+                OnPropertyChanged(() => CalcTotalCost);
+            }
+        }
+
+        private bool showCalcItemCost;
+        public bool ShowCalcItemCost
+        {
+            get { return showCalcItemCost; }
+            set {
+                showCalcItemCost = value;
+                OnPropertyChanged(() => ShowCalcItemCost);
+                if (!value)
+                {
+                    ShowCalcItemNumber = true;
+                    ShowCalcTotalCost = true;
+                }
+            }
+        }
+
+        private bool showcalcItemNumber;
+        public bool ShowCalcItemNumber
+        {
+            get { return showcalcItemNumber; }
+            set {
+                showcalcItemNumber = value;
+                OnPropertyChanged(() => ShowCalcItemNumber);
+                if (!value)
+                {
+                    ShowCalcItemCost = true;
+                    ShowCalcTotalCost = true;
+                }
+            }
+        }
+
+        private bool showcalcTotalCost;
+        public bool ShowCalcTotalCost
+        {
+            get { return showcalcTotalCost; }
+            set {
+                showcalcTotalCost = value;
+                OnPropertyChanged(() => ShowCalcTotalCost);
+                if (!value)
+                {
+                    ShowCalcItemCost = true;
+                    ShowCalcItemNumber = true;
+                }
+            }
+        }
+
+        private bool showDataCalcPopup;
+        public bool ShowDataCalcPopup
+        {
+            get { return showDataCalcPopup; }
+            set {
+                if (value != showDataCalcPopup)
+                {
+                    showDataCalcPopup = value;
+                    OnPropertyChanged(() => ShowDataCalcPopup);
+                }
+            }
+        }
+        private DataService.CalculationTargetProperty actualCalculationTarget = DataService.CalculationTargetProperty.TotalCost;
     }
 }

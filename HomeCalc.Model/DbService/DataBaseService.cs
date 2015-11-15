@@ -7,22 +7,22 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Model.DbService
 {
-    public class DataService
+    public class DataBaseService
     {
-        private static DataService instance;
+        private static DataBaseService instance;
         private IDatabaseManager dbManager;
         private static object monitor = new object();
-        private DataService(IDatabaseManager dbManager)
+        private DataBaseService(IDatabaseManager dbManager)
         {
             this.dbManager = dbManager;
         }
-        public static DataService GetInstance()
+        public static DataBaseService GetInstance()
         {
             lock (monitor)
             {
                 if (instance == null)
                 {
-                    instance = new DataService(new SQLiteManager());
+                    instance = new DataBaseService(new SQLiteManager());
                 }
             }
             return instance;
@@ -44,7 +44,7 @@ namespace HomeCalc.Model.DbService
             }
             return settings;
         }
-        public bool SavePurchase(PurchaseModel purchase)
+        public bool AddPurchase(PurchaseModel purchase)
         {
             bool result = false;
             using (var db = dbManager.GetContext())
@@ -161,7 +161,7 @@ namespace HomeCalc.Model.DbService
             }
             return result;
         }
-        public bool DeletePurchase(long purchaseId)
+        public bool RemovePurchase(long purchaseId)
         {
             bool result = false;
             using (var db = dbManager.GetContext())

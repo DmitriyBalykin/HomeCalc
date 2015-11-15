@@ -17,19 +17,13 @@ using System.Windows.Shapes;
 namespace HomeCalc.View.Controls
 {
     /// <summary>
-    /// Interaction logic for ReadDataControl.xaml
+    /// Interaction logic for CalculationRequest.xaml
     /// </summary>
-    public partial class ReadDataControl : UserControl
+    public partial class CalculationRequest : UserControl
     {
-        public ReadDataControl()
+        public CalculationRequest()
         {
             InitializeComponent();
-            this.DataContext = new ReadDataViewModel();
-        }
-
-        private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-
         }
     }
 }

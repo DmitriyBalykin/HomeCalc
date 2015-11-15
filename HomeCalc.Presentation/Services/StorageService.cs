@@ -1,4 +1,5 @@
-﻿using HomeCalc.Model.DataModels;
+﻿using HomeCalc.Core;
+using HomeCalc.Model.DataModels;
 using HomeCalc.Model.DbService;
 using System;
 using System.Collections.Generic;
@@ -8,17 +9,40 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Presentation.Models
 {
-    public class StorageService
+    public class StorageService : HomeCalc.Presentation.Services.IStorageService
     {
-        DataService DBService;
+        DataBaseService DBService;
         private static StorageService instance;
+
+        private List<Purchase> purchaseHistory;
 
         public event EventHandler TypesUpdated;
         public event EventHandler HistoryUpdated;
         
         public StorageService()
         {
-            DBService = DataService.GetInstance();
+            DBService = DataBaseService.GetInstance();
+            UpdateHistory();
+        }
+
+        private void UpdateHistory()
+        {
+            if (purchaseHistory == null)
+            {
+                purchaseHistory = new List<Purchase>();
+            }
+            Task.Factory.StartNew(() =>
+            {
+                purchaseHistory = LoadPurchaseList(SearchRequest.Requests.Empty);
+            }).ContinueWith( t => AnnounceHistoryUpdate());
+        }
+
+        private void AnnounceHistoryUpdate()
+        {
+            if (HistoryUpdated != null)
+            {
+                HistoryUpdated(null, EventArgs.Empty);
+            }
         }
 
         internal static StorageService GetInstance()
@@ -38,16 +62,27 @@ namespace HomeCalc.Presentation.Models
         {
             return DBService.LoadSettings();
         }
-        public bool SavePurchase(Purchase purchase)
+        public bool AddPurchase(Purchase purchase)
         {
-            return DBService.SavePurchase(PurchaseToModel(purchase));
+            var result = DBService.AddPurchase(PurchaseToModel(purchase));
+            if (result)
+            {
+                purchaseHistory.Add(purchase);
+                AnnounceHistoryUpdate();
+            }
+            return result;
+        }
+        public bool UpdatePurchase(Purchase purchase)
+        {
+            return DBService.UpdatePurchase(PurchaseToModel(purchase));
         }
         public bool SavePurchaseBulk(List<Purchase> purchases)
         {
             var result = DBService.SavePurchaseBulk(purchases.Select(p => PurchaseToModel(p)));
             if (result)
             {
-                HistoryUpdated(null, EventArgs.Empty);
+                purchaseHistory.AddRange(purchases);
+                AnnounceHistoryUpdate();
             }
             return result;
         }
@@ -65,9 +100,9 @@ namespace HomeCalc.Presentation.Models
         {
             return ModelToPurchase(DBService.LoadPurchase(id));
         }
-        public IList<Purchase> LoadPurchaseList(SearchRequest.Requests enumFilter)
+        public List<Purchase> LoadPurchaseList(SearchRequest.Requests enumFilter)
         {
-            IList<Purchase> list = new List<Purchase>();
+            var list = new List<Purchase>();
             switch (enumFilter)
             {
                 case SearchRequest.Requests.Empty:
@@ -76,7 +111,7 @@ namespace HomeCalc.Presentation.Models
             }
             return list;
         }
-        public IList<Purchase> LoadPurchaseList(SearchRequest filter)
+        public List<Purchase> LoadPurchaseList(SearchRequest filter)
         {
             return DBService.LoadPurchaseList(
                 p => (!filter.SearchByName || p.Name.Contains(filter.NameFilter)) &&
@@ -85,7 +120,7 @@ namespace HomeCalc.Presentation.Models
                      (!filter.SearchByCost || (p.TotalCost >= filter.CostStart) && (p.TotalCost <= filter.CostEnd))
                 ).Select(p => ModelToPurchase(p)).ToList();
         }
-        public IList<PurchaseType> LoadPurchaseTypeList()
+        public List<PurchaseType> LoadPurchaseTypeList()
         {
             if (!PurchaseTypesCache.IsActual)
             {
@@ -128,6 +163,7 @@ namespace HomeCalc.Presentation.Models
         private Purchase ModelToPurchase(PurchaseModel model)
         {
             return new Purchase {
+                Id = (int)model.PurchaseId,
                 Date = new DateTime(model.Timestamp),
                 ItemCost = model.ItemCost,
                 ItemsNumber = model.ItemsNumber,
@@ -140,6 +176,7 @@ namespace HomeCalc.Presentation.Models
         {
             return new PurchaseModel
             {
+                PurchaseId = purchase.Id,
                 Timestamp = purchase.Date.Ticks,
                 Name = purchase.Name,
                 ItemsNumber = purchase.ItemsNumber,
@@ -154,6 +191,19 @@ namespace HomeCalc.Presentation.Models
             if (TypesUpdated != null)
             {
                 TypesUpdated.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        internal bool RemovePurchase(int purchaseId)
+        {
+            return DBService.RemovePurchase(purchaseId);
+        }
+
+        public List<Purchase> PurchaseHistory
+        {
+            get
+            {
+                return purchaseHistory;
             }
         }
     }

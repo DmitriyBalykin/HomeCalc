@@ -3,6 +3,7 @@ using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Model.DbService;
 using HomeCalc.Presentation.Models;
+using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,7 @@ namespace HomeCalc.Presentation.BasicModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected StorageService StoreService;
+        protected DataService DataService;
         protected StatusService Status;
         public ViewModel()
         {
