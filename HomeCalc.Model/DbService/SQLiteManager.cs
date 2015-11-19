@@ -21,6 +21,9 @@ namespace HomeCalc.Model.DbService
 
         private StorageConnection GetConnection()
         {
+#if DEBUG
+        dbFilePath = "HomeCalc\\DataStorage_Debug.sqlite";
+#endif
             string dataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string fullPath = Path.Combine(dataFolder, dbFilePath);
             string connString = "Data Source=" + fullPath;
