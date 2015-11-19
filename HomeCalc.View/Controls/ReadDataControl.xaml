@@ -46,13 +46,13 @@
                 <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding SearchByType}" />
                 <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding SearchByCost}" />
 
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="по дате" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="по имени покупки" />
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="по типу покупки" />
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="по стоимости" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="за датою" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="за назвою" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="за типом" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="за вартістю" />
 
                 <DockPanel Grid.Row="0" Grid.Column="2">
-                    <TextBlock Text="с"/>
+                    <TextBlock Text="з"/>
                     <DatePicker HorizontalAlignment="Right" SelectedDate="{Binding SearchFromDate}"  />
                 </DockPanel>
                 <DockPanel Grid.Row="0" Grid.Column="3">
@@ -61,27 +61,26 @@
                 </DockPanel>
 
                 <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
-                     Text="{Binding PurchaseName}" />
+                     Text="{Binding PurchaseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             
                 <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
                      ItemsSource="{Binding PurchaseTypesList}"
                      SelectedItem="{Binding PurchaseType}"/>
 
                 <DockPanel Grid.Row="3" Grid.Column="2">
-                    <TextBlock Text="от"/>
+                    <TextBlock Text="від"/>
                     <TextBox HorizontalAlignment="Right"
                              Width="115"
-                             Text="{Binding CostStart}"/>
+                             Text="{Binding CostStart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </DockPanel>
                 <DockPanel Grid.Row="3" Grid.Column="3">
                     <TextBlock Text="до"/>
                     <TextBox HorizontalAlignment="Right"
                              Width="115"
-                             Text="{Binding CostEnd}"/>
+                             Text="{Binding CostEnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </DockPanel>
 
-                <Button Grid.Row="4" Grid.Column="2" Content="Получить данные" Command="{Binding Search}" />
-                <Button Grid.Row="4" Grid.Column="3" Content="Открыть данные в HTML" Command="{Binding OpenInHTML}" />
+                <Button Grid.Row="4" Grid.Column="3" Content="Знайти записи" Command="{Binding Search}" />
             </Grid>
     </Border>
         <Border Grid.Row="1" IsEnabled="{Binding ShowDataCalcPopup, Converter={StaticResource inverseBooleanConverter}}">

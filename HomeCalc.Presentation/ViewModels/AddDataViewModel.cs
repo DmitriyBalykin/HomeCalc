@@ -18,6 +18,8 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public AddDataViewModel()
         {
+            purchase = new Purchase();
+
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
 
             StoreService.TypesUpdated += StoreService_TypesUpdated;
@@ -26,6 +28,8 @@ namespace HomeCalc.Presentation.ViewModels
             typeSelectorItems = new ObservableCollection<PurchaseType>( StoreService.LoadPurchaseTypeList());
 
             PurchaseType = TypeSelectorItems.FirstOrDefault();
+
+            
 
             actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
 
@@ -75,9 +79,9 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 DataService.PerformCalculation(purchase, actualCalculationTarget);
 
-                OnPropertyChanged(Count);
-                OnPropertyChanged(ItemCost);
-                OnPropertyChanged(TotalCost);
+                OnPropertyChanged(() => Count);
+                OnPropertyChanged(() => ItemCost);
+                OnPropertyChanged(() => TotalCost);
             }
         }
         private DateTime dateToStore = DateTime.Now;
@@ -137,7 +141,7 @@ namespace HomeCalc.Presentation.ViewModels
 
         private DataService.CalculationTargetProperty actualCalculationTarget;
 
-        private Purchase purchase = new Purchase();
+        private Purchase purchase;
         public string PurchaseName
         {
             get
@@ -198,16 +202,15 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        private PurchaseType purchaseType;
         public PurchaseType PurchaseType
         {
             get
             {
-                return purchaseType; 
+                return purchase.Type; 
             }
             set
             {
-                purchaseType = value;
+                purchase.Type = value;
             }
         }
         

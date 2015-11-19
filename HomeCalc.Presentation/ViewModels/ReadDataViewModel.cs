@@ -21,7 +21,6 @@ namespace HomeCalc.Presentation.ViewModels
         {
             logger = LogService.GetLogger();
             AddCommand("Search", new DelegateCommand(SearchCommandExecute));
-            AddCommand("OpenInHTML", new DelegateCommand(OpenInHTMLCommandExecute, CanOpenInHTML));
 
             AddCommand("Calculate", new DelegateCommand(CalculateCommandExecuted));
             AddCommand("CancelCalculate", new DelegateCommand(CancelCalculateCommandExecuted));
@@ -113,11 +112,6 @@ namespace HomeCalc.Presentation.ViewModels
         private bool CanOpenInHTML(object obj)
         {
             return SearchSucceded;
-        }
-
-        private void OpenInHTMLCommandExecute(object obj)
-        {
-            
         }
 
         private void SearchCommandExecute(object obj)
@@ -284,7 +278,11 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
-                SearchByName = true;
+                if (!string.IsNullOrEmpty(value))
+                {
+                    SearchByName = true;
+                }
+                
                 if (purchaseName != value)
                 {
                     purchaseName = value;
