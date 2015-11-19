@@ -24,21 +24,24 @@ namespace HomeCalc.Model.DbService
             string dataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string fullPath = Path.Combine(dataFolder, dbFilePath);
             string connString = "Data Source=" + fullPath;
-
-            if (!File.Exists(fullPath))
+            lock (this)
             {
-                SQLiteConnection.CreateFile(fullPath);
+                if (!File.Exists(fullPath))
+                {
+                    SQLiteConnection.CreateFile(fullPath);
+                }
+                StorageConnection connection = new StorageConnection(connString);
+                if (connection != null && (connection.State == System.Data.ConnectionState.Connecting || connection.State == System.Data.ConnectionState.Open))
+                {
+                    InitializeDb(connection);
+                    return connection;
+                }
+                else
+                {
+                    throw new Exception(string.Format("Database is not available with connection string {0}", connString));
+                }
             }
-            StorageConnection connection = new StorageConnection(connString);
-            if (connection != null && (connection.State == System.Data.ConnectionState.Connecting || connection.State == System.Data.ConnectionState.Open))
-            {
-                InitializeDb(connection);
-                return connection;
-            }
-            else
-            {
-                throw new Exception(string.Format("Database is not available with connection string {0}", connString));
-            }
+            
         }
         public StorageContext GetContext()
         {
