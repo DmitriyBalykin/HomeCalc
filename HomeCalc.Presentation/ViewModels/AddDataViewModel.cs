@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using HomeCalc.Presentation.Models;
 using System.Globalization;
 using HomeCalc.Presentation.Services;
+using HomeCalc.Core.Helpers;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -28,8 +29,6 @@ namespace HomeCalc.Presentation.ViewModels
             typeSelectorItems = new ObservableCollection<PurchaseType>( StoreService.LoadPurchaseTypeList());
 
             PurchaseType = TypeSelectorItems.FirstOrDefault();
-
-            
 
             actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
 
@@ -77,8 +76,25 @@ namespace HomeCalc.Presentation.ViewModels
         {
             if (purchase != null)
             {
+                purchase.ItemsNumber = StringHelper.ToNumber(Count);
+                purchase.ItemCost = StringHelper.ToNumber(ItemCost);
+                purchase.TotalCost = StringHelper.ToNumber(TotalCost);
+                    
                 DataService.PerformCalculation(purchase, actualCalculationTarget);
 
+                if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.ItemCost)
+                {
+                    ItemCost = purchase.ItemCost != 0 ? purchase.ItemCost.ToString() : null;
+                }
+                if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.TotalCost)
+                {
+                    TotalCost = purchase.TotalCost != 0 ? purchase.TotalCost.ToString() : null;
+                }
+                if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.ItemsNumber)
+                {
+                    Count = purchase.ItemsNumber != 0 ? purchase.ItemsNumber.ToString() : null;
+                }
+                
                 OnPropertyChanged(() => Count);
                 OnPropertyChanged(() => ItemCost);
                 OnPropertyChanged(() => TotalCost);
@@ -159,45 +175,43 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
+        private string count;
         public string Count
         {
-            get { return purchase.ItemsNumber.ToString(); }
+            get { return count; }
             set
             {
-                double result;
-                if (Double.TryParse(value, out result))
+                if (count != value && StringHelper.IsNumber(value))
                 {
-                    purchase.ItemsNumber = result;
-
+                    count = StringHelper.GetCorrected(value);
                     DoCalculations();
                 }
             }
         }
 
+        string itemCost;
         public string ItemCost
         {
-            get { return purchase.ItemCost.ToString(); }
+            get { return itemCost; }
             set
             {
-                double result;
-                if (double.TryParse(value, out result))
+                if (itemCost != value && StringHelper.IsNumber(value))
                 {
-                    purchase.ItemCost = result;
-
+                    itemCost = StringHelper.GetCorrected(value);
                     DoCalculations();
                 }
             }
         }
+
+        string totalCost;
         public string TotalCost
         {
-            get { return purchase.TotalCost.ToString(); }
+            get { return totalCost; }
             set
             {
-                double result;
-                if (double.TryParse(value, out result))
+                if (totalCost != value && StringHelper.IsNumber(value))
                 {
-                    purchase.TotalCost = result;
-
+                    totalCost = StringHelper.GetCorrected(value);
                     DoCalculations();
                 }
             }
