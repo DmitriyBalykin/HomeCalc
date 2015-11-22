@@ -11,7 +11,9 @@ namespace HomeCalc.Presentation.Models
     public class Purchase : INotifyPropertyChanged
     {
         public Purchase()
-        { }
+        {
+            date = DateTime.Now;
+        }
         public Purchase(Purchase purchase)
         {
             Id = purchase.Id;
