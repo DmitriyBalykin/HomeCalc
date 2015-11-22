@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="850">
 
@@ -64,6 +65,7 @@
             Grid.Row="1" Grid.Column="1"
             ItemsSource="{Binding TypeSelectorItems}"
             SelectedItem="{Binding PurchaseType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsSynchronizedWithCurrentItem="True"
             DisplayMemberPath="Name"
             />
         <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemsCount}">
@@ -74,22 +76,14 @@
             <TextBlock Text="Считать"  Margin="0,8" />
         </ToggleButton>
 
-        <ComboBox Grid.Row="1" Grid.Column="2"
+        <controls:SearchComboBox Grid.Row="1" Grid.Column="2"
                   Text="{Binding PurchaseName}"
                   TextSearch.TextPath="Name"
                   IsTextSearchEnabled="False"
                   ItemsSource="{Binding PurchaseHistoryItems}"
                   IsDropDownOpen="{Binding ShowPurchaseHistory}"
-                  IsEditable="True">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Width="210"/>
-                        <TextBlock Text="{Binding Date, StringFormat={}{0:yyyy:MM:dd}}" HorizontalAlignment="Right" Margin="0,0,0,10" />
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+                  IsEditable="True"/>
+
         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
         <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
         <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsCalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
