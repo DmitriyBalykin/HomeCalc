@@ -67,7 +67,7 @@ namespace HomeCalc.Presentation.Models
             var result = DBService.AddPurchase(PurchaseToModel(purchase));
             if (result)
             {
-                purchaseHistory.Add(purchase);
+                purchaseHistory.Add(new Purchase(purchase));
                 AnnounceHistoryUpdate();
             }
             return result;

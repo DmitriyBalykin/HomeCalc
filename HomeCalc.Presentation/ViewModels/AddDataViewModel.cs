@@ -65,6 +65,8 @@ namespace HomeCalc.Presentation.ViewModels
             if (exactPurchases.Count() > 0)
             {
                 resultList = exactPurchases;
+
+                PurchaseType = resultList.FirstOrDefault().Type;
             }
             else
             {
@@ -224,7 +226,12 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
-                purchase.Type = value;
+                var type = TypeSelectorItems.Where(e => e.Name == value.Name).FirstOrDefault();
+                if (type != purchase.Type)
+                {
+                    purchase.Type = type;
+                    OnPropertyChanged(() => PurchaseType);
+                }
             }
         }
         
