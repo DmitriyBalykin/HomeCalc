@@ -99,7 +99,7 @@
                 RowHeaderWidth="0"
                 >
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100"/>
                         <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
                         <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" IsReadOnly="True" />
                         <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />

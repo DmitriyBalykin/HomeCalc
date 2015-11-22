@@ -39,7 +39,10 @@ namespace HomeCalc.Presentation.ViewModels
                 case ListChangedType.ItemChanged:
                     purchase = searchResultList.ElementAt(e.NewIndex);
                     var referencePurchase = SearchResultListBackup.ElementAt(e.NewIndex);
-                    RecalculatePurchase(purchase, referencePurchase);
+                    if (!RecalculatePurchase(purchase, referencePurchase))
+	                {
+                        StoreService.UpdatePurchase(purchase);
+	                }
                     break;
                 case ListChangedType.ItemDeleted:
                     purchase = SearchResultListBackup.ElementAt(e.NewIndex);
@@ -60,11 +63,11 @@ namespace HomeCalc.Presentation.ViewModels
             
         }
         private Purchase editingPurchase;
-        private void RecalculatePurchase(Purchase purchase, Purchase referencePurchase)
+        private bool RecalculatePurchase(Purchase purchase, Purchase referencePurchase)
         {
             if (ShowDataCalcPopup)
             {
-                return;
+                return false;
             }
             bool calculationNeeded = false;
             if (purchase.ItemCost != referencePurchase.ItemCost)
@@ -84,6 +87,8 @@ namespace HomeCalc.Presentation.ViewModels
             }
             editingPurchase = purchase;
             ShowDataCalcPopup = calculationNeeded;
+
+            return calculationNeeded;
         }
         private void CancelCalculateCommandExecuted(object obj)
         {
@@ -129,7 +134,7 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByDate = searchByDate,
                 SearchByCost = searchByCost,
             };
-            List<Purchase> results = StoreService.LoadPurchaseList(searchRequest);
+            List<Purchase> results = StoreService.LoadPurchaseList(searchRequest).OrderBy(p => p.Date).ToList();
             TotalCount = results.Sum(p => p.ItemsNumber).ToString();
             TotalCost = results.Sum(p => p.TotalCost).ToString();
             BackupSearchList(results);

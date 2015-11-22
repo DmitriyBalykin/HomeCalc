@@ -18,10 +18,13 @@ namespace HomeCalc.Presentation.Models
 
         public event EventHandler TypesUpdated;
         public event EventHandler HistoryUpdated;
-        
+
+        private StatusService Status;
+
         public StorageService()
         {
             DBService = DataBaseService.GetInstance();
+            Status = StatusService.GetInstance();
             UpdateHistory();
         }
 
@@ -74,7 +77,12 @@ namespace HomeCalc.Presentation.Models
         }
         public bool UpdatePurchase(Purchase purchase)
         {
-            return DBService.UpdatePurchase(PurchaseToModel(purchase));
+            if (DBService.UpdatePurchase(PurchaseToModel(purchase)))
+            {
+                Status.Post("Запис \"{0}\" оновлено", purchase.Name);
+                return true;
+            }
+            return false;
         }
         public bool SavePurchaseBulk(List<Purchase> purchases)
         {
@@ -196,7 +204,12 @@ namespace HomeCalc.Presentation.Models
 
         internal bool RemovePurchase(int purchaseId)
         {
-            return DBService.RemovePurchase(purchaseId);
+            bool result = DBService.RemovePurchase(purchaseId);
+            if (result)
+            {
+                purchaseHistory.Remove(new Purchase { Id = purchaseId });
+            }
+            return result;
         }
 
         public List<Purchase> PurchaseHistory
