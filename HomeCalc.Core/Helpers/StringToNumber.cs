@@ -41,6 +41,10 @@ namespace HomeCalc.Core.Helpers
                 return null;
             }
             str = GetCorrected(str);
+            if (str.Count( c => c == CORRECT_COMA) > 1)
+            {
+                return null;
+            }
             str = str.TrimEnd(CORRECT_COMA);
 
             return str;
