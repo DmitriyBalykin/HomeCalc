@@ -14,5 +14,20 @@ namespace HomeCalc.Model.DataModels
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public Int64 TypeId { get; set; }
         public string Name { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is PurchaseTypeModel) && ((PurchaseTypeModel)obj).TypeId == this.TypeId;
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)this.TypeId;
+        }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

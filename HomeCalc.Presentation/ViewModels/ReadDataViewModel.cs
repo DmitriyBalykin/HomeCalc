@@ -295,7 +295,25 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        public PurchaseType PurchaseType { get; set; }
+
+        private PurchaseType purchaseType;
+        public PurchaseType PurchaseType
+        {
+            get
+            {
+                return purchaseType;
+            }
+            set
+            {
+                SearchByType = true;
+
+                if (purchaseType != value)
+                {
+                    purchaseType = value;
+                    OnPropertyChanged(() => PurchaseType);
+                }
+            }
+        }
         
         private double costStart;
         public string CostStart
