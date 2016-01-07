@@ -58,23 +58,23 @@
                 Margin="2"
                 Grid.Row="1">
                 <TabItem
-                    Header="Добавить данные">
+                    Header="Додати дані">
                     <controls:AddDataControl/>
                 </TabItem>
                 <TabItem
-                    Header="Просмотреть данные">
+                    Header="Подивитись дані">
                     <controls:ReadDataControl/>
                 </TabItem>
                 <TabItem
-                    Header="Настройки">
+                    Header="Налаштування">
                     <controls:SettingsControl/>
                 </TabItem>
                 <TabItem
-                    Header="Операции">
+                    Header="Операції">
                     <controls:OperationsControl/>
                 </TabItem>
                 <TabItem
-                    Header="Аналитика">
+                    Header="Аналітика">
                     <controls:AnalyticsControl/>
                 </TabItem>
             </TabControl>
