@@ -1,4 +1,5 @@
-﻿using HomeCalc.ChartsLib.ViewModels;
+﻿using HomeCalc.ChartsLib.Models;
+using HomeCalc.ChartsLib.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace HomeCalc.ChartsLib.Charts
     /// <summary>
     /// Interaction logic for UserControl1.xaml
     /// </summary>
-    public partial class AreaPlot : UserControl
+    public partial class AreaPlot<T> : UserControl where T : SeriesElement
     {
         Canvas plotArea;
         public AreaPlot()
@@ -30,5 +31,45 @@ namespace HomeCalc.ChartsLib.Charts
 
             plotArea = FindName("PlotArea") as Canvas;
         }
+        #region Properties
+        public IEnumerable<IEnumerable<T>> Series
+        {
+            get { return (IEnumerable<IEnumerable<T>>)GetValue(SeriesProperty); }
+            set {
+                SetValue(SeriesProperty, value);
+                DrawSeries();
+            }
+        }
+
+        // Using a DependencyProperty as the backing store for Series.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SeriesProperty =
+            DependencyProperty.Register("Series", typeof(IEnumerable<IEnumerable<T>>), typeof(IEnumerable<IEnumerable<T>>), new PropertyMetadata(0));
+
+        #endregion
+
+        #region Internal
+        private void DrawSeries()
+        {
+            if (plotArea == null)
+            {
+                return;
+            }
+            if (Series == null || Series.Count() == 0)
+            {
+                return;
+            }
+            foreach (var seria in Series)
+            {
+                DrawSeria(seria);
+            }
+        }
+
+        private void DrawSeria(IEnumerable<T> seria)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
     }
 }
