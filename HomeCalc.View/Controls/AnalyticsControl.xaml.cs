@@ -1,4 +1,5 @@
-﻿using HomeCalc.Presentation.ViewModels;
+﻿using HomeCalc.ChartsLib.Models;
+using HomeCalc.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,20 +20,29 @@ namespace HomeCalc.View.Controls
     /// <summary>
     /// Interaction logic for SettingsControl.xaml
     /// </summary>
-    public partial class SettingsControl : UserControl
+    public partial class AnalyticsControl : UserControl
     {
-        public SettingsControl()
+        public AnalyticsControl()
         {
             InitializeComponent();
-            this.DataContext = new SettingsViewModel();
+
+            var viewModel = new AnalyticsViewModel();
+
+            viewModel.ChartSeries = GetChartSeries();
+
+            this.DataContext = viewModel;
         }
 
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        private IEnumerable<IEnumerable<SeriesDoubleBasedElement>> GetChartSeries()
         {
-            if (DataContext != null)
-            {
-                ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
-            }
+            var seria = new List<SeriesDoubleBasedElement>();
+            seria.Add(new SeriesDoubleBasedElement { Argument = 0, Value = 7 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 1, Value = 17 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 2, Value = 2 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 3, Value = 11 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 4, Value = 3 });
+
+            return new List<IEnumerable<SeriesDoubleBasedElement>> { seria };
         }
     }
 }
