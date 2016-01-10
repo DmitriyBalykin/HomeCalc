@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.ChartsLib.Models
 {
-    public class SeriesBaseElement
+    public class SeriesDateBasedElement: SeriesBaseElement
     {
-        public double Value { get; set; }
+        public DateTime Argument { get; set; }
     }
 }

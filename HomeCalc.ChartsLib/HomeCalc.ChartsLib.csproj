@@ -47,6 +47,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\SeriesDoubleBasedElement.cs" />
+    <Compile Include="Models\SeriesStringBasedElement.cs" />
+    <Compile Include="Models\SeriesDateBasedElement.cs" />
+    <Compile Include="Models\SeriesElement.cs" />
     <Compile Include="ViewModels\AreaPlotViewModel.cs" />
     <Compile Include="ViewModels\UserControlViewModel.cs" />
     <Page Include="Charts\AreaPlot.xaml">
@@ -82,6 +86,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

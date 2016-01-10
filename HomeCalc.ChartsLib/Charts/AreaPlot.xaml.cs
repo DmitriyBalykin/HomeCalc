@@ -18,55 +18,108 @@ using System.Windows.Shapes;
 namespace HomeCalc.ChartsLib.Charts
 {
     /// <summary>
-    /// Interaction logic for UserControl1.xaml
+    /// Interaction logic for AreaPlot.xaml
     /// </summary>
-    public partial class AreaPlot<T> : UserControl where T : SeriesElement
+    public partial class AreaPlot : UserControl
     {
         Canvas plotArea;
+        AreaPlotViewModel dataContext;
         public AreaPlot()
         {
             InitializeComponent();
-
-            DataContext = new AreaPlotViewModel();
+            
+            dataContext = new AreaPlotViewModel();
+            dataContext.SeriesUpdated += (sender, e) => DrawChart();
+            DataContext = dataContext;
 
             plotArea = FindName("PlotArea") as Canvas;
         }
-        #region Properties
-        public IEnumerable<IEnumerable<T>> Series
-        {
-            get { return (IEnumerable<IEnumerable<T>>)GetValue(SeriesProperty); }
-            set {
-                SetValue(SeriesProperty, value);
-                DrawSeries();
-            }
-        }
-
-        // Using a DependencyProperty as the backing store for Series.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SeriesProperty =
-            DependencyProperty.Register("Series", typeof(IEnumerable<IEnumerable<T>>), typeof(IEnumerable<IEnumerable<T>>), new PropertyMetadata(0));
-
-        #endregion
 
         #region Internal
-        private void DrawSeries()
+        private void DrawChart()
         {
             if (plotArea == null)
             {
                 return;
             }
-            if (Series == null || Series.Count() == 0)
+            if (dataContext.Series == null || dataContext.Series.Count() == 0)
             {
                 return;
             }
-            foreach (var seria in Series)
+
+            dataContext.FooterHeight = 50;
+            dataContext.HeaderHeight = 50;
+            dataContext.LeftLegendWidth = 20;
+            dataContext.RightLegendWidth = 20;
+
+            DrawLegend();
+            DrawGrid();
+            foreach (var seria in dataContext.Series)
             {
                 DrawSeria(seria);
             }
         }
 
-        private void DrawSeria(IEnumerable<T> seria)
+        private void DrawGrid()
         {
-            throw new NotImplementedException();
+            double minDate = dataContext.Series.FirstOrDefault().Min(element => element.Argument);
+            double minValue = dataContext.Series.FirstOrDefault().Min(element => element.Value);
+            double maxDate = dataContext.Series.FirstOrDefault().Max(element => element.Argument);
+            double maxValue = dataContext.Series.FirstOrDefault().Max(element => element.Value);
+            foreach (var seria in dataContext.Series.Skip(1))
+            {
+                var minX = seria.Min(el => el.Argument);
+                if (minX < minDate)
+                {
+                    minDate = minX;
+                }
+                var minY = seria.Min(el => el.Value);
+                if (minY < minValue)
+                {
+                    minValue = minY;
+                }
+                var maxX = seria.Max(el => el.Argument);
+                if (maxX > maxDate)
+                {
+                    maxDate = maxX;
+                }
+                var maxY = seria.Max(el => el.Value);
+                if (maxY > maxValue)
+                {
+                    maxValue = maxY;
+                }
+            }
+
+            plotArea.Width = maxDate;
+            plotArea.Height = maxValue;
+
+            DrawLine(0, 0, 0, maxValue, Brushes.Red);
+            DrawLine(maxDate, 0, maxDate, maxValue, Brushes.Red);
+            DrawLine(0, maxValue, maxDate, maxValue, Brushes.Red);
+            DrawLine(0, 0, maxDate, 0, Brushes.Red);
+        }
+
+        private void DrawLine(double x1, double y1, double x2, double y2, Brush brush)
+        {
+            var line = new Line();
+            line.X1 = x1;
+            line.X2 = x2;
+            line.Y1 = y1;
+            line.Y2 = y2;
+            line.Stroke = brush;
+            line.StrokeThickness = 2;
+
+            plotArea.Children.Add(line);
+        }
+
+        private void DrawLegend()
+        {
+            //TODO: Implement Legend drawing
+        }
+
+        private void DrawSeria(IEnumerable<SeriesDoubleBasedElement> seria)
+        {
+            //TODO: Implement Seria drawing
         }
 
         #endregion

@@ -7,11 +7,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace HomeCalc.ChartsLib.ViewModels
 {
-    public partial class UserControlViewModel : INotifyPropertyChanged
+    public partial class UserControlViewModel : DependencyObject, INotifyPropertyChanged
     {
         //protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;

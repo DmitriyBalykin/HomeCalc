@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.ChartsLib.Models;
+using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Presentation.BasicModels;
 using System;
@@ -17,5 +18,19 @@ namespace HomeCalc.Presentation.ViewModels
             logger = LogService.GetLogger();
         }
 
+        private IEnumerable<IEnumerable<SeriesDoubleBasedElement>> chartSeries;
+        public IEnumerable<IEnumerable<SeriesDoubleBasedElement>> ChartSeries
+        {
+            get { return chartSeries; }
+            set
+            {
+                if (value != chartSeries)
+                {
+                    chartSeries = value;
+                    OnPropertyChanged(() => ChartSeries);
+                }
+            }
+        }
+        
     }
 }

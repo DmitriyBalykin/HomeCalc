@@ -65,6 +65,10 @@
     <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HomeCalc.ChartsLib\HomeCalc.ChartsLib.csproj">
+      <Project>{6675f7d6-ad85-407d-be3c-06ee3c71a660}</Project>
+      <Name>HomeCalc.ChartsLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HomeCalc.Core\HomeCalc.Core.csproj">
       <Project>{466144d4-3b44-4bb1-948a-1411ab4dfe46}</Project>
       <Name>HomeCalc.Core</Name>

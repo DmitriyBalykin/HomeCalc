@@ -19,7 +19,7 @@
         Style="{StaticResource SettingsGridStyle}"
         >
         <DockPanel>
-            <charts:AreaPlot />
+            <charts:AreaPlot Series="{Binding ChartSeries}" />
         </DockPanel>
     </Grid>
 </UserControl>
