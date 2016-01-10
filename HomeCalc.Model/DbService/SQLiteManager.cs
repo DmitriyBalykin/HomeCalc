@@ -17,15 +17,21 @@ namespace HomeCalc.Model.DbService
 {
     class SQLiteManager : IDatabaseManager
     {
-        private static string dbFilePath = "HomeCalc\\DataStorage.sqlite";
-
+        private static string dbFilePath = "DataStorage.sqlite";
+        private static string containerFolder = "HomeCalc";
         private StorageConnection GetConnection()
         {
+            
 #if DEBUG
-        dbFilePath = "HomeCalc\\DataStorage_Debug.sqlite";
+        dbFilePath = "DataStorage_Debug.sqlite";
 #endif
-            string dataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string fullPath = Path.Combine(dataFolder, dbFilePath);
+            string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var containerFolderPath = Path.Combine(appDataFolder, containerFolder);
+            if (!Directory.Exists(containerFolderPath))
+            {
+                Directory.CreateDirectory(containerFolderPath);
+            }
+            string fullPath = Path.Combine(containerFolderPath, dbFilePath);
             string connString = "Data Source=" + fullPath;
             lock (this)
             {
