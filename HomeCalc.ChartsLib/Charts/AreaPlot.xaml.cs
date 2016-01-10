@@ -29,11 +29,32 @@ namespace HomeCalc.ChartsLib.Charts
             InitializeComponent();
             
             dataContext = new AreaPlotViewModel();
-            dataContext.SeriesUpdated += (sender, e) => DrawChart();
+            //dataContext.SeriesUpdated += (sender, e) => DrawChart();
             DataContext = dataContext;
 
             plotArea = FindName("PlotArea") as Canvas;
         }
+
+        #region Properties
+        public IEnumerable<IEnumerable<SeriesDoubleBasedElement>> Series
+        {
+            get { return (IEnumerable<IEnumerable<SeriesDoubleBasedElement>>)GetValue(SeriesProperty); }
+            set
+            {
+                SetValue(SeriesProperty, value);
+
+                //if (SeriesUpdated != null)
+                //{
+                //    SeriesUpdated(null, EventArgs.Empty);
+                //}
+            }
+        }
+
+        // Using a DependencyProperty as the backing store for Series.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SeriesProperty =
+            DependencyProperty.Register("Series", typeof(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>), typeof(AreaPlot), new FrameworkPropertyMetadata(default(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>),FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        #endregion
 
         #region Internal
         private void DrawChart()
@@ -42,7 +63,7 @@ namespace HomeCalc.ChartsLib.Charts
             {
                 return;
             }
-            if (dataContext.Series == null || dataContext.Series.Count() == 0)
+            if (Series == null || Series.Count() == 0)
             {
                 return;
             }
@@ -54,7 +75,7 @@ namespace HomeCalc.ChartsLib.Charts
 
             DrawLegend();
             DrawGrid();
-            foreach (var seria in dataContext.Series)
+            foreach (var seria in Series)
             {
                 DrawSeria(seria);
             }
@@ -62,11 +83,11 @@ namespace HomeCalc.ChartsLib.Charts
 
         private void DrawGrid()
         {
-            double minDate = dataContext.Series.FirstOrDefault().Min(element => element.Argument);
-            double minValue = dataContext.Series.FirstOrDefault().Min(element => element.Value);
-            double maxDate = dataContext.Series.FirstOrDefault().Max(element => element.Argument);
-            double maxValue = dataContext.Series.FirstOrDefault().Max(element => element.Value);
-            foreach (var seria in dataContext.Series.Skip(1))
+            double minDate = Series.FirstOrDefault().Min(element => element.Argument);
+            double minValue = Series.FirstOrDefault().Min(element => element.Value);
+            double maxDate = Series.FirstOrDefault().Max(element => element.Argument);
+            double maxValue = Series.FirstOrDefault().Max(element => element.Value);
+            foreach (var seria in Series.Skip(1))
             {
                 var minX = seria.Min(el => el.Argument);
                 if (minX < minDate)
