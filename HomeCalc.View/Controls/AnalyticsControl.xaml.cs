@@ -24,13 +24,13 @@ namespace HomeCalc.View.Controls
     {
         public AnalyticsControl()
         {
-            InitializeComponent();
-
             var viewModel = new AnalyticsViewModel();
 
-            viewModel.ChartSeries = GetChartSeries();
-
             this.DataContext = viewModel;
+
+            InitializeComponent();
+
+            viewModel.ChartSeries = GetChartSeries();
         }
 
         private IEnumerable<IEnumerable<SeriesDoubleBasedElement>> GetChartSeries()

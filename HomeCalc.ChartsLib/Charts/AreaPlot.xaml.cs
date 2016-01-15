@@ -42,17 +42,51 @@ namespace HomeCalc.ChartsLib.Charts
             set
             {
                 SetValue(SeriesProperty, value);
-
-                //if (SeriesUpdated != null)
-                //{
-                //    SeriesUpdated(null, EventArgs.Empty);
-                //}
             }
         }
 
         // Using a DependencyProperty as the backing store for Series.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SeriesProperty =
-            DependencyProperty.Register("Series", typeof(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>), typeof(AreaPlot), new FrameworkPropertyMetadata(default(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>),FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+            DependencyProperty.Register(
+            "Series",
+            typeof(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>),
+            typeof(AreaPlot),
+            new FrameworkPropertyMetadata(
+                default(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>),
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                new PropertyChangedCallback(OnSeriesChangedCallback),
+                new CoerceValueCallback(OnSeriesCoerceCallback))
+                );
+
+        private static object OnSeriesCoerceCallback(DependencyObject d, object baseValue)
+        {
+            if (d is AreaPlot)
+            {
+                return (d as AreaPlot).OnCoerceSeriesProperty(baseValue);
+            }
+            else
+            {
+                return baseValue;
+            }
+        }
+
+        private object OnCoerceSeriesProperty(object baseValue)
+        {
+            return baseValue;
+        }
+
+        private static void OnSeriesChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is AreaPlot)
+            {
+                (d as AreaPlot).OnSeriesPropertyChanged(e);
+            }
+        }
+
+        private void OnSeriesPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            var newSeriesValue = ReadLocalValue(SeriesProperty);
+        }
 
         #endregion
 
