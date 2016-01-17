@@ -32,5 +32,6 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
         
+        
     }
 }

@@ -18,8 +18,12 @@
     <Grid
         Style="{StaticResource SettingsGridStyle}"
         >
-        <DockPanel>
-            <charts:AreaPlot Series="{Binding .}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0">
+            <charts:AreaPlot Series="{Binding ChartSeries}" />
         </DockPanel>
     </Grid>
 </UserControl>

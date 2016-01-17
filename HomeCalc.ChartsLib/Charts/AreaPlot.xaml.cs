@@ -23,25 +23,27 @@ namespace HomeCalc.ChartsLib.Charts
     public partial class AreaPlot : UserControl
     {
         Canvas plotArea;
-        AreaPlotViewModel dataContext;
+        //AreaPlotViewModel dataContext;
         public AreaPlot()
         {
             InitializeComponent();
             
-            dataContext = new AreaPlotViewModel();
-            //dataContext.SeriesUpdated += (sender, e) => DrawChart();
-            DataContext = dataContext;
+            //dataContext = new AreaPlotViewModel();
+            //DataContext = dataContext;
 
             plotArea = FindName("PlotArea") as Canvas;
         }
 
         #region Properties
+        private IEnumerable<IEnumerable<SeriesDoubleBasedElement>> series;
         public IEnumerable<IEnumerable<SeriesDoubleBasedElement>> Series
         {
-            get { return (IEnumerable<IEnumerable<SeriesDoubleBasedElement>>)GetValue(SeriesProperty); }
+            get { return series; }
             set
             {
-                SetValue(SeriesProperty, value);
+                //SetValue(SeriesProperty, value);
+                series = value;
+                DrawChart();
             }
         }
 
@@ -72,7 +74,11 @@ namespace HomeCalc.ChartsLib.Charts
 
         private object OnCoerceSeriesProperty(object baseValue)
         {
-            return baseValue;
+            if (baseValue != null)
+            {
+                Series = baseValue as IEnumerable<IEnumerable<SeriesDoubleBasedElement>>;
+            }
+            return series;
         }
 
         private static void OnSeriesChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -85,7 +91,11 @@ namespace HomeCalc.ChartsLib.Charts
 
         private void OnSeriesPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
-            var newSeriesValue = ReadLocalValue(SeriesProperty);
+            var localValue = ReadLocalValue(SeriesProperty);
+            if (localValue != null)
+            {
+                series = localValue as IEnumerable<IEnumerable<SeriesDoubleBasedElement>>;
+            }
         }
 
         #endregion
@@ -102,10 +112,10 @@ namespace HomeCalc.ChartsLib.Charts
                 return;
             }
 
-            dataContext.FooterHeight = 50;
-            dataContext.HeaderHeight = 50;
-            dataContext.LeftLegendWidth = 20;
-            dataContext.RightLegendWidth = 20;
+            //dataContext.FooterHeight = 50;
+            //dataContext.HeaderHeight = 50;
+            //dataContext.LeftLegendWidth = 20;
+            //dataContext.RightLegendWidth = 20;
 
             DrawLegend();
             DrawGrid();
