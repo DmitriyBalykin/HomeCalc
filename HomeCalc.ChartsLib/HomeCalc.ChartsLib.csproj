@@ -47,12 +47,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\BrushGenerator.cs" />
+    <Compile Include="Helpers\ChartPlotInfo.cs" />
+    <Compile Include="Helpers\GeometricHelper.cs" />
     <Compile Include="Models\SeriesDoubleBasedElement.cs" />
     <Compile Include="Models\SeriesStringBasedElement.cs" />
     <Compile Include="Models\SeriesDateBasedElement.cs" />
     <Compile Include="Models\SeriesElement.cs" />
-    <Compile Include="ViewModels\AreaPlotViewModel.cs" />
-    <Compile Include="ViewModels\UserControlViewModel.cs" />
     <Page Include="Charts\AreaPlot.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -3,24 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="600">
+             mc:Ignorable="d">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="{Binding HeaderHeight}" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="{Binding FooterHeight}" />
-        </Grid.RowDefinitions>    
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding LeftLegendWidth}" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="{Binding RightLegendWidth}" />
-        </Grid.ColumnDefinitions>
-        
-        <Grid Name="PlotHeader" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" />
-        <Grid Name="PlotLeftLegend" Grid.Row="1" Grid.Column="0" />
-        <Canvas Name="PlotArea" Grid.Row="1" Grid.Column="1" />
-        <Grid Name="PlotRightLegend" Grid.Row="1" Grid.Column="2" />
-        <Grid Name="PlotFooter" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" />
+        <Canvas Name="PlotArea"/>
     </Grid>
 </UserControl>

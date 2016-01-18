@@ -5,7 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:charts="clr-namespace:HomeCalc.ChartsLib.Charts;assembly=HomeCalc.ChartsLib"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="850">
+             Width="Auto"
+             Height="Auto"
+             MinWidth="850"
+             MinHeight="300">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -20,10 +23,9 @@
         >
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
-            <charts:AreaPlot Series="{Binding ChartSeries}" />
+            <charts:AreaPlot Series="{Binding ChartSeries}" ChartBackground="{StaticResource ChartBackgroundLight}"/>
         </DockPanel>
     </Grid>
 </UserControl>

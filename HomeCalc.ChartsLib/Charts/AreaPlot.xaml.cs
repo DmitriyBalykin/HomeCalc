@@ -1,5 +1,5 @@
 ﻿using HomeCalc.ChartsLib.Models;
-using HomeCalc.ChartsLib.ViewModels;
+using HomeCalc.ChartsLib.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,18 +23,16 @@ namespace HomeCalc.ChartsLib.Charts
     public partial class AreaPlot : UserControl
     {
         Canvas plotArea;
-        //AreaPlotViewModel dataContext;
+        
         public AreaPlot()
         {
             InitializeComponent();
-            
-            //dataContext = new AreaPlotViewModel();
-            //DataContext = dataContext;
 
             plotArea = FindName("PlotArea") as Canvas;
         }
 
         #region Properties
+
         private IEnumerable<IEnumerable<SeriesDoubleBasedElement>> series;
         public IEnumerable<IEnumerable<SeriesDoubleBasedElement>> Series
         {
@@ -98,6 +96,67 @@ namespace HomeCalc.ChartsLib.Charts
             }
         }
 
+        private Brush chartBackground;
+        public Brush ChartBackground
+        {
+            get { return chartBackground; }
+            set
+            {
+                chartBackground = value;
+            }
+        }
+
+        // Using a DependencyProperty as the backing store for Series.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ChartBackgroundProperty =
+            DependencyProperty.Register(
+            "ChartBackground",
+            typeof(Brush),
+            typeof(AreaPlot),
+            new FrameworkPropertyMetadata(
+                default(Brush),
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                new PropertyChangedCallback(OnChartBackgroundChangedCallback),
+                new CoerceValueCallback(OnChartBackgroundCoerceCallback))
+                );
+
+        private static object OnChartBackgroundCoerceCallback(DependencyObject d, object baseValue)
+        {
+            if (d is AreaPlot)
+            {
+                return (d as AreaPlot).OnCoerceChartBackgroundProperty(baseValue);
+            }
+            else
+            {
+                return baseValue;
+            }
+        }
+
+        private object OnCoerceChartBackgroundProperty(object baseValue)
+        {
+            if (baseValue != null)
+            {
+                ChartBackground = baseValue as Brush;
+            }
+            return series;
+        }
+
+        private static void OnChartBackgroundChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is AreaPlot)
+            {
+                (d as AreaPlot).OnChartBackgroundPropertyChanged(e);
+            }
+        }
+
+        private void OnChartBackgroundPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            var localValue = ReadLocalValue(ChartBackgroundProperty);
+            if (localValue != null)
+            {
+                chartBackground = localValue as Brush;
+            }
+        }
+
         #endregion
 
         #region Internal
@@ -112,21 +171,90 @@ namespace HomeCalc.ChartsLib.Charts
                 return;
             }
 
-            //dataContext.FooterHeight = 50;
-            //dataContext.HeaderHeight = 50;
-            //dataContext.LeftLegendWidth = 20;
-            //dataContext.RightLegendWidth = 20;
+            ChartPlotInfo plotInfo = CalculatePlotInfo();
+
+            plotArea.Width = plotInfo.Width + plotInfo.LeftLegendWidth + plotInfo.RightLegendWidth;
+            plotArea.Height = plotInfo.Height + plotInfo.FooterHeight + plotInfo.HeaderHeight;
 
             DrawLegend();
-            DrawGrid();
+            DrawBackground(plotInfo);
+            DrawGrid(plotInfo);
             foreach (var seria in Series)
             {
-                DrawSeria(seria);
+                DrawSeria(seria, plotInfo, BrushGenerator.GetBrush());
             }
         }
 
-        private void DrawGrid()
+        private void DrawBackground(ChartPlotInfo plotInfo)
         {
+            var chartBack = new Rectangle();
+            chartBack.Width = plotInfo.MaxWidth;
+            chartBack.Height = plotInfo.MaxHeight;
+            Canvas.SetLeft(chartBack, plotInfo.LeftLegendWidth);
+            Canvas.SetTop(chartBack, plotInfo.HeaderHeight);
+            chartBack.Fill = ChartBackground;
+            
+            plotArea.Children.Add(chartBack);
+        }
+
+        private void DrawGrid(ChartPlotInfo info)
+        {
+            DrawLine(0, 0, 0, info.Height, info, Brushes.Red);
+            DrawLine(info.Width, 0, info.Width, info.Height, info, Brushes.Red);
+            DrawLine(0, info.Height, info.Width, info.Height, info, Brushes.Red);
+            DrawLine(0, 0, info.Width, 0, info, Brushes.Red);
+        }
+
+        private void DrawLine(double x1, double y1, double x2, double y2, ChartPlotInfo info, Brush brush)
+        {
+            var line = new Line();
+            line.X1 = GeometricHelper.XCoordToChart(x1, info);
+            line.X2 = GeometricHelper.XCoordToChart(x2, info);
+            line.Y1 = GeometricHelper.YCoordToChart(y1, info);
+            line.Y2 = GeometricHelper.YCoordToChart(y2, info);
+            line.Stroke = brush;
+            line.StrokeThickness = 2;
+
+            plotArea.Children.Add(line);
+        }
+
+        private void DrawBezierSegment(Point p1, Point p2, Point p3, ChartPlotInfo info, Brush brush)
+        {
+            var line = new BezierSegment();
+            line.Point1 = GeometricHelper.PointToChart(p1, info);
+            line.Point2 = GeometricHelper.PointToChart(p2, info);
+            line.Point3 = GeometricHelper.PointToChart(p3, info);
+            //line.Stroke = brush;
+            //line.StrokeThickness = 2;
+
+            //plotArea.Children.Add(line);
+        }
+
+        private void DrawLegend()
+        {
+            //TODO: Implement Legend drawing
+        }
+
+        private void DrawSeria(IEnumerable<SeriesDoubleBasedElement> seria, ChartPlotInfo info, Brush brush)
+        {
+            var prevItem = seria.First();
+            foreach(var item in seria.Skip(1))
+            {
+                DrawLine(
+                    prevItem.Argument,
+                    prevItem.Value,
+                    item.Argument,
+                    item.Value,
+                    info,
+                    brush);
+                prevItem = item;
+            }
+        }
+
+        private ChartPlotInfo CalculatePlotInfo()
+        {
+            ChartPlotInfo plotInfo = new ChartPlotInfo();
+
             double minDate = Series.FirstOrDefault().Min(element => element.Argument);
             double minValue = Series.FirstOrDefault().Min(element => element.Value);
             double maxDate = Series.FirstOrDefault().Max(element => element.Argument);
@@ -155,38 +283,18 @@ namespace HomeCalc.ChartsLib.Charts
                 }
             }
 
-            plotArea.Width = maxDate;
-            plotArea.Height = maxValue;
+            plotInfo.MaxX = maxDate;
+            plotInfo.MaxY = maxValue;
+            plotInfo.MinX = minDate;
+            plotInfo.MinY = minValue;
 
-            DrawLine(0, 0, 0, maxValue, Brushes.Red);
-            DrawLine(maxDate, 0, maxDate, maxValue, Brushes.Red);
-            DrawLine(0, maxValue, maxDate, maxValue, Brushes.Red);
-            DrawLine(0, 0, maxDate, 0, Brushes.Red);
+            plotInfo.FooterHeight = 50;
+            plotInfo.HeaderHeight = 50;
+            plotInfo.LeftLegendWidth = 20;
+            plotInfo.RightLegendWidth = 20;
+
+            return plotInfo;
         }
-
-        private void DrawLine(double x1, double y1, double x2, double y2, Brush brush)
-        {
-            var line = new Line();
-            line.X1 = x1;
-            line.X2 = x2;
-            line.Y1 = y1;
-            line.Y2 = y2;
-            line.Stroke = brush;
-            line.StrokeThickness = 2;
-
-            plotArea.Children.Add(line);
-        }
-
-        private void DrawLegend()
-        {
-            //TODO: Implement Legend drawing
-        }
-
-        private void DrawSeria(IEnumerable<SeriesDoubleBasedElement> seria)
-        {
-            //TODO: Implement Seria drawing
-        }
-
         #endregion
         
     }

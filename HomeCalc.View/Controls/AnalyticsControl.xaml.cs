@@ -37,10 +37,21 @@ namespace HomeCalc.View.Controls
         {
             var seria = new List<SeriesDoubleBasedElement>();
             seria.Add(new SeriesDoubleBasedElement { Argument = 0, Value = 7 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 1, Value = 17 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 2, Value = 2 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 3, Value = 11 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 4, Value = 3 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 17, Value = 170 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 52, Value = 221 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 117, Value = 114 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 159, Value = 326 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 210, Value = 71 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 230, Value = 179 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 399, Value = 112 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 422, Value = 171 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 476, Value = 321 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 589, Value = 762 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 631, Value = 217 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 792, Value = 2 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 850, Value = 211 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 910, Value = 611 });
+            seria.Add(new SeriesDoubleBasedElement { Argument = 1000, Value = 32 });
 
             return new List<IEnumerable<SeriesDoubleBasedElement>> { seria };
         }
