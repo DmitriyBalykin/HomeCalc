@@ -8,18 +8,26 @@ namespace HomeCalc.ChartsLib.Helpers
 {
     public class ChartPlotInfo
     {
-        public double MinX { get; set; }
-        public double MaxX { get; set; }
+        public DateTime MinX { get; set; }
+        public DateTime MaxX { get; set; }
         public double MinY { get; set; }
         public double MaxY { get; set; }
 
+        public int DaysWidth
+        {
+            get
+            {
+                return (MaxX - MinX).Days;
+            }
+        }
         public double Width
         {
             get
             {
-                return MaxX - MinX;
+                return DaysWidth * WidthScale;
             }
         }
+
         public double Height
         {
             get
@@ -31,7 +39,7 @@ namespace HomeCalc.ChartsLib.Helpers
         {
             get
             {
-                return MaxWidth/Width;
+                return MaxWidth/DaysWidth;
             }
         }
         public double HeightScale
@@ -44,10 +52,10 @@ namespace HomeCalc.ChartsLib.Helpers
 
         public double HeaderHeight { get; set; }
         public double FooterHeight { get; set; }
-        public double LeftLegendWidth { get; set; }
-        public double RightLegendWidth { get; set; }
+        public double LeftMarginWidth { get; set; }
+        public double RightMarginWidth { get; set; }
 
         public double MaxHeight = 600;
-        public double MaxWidth = 800;
+        public double MaxWidth = 1000;
     }
 }

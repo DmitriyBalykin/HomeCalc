@@ -33,8 +33,8 @@ namespace HomeCalc.ChartsLib.Charts
 
         #region Properties
 
-        private IEnumerable<IEnumerable<SeriesDoubleBasedElement>> series;
-        public IEnumerable<IEnumerable<SeriesDoubleBasedElement>> Series
+        private IEnumerable<IEnumerable<SeriesDateBasedElement>> series;
+        public IEnumerable<IEnumerable<SeriesDateBasedElement>> Series
         {
             get { return series; }
             set
@@ -49,10 +49,10 @@ namespace HomeCalc.ChartsLib.Charts
         public static readonly DependencyProperty SeriesProperty =
             DependencyProperty.Register(
             "Series",
-            typeof(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>),
+            typeof(IEnumerable<IEnumerable<SeriesDateBasedElement>>),
             typeof(AreaPlot),
             new FrameworkPropertyMetadata(
-                default(IEnumerable<IEnumerable<SeriesDoubleBasedElement>>),
+                default(IEnumerable<IEnumerable<SeriesDateBasedElement>>),
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 new PropertyChangedCallback(OnSeriesChangedCallback),
                 new CoerceValueCallback(OnSeriesCoerceCallback))
@@ -74,7 +74,7 @@ namespace HomeCalc.ChartsLib.Charts
         {
             if (baseValue != null)
             {
-                Series = baseValue as IEnumerable<IEnumerable<SeriesDoubleBasedElement>>;
+                Series = baseValue as IEnumerable<IEnumerable<SeriesDateBasedElement>>;
             }
             return series;
         }
@@ -92,7 +92,7 @@ namespace HomeCalc.ChartsLib.Charts
             var localValue = ReadLocalValue(SeriesProperty);
             if (localValue != null)
             {
-                series = localValue as IEnumerable<IEnumerable<SeriesDoubleBasedElement>>;
+                series = localValue as IEnumerable<IEnumerable<SeriesDateBasedElement>>;
             }
         }
 
@@ -170,10 +170,13 @@ namespace HomeCalc.ChartsLib.Charts
             {
                 return;
             }
-
+            if (Series.FirstOrDefault().Count() == 0)
+            {
+                return;
+            }
             ChartPlotInfo plotInfo = CalculatePlotInfo();
 
-            plotArea.Width = plotInfo.Width + plotInfo.LeftLegendWidth + plotInfo.RightLegendWidth;
+            plotArea.Width = plotInfo.Width + plotInfo.LeftMarginWidth + plotInfo.RightMarginWidth;
             plotArea.Height = plotInfo.Height + plotInfo.FooterHeight + plotInfo.HeaderHeight;
 
             DrawLegend();
@@ -190,7 +193,7 @@ namespace HomeCalc.ChartsLib.Charts
             var chartBack = new Rectangle();
             chartBack.Width = plotInfo.MaxWidth;
             chartBack.Height = plotInfo.MaxHeight;
-            Canvas.SetLeft(chartBack, plotInfo.LeftLegendWidth);
+            Canvas.SetLeft(chartBack, plotInfo.LeftMarginWidth);
             Canvas.SetTop(chartBack, plotInfo.HeaderHeight);
             chartBack.Fill = ChartBackground;
             
@@ -205,6 +208,18 @@ namespace HomeCalc.ChartsLib.Charts
             DrawLine(0, 0, info.Width, 0, info, Brushes.Red);
         }
 
+        private void DrawLine(DateTime x1, double y1, DateTime x2, double y2, ChartPlotInfo info, Brush brush)
+        {
+            var line = new Line();
+            line.X1 = GeometricHelper.DateToChart(x1, info);
+            line.X2 = GeometricHelper.DateToChart(x2, info);
+            line.Y1 = GeometricHelper.YCoordToChart(y1, info);
+            line.Y2 = GeometricHelper.YCoordToChart(y2, info);
+            line.Stroke = brush;
+            line.StrokeThickness = 2;
+
+            plotArea.Children.Add(line);
+        }
         private void DrawLine(double x1, double y1, double x2, double y2, ChartPlotInfo info, Brush brush)
         {
             var line = new Line();
@@ -220,10 +235,10 @@ namespace HomeCalc.ChartsLib.Charts
 
         private void DrawBezierSegment(Point p1, Point p2, Point p3, ChartPlotInfo info, Brush brush)
         {
-            var line = new BezierSegment();
-            line.Point1 = GeometricHelper.PointToChart(p1, info);
-            line.Point2 = GeometricHelper.PointToChart(p2, info);
-            line.Point3 = GeometricHelper.PointToChart(p3, info);
+            //var line = new BezierSegment();
+            //line.Point1 = GeometricHelper.PointToChart(p1, info);
+            //line.Point2 = GeometricHelper.PointToChart(p2, info);
+            //line.Point3 = GeometricHelper.PointToChart(p3, info);
             //line.Stroke = brush;
             //line.StrokeThickness = 2;
 
@@ -235,10 +250,11 @@ namespace HomeCalc.ChartsLib.Charts
             //TODO: Implement Legend drawing
         }
 
-        private void DrawSeria(IEnumerable<SeriesDoubleBasedElement> seria, ChartPlotInfo info, Brush brush)
+        private void DrawSeria(IEnumerable<SeriesDateBasedElement> seria, ChartPlotInfo info, Brush brush)
         {
-            var prevItem = seria.First();
-            foreach(var item in seria.Skip(1))
+            var timeOrderedSeria = seria.OrderBy(x => x.Argument).ToList();
+            var prevItem = timeOrderedSeria.First();
+            foreach (var item in timeOrderedSeria.Skip(1))
             {
                 DrawLine(
                     prevItem.Argument,
@@ -255,9 +271,9 @@ namespace HomeCalc.ChartsLib.Charts
         {
             ChartPlotInfo plotInfo = new ChartPlotInfo();
 
-            double minDate = Series.FirstOrDefault().Min(element => element.Argument);
+            DateTime minDate = Series.FirstOrDefault().Min(element => element.Argument);
             double minValue = Series.FirstOrDefault().Min(element => element.Value);
-            double maxDate = Series.FirstOrDefault().Max(element => element.Argument);
+            DateTime maxDate = Series.FirstOrDefault().Max(element => element.Argument);
             double maxValue = Series.FirstOrDefault().Max(element => element.Value);
             foreach (var seria in Series.Skip(1))
             {
@@ -290,8 +306,8 @@ namespace HomeCalc.ChartsLib.Charts
 
             plotInfo.FooterHeight = 50;
             plotInfo.HeaderHeight = 50;
-            plotInfo.LeftLegendWidth = 20;
-            plotInfo.RightLegendWidth = 20;
+            plotInfo.LeftMarginWidth = 20;
+            plotInfo.RightMarginWidth = 20;
 
             return plotInfo;
         }

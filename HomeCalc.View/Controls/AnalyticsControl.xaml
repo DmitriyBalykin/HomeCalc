@@ -24,7 +24,23 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <DockPanel Grid.Row="0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="0,50">
+            <DatePicker SelectedDate="{Binding SearchFromDate}" />
+            <DatePicker SelectedDate="{Binding SearchToDate}" />
+            <TextBox Text="{Binding PurchaseName}" />
+            <ComboBox ItemsSource="{Binding PurchaseTypesList}"
+                     SelectedItem="{Binding PurchaseType}" />
+
+            <ComboBox ItemsSource="{Binding IntervalList}" SelectedItem="{Binding SelectedInterval}" DisplayMemberPath="DisplayName" />
+
+
+            <Button Command="{Binding ShowData}">Показати дані</Button>
+        </StackPanel>
+        <DockPanel Grid.Column="1">
             <charts:AreaPlot Series="{Binding ChartSeries}" ChartBackground="{StaticResource ChartBackgroundLight}"/>
         </DockPanel>
     </Grid>

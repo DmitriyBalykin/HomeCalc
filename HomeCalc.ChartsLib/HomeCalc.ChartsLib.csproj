@@ -53,7 +53,7 @@
     <Compile Include="Models\SeriesDoubleBasedElement.cs" />
     <Compile Include="Models\SeriesStringBasedElement.cs" />
     <Compile Include="Models\SeriesDateBasedElement.cs" />
-    <Compile Include="Models\SeriesElement.cs" />
+    <Compile Include="Models\SeriesBaseElement.cs" />
     <Page Include="Charts\AreaPlot.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

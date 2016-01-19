@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicModels\ViewModel.cs" />
+    <Compile Include="Models\AggregationInterval.cs" />
     <Compile Include="Models\Purchase.cs" />
     <Compile Include="Models\PurchaseType.cs" />
     <Compile Include="Models\SearchRequest.cs" />

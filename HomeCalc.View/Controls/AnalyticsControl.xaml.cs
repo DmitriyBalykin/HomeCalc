@@ -30,30 +30,33 @@ namespace HomeCalc.View.Controls
 
             InitializeComponent();
 
-            viewModel.ChartSeries = GetChartSeries();
+            //viewModel.ChartSeries = GetChartSeries();
         }
 
-        private IEnumerable<IEnumerable<SeriesDoubleBasedElement>> GetChartSeries()
+        private IEnumerable<IEnumerable<SeriesDateBasedElement>> GetChartSeries()
         {
-            var seria = new List<SeriesDoubleBasedElement>();
-            seria.Add(new SeriesDoubleBasedElement { Argument = 0, Value = 7 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 17, Value = 170 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 52, Value = 221 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 117, Value = 114 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 159, Value = 326 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 210, Value = 71 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 230, Value = 179 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 399, Value = 112 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 422, Value = 171 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 476, Value = 321 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 589, Value = 762 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 631, Value = 217 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 792, Value = 2 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 850, Value = 211 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 910, Value = 611 });
-            seria.Add(new SeriesDoubleBasedElement { Argument = 1000, Value = 32 });
+            var seria = new List<SeriesDateBasedElement>();
 
-            return new List<IEnumerable<SeriesDoubleBasedElement>> { seria };
+            var now = DateTime.Now;
+
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-36), Value = 7 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-34), Value = 170 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-33), Value = 221 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-31), Value = 114 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-30), Value = 326 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-29), Value = 71 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-27), Value = 179 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-25), Value = 112 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-22), Value = 171 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-20), Value = 321 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-17), Value = 762 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-15), Value = 217 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-12), Value = 2 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-10), Value = 211 });
+            seria.Add(new SeriesDateBasedElement { Argument = now.AddDays(-5), Value = 611 });
+            seria.Add(new SeriesDateBasedElement { Argument = now, Value = 32 });
+
+            return new List<IEnumerable<SeriesDateBasedElement>> { seria };
         }
     }
 }
