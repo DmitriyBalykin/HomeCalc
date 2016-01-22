@@ -28,7 +28,7 @@ namespace HomeCalc.ChartsLib.Helpers
             }
         }
 
-        public double Height
+        public double PhysHeight
         {
             get
             {
@@ -46,7 +46,7 @@ namespace HomeCalc.ChartsLib.Helpers
         {
             get
             {
-                return MaxHeight/Height;
+                return MaxHeight/PhysHeight;
             }
         }
 

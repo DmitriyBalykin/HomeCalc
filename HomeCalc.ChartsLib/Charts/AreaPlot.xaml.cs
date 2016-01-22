@@ -174,10 +174,12 @@ namespace HomeCalc.ChartsLib.Charts
             {
                 return;
             }
+            plotArea.Children.Clear();
+
             ChartPlotInfo plotInfo = CalculatePlotInfo();
 
             plotArea.Width = plotInfo.Width + plotInfo.LeftMarginWidth + plotInfo.RightMarginWidth;
-            plotArea.Height = plotInfo.Height + plotInfo.FooterHeight + plotInfo.HeaderHeight;
+            plotArea.Height = plotInfo.PhysHeight + plotInfo.FooterHeight + plotInfo.HeaderHeight;
 
             DrawLegend();
             DrawBackground(plotInfo);
@@ -202,13 +204,59 @@ namespace HomeCalc.ChartsLib.Charts
 
         private void DrawGrid(ChartPlotInfo info)
         {
-            DrawLine(0, 0, 0, info.Height, info, Brushes.Red);
-            DrawLine(info.Width, 0, info.Width, info.Height, info, Brushes.Red);
-            DrawLine(0, info.Height, info.Width, info.Height, info, Brushes.Red);
-            DrawLine(0, 0, info.Width, 0, info, Brushes.Red);
+            //Frame
+            var frameBrush = Brushes.SteelBlue;
+            var gridBrush = Brushes.LightSteelBlue;
+
+            DrawLine(0, 0, 0, info.PhysHeight, info, frameBrush);
+            DrawLine(info.Width, 0, info.Width, info.PhysHeight, info, frameBrush);
+            DrawLine(0, info.PhysHeight, info.Width, info.PhysHeight, info, frameBrush);
+            DrawLine(0, 0, info.Width, 0, info, frameBrush);
+
+            //Grid
+            var argumentDivideCoef = 10;
+            var dateGridStep = new TimeSpan((int)Math.Ceiling((double)info.DaysWidth / argumentDivideCoef), 0, 0, 0);
+
+            for (DateTime x = info.MinX; x < info.MaxX; x += dateGridStep)
+            {
+                if (x > info.MinX)
+                {
+                    DrawLine(x, 0, x, info.PhysHeight, info, gridBrush, true);
+                }
+
+                DrawLabel(x, -20, string.Format("{0:dd MMM yyyy}", x), info);
+            }
+
+            var valueDivideCoef = 6;
+            var valueGridStep = Math.Ceiling((info.PhysHeight / valueDivideCoef) / 100) * 100;
+
+            for (var y = info.MinY; y <= info.PhysHeight; y += valueGridStep)
+            {
+                DrawLine(0, y, info.Width, y, info, gridBrush, true);
+                DrawLabel(-30, y + 20, string.Format("{0:F0}", y), info);
+            }
         }
 
-        private void DrawLine(DateTime x1, double y1, DateTime x2, double y2, ChartPlotInfo info, Brush brush)
+        private void DrawLabel(DateTime x, double y, string labelText, ChartPlotInfo info)
+        {
+            var dateLabelWidth = labelText.Length * 8;
+            var textBlock = new TextBlock();
+            textBlock.Text = labelText;
+
+            RenderElement(textBlock, GeometricHelper.DateToChart(x, info) - dateLabelWidth/2, GeometricHelper.YCoordToChart(y, info));
+        }
+
+
+        private void DrawLabel(double x, double y, string labelText, ChartPlotInfo info)
+        {
+            var dateLabelWidth = labelText.Length * 8;
+            var textBlock = new TextBlock();
+            textBlock.Text = labelText;
+
+            RenderElement(textBlock, GeometricHelper.XCoordToChart(x, info) - dateLabelWidth / 2, GeometricHelper.YCoordToChart(y, info));
+        }
+
+        private void DrawLine(DateTime x1, double y1, DateTime x2, double y2, ChartPlotInfo info, Brush brush, bool isDashed = false)
         {
             var line = new Line();
             line.X1 = GeometricHelper.DateToChart(x1, info);
@@ -217,10 +265,19 @@ namespace HomeCalc.ChartsLib.Charts
             line.Y2 = GeometricHelper.YCoordToChart(y2, info);
             line.Stroke = brush;
             line.StrokeThickness = 2;
+            if (isDashed)
+            {
+                DoubleCollection dashes = new DoubleCollection(2);
+                dashes.Add(5);
+                dashes.Add(5);
+                line.StrokeThickness = 1;
+                line.StrokeDashArray = dashes;
+            }
 
-            plotArea.Children.Add(line);
+            RenderElement(line);
         }
-        private void DrawLine(double x1, double y1, double x2, double y2, ChartPlotInfo info, Brush brush)
+
+        private void DrawLine(double x1, double y1, double x2, double y2, ChartPlotInfo info, Brush brush, bool isDashed = false)
         {
             var line = new Line();
             line.X1 = GeometricHelper.XCoordToChart(x1, info);
@@ -229,10 +286,14 @@ namespace HomeCalc.ChartsLib.Charts
             line.Y2 = GeometricHelper.YCoordToChart(y2, info);
             line.Stroke = brush;
             line.StrokeThickness = 2;
+            if (isDashed)
+            {
+                line.StrokeThickness = 1;
+                line.StrokeDashOffset = 5;
+            }
 
-            plotArea.Children.Add(line);
+            RenderElement(line);
         }
-
         private void DrawBezierSegment(Point p1, Point p2, Point p3, ChartPlotInfo info, Brush brush)
         {
             //var line = new BezierSegment();
@@ -242,9 +303,21 @@ namespace HomeCalc.ChartsLib.Charts
             //line.Stroke = brush;
             //line.StrokeThickness = 2;
 
-            //plotArea.Children.Add(line);
+            //RenderElement(line);
         }
+        private void RenderElement(UIElement element, double? x = null, double? y = null)
+        {
+            if (x != null)
+            {
+                Canvas.SetLeft(element, x ?? 0);
+            }
+            if (y != null)
+            {
+                Canvas.SetTop(element, y ?? 0);
+            }
 
+            plotArea.Children.Add(element);
+        }
         private void DrawLegend()
         {
             //TODO: Implement Legend drawing
@@ -272,7 +345,6 @@ namespace HomeCalc.ChartsLib.Charts
             ChartPlotInfo plotInfo = new ChartPlotInfo();
 
             DateTime minDate = Series.FirstOrDefault().Min(element => element.Argument);
-            double minValue = Series.FirstOrDefault().Min(element => element.Value);
             DateTime maxDate = Series.FirstOrDefault().Max(element => element.Argument);
             double maxValue = Series.FirstOrDefault().Max(element => element.Value);
             foreach (var seria in Series.Skip(1))
@@ -281,11 +353,6 @@ namespace HomeCalc.ChartsLib.Charts
                 if (minX < minDate)
                 {
                     minDate = minX;
-                }
-                var minY = seria.Min(el => el.Value);
-                if (minY < minValue)
-                {
-                    minValue = minY;
                 }
                 var maxX = seria.Max(el => el.Argument);
                 if (maxX > maxDate)
@@ -302,11 +369,11 @@ namespace HomeCalc.ChartsLib.Charts
             plotInfo.MaxX = maxDate;
             plotInfo.MaxY = maxValue;
             plotInfo.MinX = minDate;
-            plotInfo.MinY = minValue;
+            plotInfo.MinY = 0;
 
             plotInfo.FooterHeight = 50;
             plotInfo.HeaderHeight = 50;
-            plotInfo.LeftMarginWidth = 20;
+            plotInfo.LeftMarginWidth = 40;
             plotInfo.RightMarginWidth = 20;
 
             return plotInfo;

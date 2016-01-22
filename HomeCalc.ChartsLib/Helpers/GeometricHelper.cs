@@ -26,7 +26,7 @@ namespace HomeCalc.ChartsLib.Helpers
         }
         public static double YCoordToChart(double y, ChartPlotInfo info)
         {
-            return (info.Height - y) * info.HeightScale + info.HeaderHeight;
+            return (info.PhysHeight - y) * info.HeightScale + info.HeaderHeight;
         }
     }
 }
