@@ -1,5 +1,6 @@
 ﻿using HomeCalc.ChartsLib.Models;
 using HomeCalc.Core.LogService;
+using HomeCalc.Core.Helpers;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Presentation.BasicModels;
 using HomeCalc.Presentation.Models;
@@ -19,6 +20,8 @@ namespace HomeCalc.Presentation.ViewModels
         {
             logger = LogService.GetLogger();
             AddCommand("ShowData", new DelegateCommand(ShowDataCommandExecuted));
+
+            IntervalList = AggregationInterval.GetList();
         }
 
         private void ShowDataCommandExecuted(object obj)
@@ -36,8 +39,11 @@ namespace HomeCalc.Presentation.ViewModels
             };
 
             var chartData = StoreService.LoadPurchaseList(searchRequest)
-                //.GroupBy()
-                .Select(p => new SeriesDateBasedElement { Argument = p.Date, Value = p.TotalCost }).ToList();
+                .GroupBy(x =>
+                    {
+                        return CutTimeTo(x.Date, SelectedInterval);
+                    })
+                .Select(g => new SeriesDateBasedElement { Argument = g.Key, Value = g.Sum(p => p.TotalCost) }).ToList();
 
             ChartSeries = new List<IEnumerable<SeriesDateBasedElement>> { chartData };
         }
@@ -55,6 +61,54 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
+
+        public IEnumerable<AggregationInterval> IntervalList
+        {
+            get;
+            private set;
+        }
+
+        private AggregationInterval selectedInterval;
+
+        public AggregationInterval SelectedInterval
+        {
+            get
+            {
+                return selectedInterval;
+            }
+            set
+            {
+                if (selectedInterval != value)
+                {
+                    selectedInterval = value;
+                    OnPropertyChanged(() => SelectedInterval);
+                }
+            }
+        }
+        
+        #endregion
+
+        #region Private
+
+        private DateTime CutTimeTo(DateTime dt, AggregationInterval intl)
+        {
+            switch (intl.Value)
+            {
+                case AggregationIntervalValue.Day:
+                    return new DateTime(dt.Year, dt.Month, dt.Day);
+                case AggregationIntervalValue.Week:
+                    return dt.Round(TimeSpan.FromDays(7));
+                case AggregationIntervalValue.Month:
+                    return new DateTime(dt.Year, dt.Month, 0);
+                case AggregationIntervalValue.Quarter:
+                    //TODO
+                    break;
+                case AggregationIntervalValue.Year:
+                    return new DateTime(dt.Year, 0, 0);
+            }
+            return new DateTime();
+        }
+
         #endregion
     }
 }
