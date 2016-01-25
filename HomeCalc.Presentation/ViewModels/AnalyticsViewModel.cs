@@ -99,12 +99,11 @@ namespace HomeCalc.Presentation.ViewModels
                 case AggregationIntervalValue.Week:
                     return dt.Round(TimeSpan.FromDays(7));
                 case AggregationIntervalValue.Month:
-                    return new DateTime(dt.Year, dt.Month, 0);
+                    return new DateTime(dt.Year, dt.Month, 1);
                 case AggregationIntervalValue.Quarter:
-                    //TODO
-                    break;
+                    return new DateTime(dt.Year, ((int)(Math.Ceiling((double)dt.Month / 3) * 3 - 2)), 1);
                 case AggregationIntervalValue.Year:
-                    return new DateTime(dt.Year, 0, 0);
+                    return new DateTime(dt.Year, 1, 1);
             }
             return new DateTime();
         }
