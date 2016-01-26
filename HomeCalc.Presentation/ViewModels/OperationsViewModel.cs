@@ -2,6 +2,7 @@
 using HomeCalc.Core.Presentation;
 using HomeCalc.Core.Utilities;
 using HomeCalc.Presentation.BasicModels;
+using HomeCalc.Presentation.Models;
 using HomeCalc.Presentation.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -31,7 +32,16 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void AddTypeCommandExecute(object obj)
         {
-            throw new NotImplementedException();
+            if (StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }))
+            {
+                logger.Info("Purchase type saved");
+                Status.Post("Тип покупки \"{0}\" збережено", NewPurchaseType);
+            }
+            else
+            {
+                logger.Warn("Purchase type not saved");
+                Status.Post("Помилка: тип покупки \"{0}\" не збережено", NewPurchaseType);
+            }
         }
 
         private void SelectPathCommandExecute(object obj)

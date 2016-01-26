@@ -84,12 +84,22 @@ namespace HomeCalc.Model.DbService
         }
         public bool SavePurchaseType(PurchaseTypeModel purchaseType)
         {
+            bool result = false;
             using (var db = dbManager.GetContext())
             {
-                db.PurchaseType.Add(purchaseType);
-                db.SaveChanges();
+                try
+                {
+                    db.PurchaseType.Add(purchaseType);
+                    db.SaveChanges();
+                    result = true;
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+                
             }
-            return false;
+            return result;
         }
         public PurchaseModel LoadPurchase(int id)
         {

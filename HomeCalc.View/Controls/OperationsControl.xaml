@@ -41,7 +41,7 @@
         <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" />
 
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Новий тип товару" HorizontalAlignment="Left" Margin="10"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewPurchaseType}" />
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewPurchaseType, UpdateSourceTrigger=PropertyChanged}" />
         <Button Grid.Row="2" Grid.Column="2" Content="Додати" Command="{Binding AddType}"/>
 
     </Grid>
