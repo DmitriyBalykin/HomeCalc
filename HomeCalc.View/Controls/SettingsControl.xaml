@@ -13,44 +13,42 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    <Grid
-        Style="{StaticResource SettingsGridStyle}"
-        >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="130" />
-            <ColumnDefinition Width="200" />
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Сетевой адрес" />
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Порт" />
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Имя базы данных" />
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Имя таблицы" />
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Имя пользователя" />
-        <TextBlock Grid.Row="5" Grid.Column="0" Text="Пароль" />
-        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
-            Content="Сохранить" 
-            Command="{Binding Save}"/>
-        
-        <TextBox Grid.Row="0" Grid.Column="1"
-            Text="{Binding NetAddress}" />
-        <TextBox Grid.Row="1" Grid.Column="1"
-            Text="{Binding NetPort}" />
-        <TextBox Grid.Row="2" Grid.Column="1"
-            Text="{Binding DBName}" />
-        <TextBox Grid.Row="3" Grid.Column="1"
-            Text="{Binding DBTable}" />
-        <TextBox Grid.Row="4" Grid.Column="1"
-            Text="{Binding UserName}" />
-        <PasswordBox Grid.Row="5" Grid.Column="1"
-            PasswordChanged="PasswordBox_PasswordChanged" />
-    </Grid>
+
+    <Border Background="{StaticResource TitlePanelGradient}">
+        <TabControl>
+            <TabItem Header="Керування">
+                <Grid Style="{StaticResource SettingsGridStyle}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300" />
+                        <ColumnDefinition Width="50" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Адаптувати розмір вікна до вмісту" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding AutoWindowSize}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Вирівнювати вікно по центру екрану" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding AutoWindowPosition}"  />
+                    
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Очищувати поля після збереження запису" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ClearFieldsOnSave}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Зкидати конфігурацію обчислення після збереження запису" Height="30" Margin="10,10,0,0" Width="280" TextWrapping="Wrap" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ResetCalculation}" />
+
+                    
+                </Grid>
+            </TabItem>
+            <TabItem Header="Додаткове">
+                
+            </TabItem>
+        </TabControl>
+    </Border>
+
+
 </UserControl>

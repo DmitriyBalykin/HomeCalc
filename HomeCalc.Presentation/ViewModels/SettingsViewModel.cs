@@ -1,5 +1,6 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
+using HomeCalc.Model.DataModels;
 using HomeCalc.Presentation.BasicModels;
 using System;
 using System.Collections.Generic;
@@ -20,24 +21,63 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void SaveCommandExecute(object obj)
         {
-            
-        }
-
-        public string NetAddress { get; set; }
-        public string NetPort { get; set; }
-        public string DBName { get; set; }
-        public string DBTable { get; set; }
-        public string UserName { get; set; }
-        public SecureString SecurePassword {
-            get
+            StoreService.SaveSettings(new SettingsModel
             {
-                return new SecureString();
-            }
+                AutoWindowPosition = AutoWindowPosition,
+                AutoWindowSize = AutoWindowSize,
+                ClearFieldsOnSave = ClearFieldsOnSave,
+                ResetCalculation = ResetCalculation
+            });
+        }
+        private bool autoWindowSize;
+        public bool AutoWindowSize
+        {
+            get { return autoWindowSize; }
             set
             {
-                if (value != null)
+                if (value != autoWindowSize)
                 {
-                    
+                    autoWindowSize = value;
+                    OnPropertyChanged(() => AutoWindowSize);
+                }
+            }
+        }
+        private bool autoWindowPosition;
+        public bool AutoWindowPosition
+        {
+            get { return autoWindowPosition; }
+            set
+            {
+                if (value != autoWindowPosition)
+                {
+                    autoWindowPosition = value;
+                    OnPropertyChanged(() => AutoWindowPosition);
+                }
+            }
+        }
+        private bool clearFieldsOnSave;
+        public bool ClearFieldsOnSave
+        {
+            get { return clearFieldsOnSave; }
+            set
+            {
+                if (value != clearFieldsOnSave)
+                {
+                    clearFieldsOnSave = value;
+                    OnPropertyChanged(() => ClearFieldsOnSave);
+                }
+            }
+        }
+        private bool resetCalculation;
+        public bool ResetCalculation
+        {
+            get { return resetCalculation; }
+            set
+            {
+                if (value != resetCalculation)
+                {
+                    resetCalculation = value;
+                    OnPropertyChanged(() => ResetCalculation);
                 }
             }
         }
