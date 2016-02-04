@@ -49,10 +49,12 @@ namespace HomeCalc.Presentation.ViewModels
                     {
                         return CutTimeTo(x.Date, SelectedInterval);
                     })
-                .Select(g => new SeriesDateBasedElement { Argument = g.Key, Value = g.Sum(p => p.TotalCost) }).ToList();
+                .Select(g => GetChartElement(g)).ToList();
 
             ChartSeries = new List<IEnumerable<SeriesDateBasedElement>> { chartData };
         }
+
+        
         #region properties
         private IEnumerable<IEnumerable<SeriesDateBasedElement>> chartSeries;
         public IEnumerable<IEnumerable<SeriesDateBasedElement>> ChartSeries
@@ -91,10 +93,85 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        
+
+        //TODO rework to listbox selector
+
+        ChartValueType chartValueType = ChartValueType.TotalCost;
+
+        private bool totalCostChart;
+        public bool TotalCostChart
+        {
+            get
+            {
+                return totalCostChart;
+            }
+            set
+            {
+                if (totalCostChart != value)
+                {
+                    chartValueType = ChartValueType.TotalCost;
+                    totalCostChart = value;
+                    OnPropertyChanged(() => TotalCostChart);
+                }
+            }
+        }
+
+        private bool itemCostChart;
+        public bool ItemCostChart
+        {
+            get
+            {
+                return itemCostChart;
+            }
+            set
+            {
+                if (itemCostChart != value)
+                {
+                    chartValueType = ChartValueType.ItemCost;
+                    itemCostChart = value;
+                    OnPropertyChanged(() => ItemCostChart);
+                }
+            }
+        }
+
+        private bool numberChart;
+        public bool NumberChart
+        {
+            get
+            {
+                return numberChart;
+            }
+            set
+            {
+                if (numberChart != value)
+                {
+                    chartValueType = ChartValueType.Number;
+                    numberChart = value;
+                    OnPropertyChanged(() => NumberChart);
+                }
+            }
+        }
+
         #endregion
 
         #region Private
+        private SeriesDateBasedElement GetChartElement(IGrouping<DateTime, Purchase> g)
+        {
+            var seriesElement = new SeriesDateBasedElement{ Argument = g.Key };
+            switch (chartValueType)
+            {
+                case ChartValueType.TotalCost:
+                    seriesElement.Value = g.Sum(purchase => purchase.TotalCost);
+                    break; 
+                case ChartValueType.ItemCost:
+                    seriesElement.Value = g.Average(purchase => purchase.ItemCost);
+                    break;
+                case ChartValueType.Number:
+                    seriesElement.Value = g.Sum(purchase => purchase.ItemsNumber);
+                    break;
+            }
+            return seriesElement;
+        }
 
         private DateTime CutTimeTo(DateTime dt, AggregationInterval intl)
         {
@@ -115,5 +192,12 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         #endregion
+    }
+
+    enum ChartValueType
+    {
+        TotalCost = 0,
+        ItemCost = 1,
+        Number = 2
     }
 }
