@@ -40,7 +40,9 @@
                 SelectedItem="{Binding SelectedInterval, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 IsSynchronizedWithCurrentItem="True"
                 DisplayMemberPath="DisplayName" />
-
+            <RadioButton Content="Загальна Ціна" GroupName="ShowValueGroup" IsChecked="True" Checked="{Binding TotalCostChart}" />
+            <RadioButton Content="Ціна одиниці" GroupName="ShowValueGroup" Checked="{Binding ItemCostChart}" />
+            <RadioButton Content="Кількість" GroupName="ShowValueGroup" Checked="{Binding NumberChart}" />
 
             <Button Command="{Binding ShowData}">Показати дані</Button>
         </StackPanel>
