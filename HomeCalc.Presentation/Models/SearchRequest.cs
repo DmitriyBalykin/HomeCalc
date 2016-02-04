@@ -8,8 +8,7 @@ namespace HomeCalc.Presentation.Models
 {
     public class SearchRequest
     {
-        public string NameFilter { get; set; }
-        public PurchaseType MyProperty { get; set; }
+        public string Name { get; set; }
 
         public PurchaseType Type { get; set; }
 
