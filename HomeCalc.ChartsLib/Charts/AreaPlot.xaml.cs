@@ -179,7 +179,7 @@ namespace HomeCalc.ChartsLib.Charts
             ChartPlotInfo plotInfo = CalculatePlotInfo();
 
             plotArea.Width = plotInfo.Width + plotInfo.LeftMarginWidth + plotInfo.RightMarginWidth;
-            plotArea.Height = plotInfo.PhysHeight + plotInfo.FooterHeight + plotInfo.HeaderHeight;
+            plotArea.Height = plotInfo.MaxHeight + plotInfo.FooterHeight + plotInfo.HeaderHeight;
 
             DrawLegend();
             DrawBackground(plotInfo);
