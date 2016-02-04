@@ -22,18 +22,24 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("ShowData", new DelegateCommand(ShowDataCommandExecuted));
 
             IntervalList = AggregationInterval.GetList();
+
+            PurchaseTypesList.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
+
+            SelectedInterval = IntervalList.FirstOrDefault();
+
+            PurchaseType = PurchaseTypesList.FirstOrDefault();
         }
 
         private void ShowDataCommandExecuted(object obj)
         {
             var searchRequest = new SearchRequest
             {
-                //NameFilter = purchaseName,
+                Name = PurchaseName,
                 Type = PurchaseType,
                 DateStart = SearchFromDate,
                 DateEnd = SearchToDate,
-                SearchByName = false,
-                SearchByType = false,
+                SearchByName = !string.IsNullOrEmpty(PurchaseName),
+                SearchByType = PurchaseType.TypeId != -1,
                 SearchByDate = true,
                 SearchByCost = false,
             };
