@@ -28,6 +28,8 @@ namespace HomeCalc.Presentation.ViewModels
             SelectedInterval = IntervalList.FirstOrDefault();
 
             PurchaseType = PurchaseTypesList.FirstOrDefault();
+
+            TotalCostChart = true;
         }
 
         private void ShowDataCommandExecuted(object obj)
@@ -109,9 +111,12 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (totalCostChart != value)
                 {
-                    chartValueType = ChartValueType.TotalCost;
                     totalCostChart = value;
                     OnPropertyChanged(() => TotalCostChart);
+                }
+                if (value)
+                {
+                    chartValueType = ChartValueType.TotalCost;
                 }
             }
         }
@@ -127,9 +132,12 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (itemCostChart != value)
                 {
-                    chartValueType = ChartValueType.ItemCost;
                     itemCostChart = value;
                     OnPropertyChanged(() => ItemCostChart);
+                }
+                if (value)
+                {
+                    chartValueType = ChartValueType.ItemCost;
                 }
             }
         }
@@ -145,9 +153,12 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (numberChart != value)
                 {
-                    chartValueType = ChartValueType.Number;
                     numberChart = value;
                     OnPropertyChanged(() => NumberChart);
+                }
+                if (value)
+                {
+                    chartValueType = ChartValueType.Number;
                 }
             }
         }
@@ -161,12 +172,15 @@ namespace HomeCalc.Presentation.ViewModels
             switch (chartValueType)
             {
                 case ChartValueType.TotalCost:
+                    var list = g.ToList();
                     seriesElement.Value = g.Sum(purchase => purchase.TotalCost);
                     break; 
                 case ChartValueType.ItemCost:
+                    list = g.ToList();
                     seriesElement.Value = g.Average(purchase => purchase.ItemCost);
                     break;
                 case ChartValueType.Number:
+                    list = g.ToList();
                     seriesElement.Value = g.Sum(purchase => purchase.ItemsNumber);
                     break;
             }
