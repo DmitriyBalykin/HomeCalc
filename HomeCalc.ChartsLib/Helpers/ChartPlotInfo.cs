@@ -12,6 +12,8 @@ namespace HomeCalc.ChartsLib.Helpers
         public DateTime MaxX { get; set; }
         public double MinY { get; set; }
         public double MaxY { get; set; }
+        public TimeSpan XStep { get; set; }
+        public double YStep { get; set; }
 
         public int DaysWidth
         {

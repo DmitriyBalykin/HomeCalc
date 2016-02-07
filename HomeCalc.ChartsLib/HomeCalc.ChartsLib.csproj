@@ -50,6 +50,7 @@
     <Compile Include="Helpers\BrushGenerator.cs" />
     <Compile Include="Helpers\ChartPlotInfo.cs" />
     <Compile Include="Helpers\GeometricHelper.cs" />
+    <Compile Include="Models\LabelModel.cs" />
     <Compile Include="Models\SeriesDoubleBasedElement.cs" />
     <Compile Include="Models\SeriesStringBasedElement.cs" />
     <Compile Include="Models\SeriesDateBasedElement.cs" />
