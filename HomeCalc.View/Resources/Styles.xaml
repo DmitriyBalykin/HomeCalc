@@ -13,6 +13,7 @@
     <SolidColorBrush x:Key="FocusedButtonColor" Color="#FFDCF5FF" />
     <SolidColorBrush x:Key="GlobalBackground" Color="LightBlue" />
     <SolidColorBrush x:Key="DisabledTextBox" Color="#FFEFEFEF" />
+    <SolidColorBrush x:Key="ChartBackgroundLight" Color="#FFFAFAFF" />
     <LinearGradientBrush
         x:Key="WindowTitleGradient"
         StartPoint="0,0"
@@ -224,5 +225,10 @@
                 </Style.Setters>
             </Style>
         </Style.Resources>
+    </Style>
+    <Style TargetType="RadioButton">
+        <Style.Setters>
+            <Setter Property="Height" Value="20" />
+        </Style.Setters>
     </Style>
 </ResourceDictionary>

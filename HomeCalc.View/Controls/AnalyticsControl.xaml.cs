@@ -1,4 +1,5 @@
-﻿using HomeCalc.Presentation.ViewModels;
+﻿using HomeCalc.ChartsLib.Models;
+using HomeCalc.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +24,11 @@ namespace HomeCalc.View.Controls
     {
         public AnalyticsControl()
         {
-            InitializeComponent();
-
             var viewModel = new AnalyticsViewModel();
 
             this.DataContext = viewModel;
+
+            InitializeComponent();
         }
     }
 }

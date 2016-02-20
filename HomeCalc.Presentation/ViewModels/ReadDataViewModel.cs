@@ -123,7 +123,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             var searchRequest = new SearchRequest
             {
-                NameFilter = purchaseName,
+                Name = purchaseName,
                 Type = PurchaseType,
                 CostStart = costStart,
                 CostEnd = costEnd,
@@ -266,7 +266,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 SearchByDate = true;
                 if (searchToDate != value &&
-                    searchFromDate >= searchToDate)
+                    searchFromDate <= value)
                 {
                     searchToDate = value;
                     OnPropertyChanged(() => SearchToDate);

@@ -144,7 +144,7 @@
                 <ToggleButton Content="Вартість одиниці" IsChecked="{Binding CalcItemCost}" IsEnabled="{Binding ShowCalcItemCost}" Grid.Row="2"  Grid.ColumnSpan="2"/>
                 <ToggleButton Content="Загальну вартість" IsChecked="{Binding CalcTotalCost}" IsEnabled="{Binding ShowCalcTotalCost}" Grid.Row="3" Grid.ColumnSpan="2" />
                 <Button Grid.Row="4" Grid.Column="0" Content="Так" Command="{Binding Calculate}"/>
-                <Button Grid.Row="4" Grid.Column="1" Content="Відміна" Command="{Binding Cancel}"/>
+                <Button Grid.Row="4" Grid.Column="1" Content="Відміна" Command="{Binding CancelCalculate}"/>
                 </Grid>
             </Border>
             

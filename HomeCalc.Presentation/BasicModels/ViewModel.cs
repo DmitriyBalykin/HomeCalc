@@ -22,7 +22,6 @@ namespace HomeCalc.Presentation.BasicModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected StorageService StoreService;
-        protected DataService DataService;
         protected StatusService Status;
         public ViewModel()
         {

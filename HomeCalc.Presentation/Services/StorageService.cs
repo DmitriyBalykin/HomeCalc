@@ -122,7 +122,7 @@ namespace HomeCalc.Presentation.Models
         public List<Purchase> LoadPurchaseList(SearchRequest filter)
         {
             return DBService.LoadPurchaseList(
-                p => (!filter.SearchByName || p.Name.Contains(filter.NameFilter)) &&
+                p => (!filter.SearchByName || p.Name.Contains(filter.Name)) &&
                      (!filter.SearchByType || p.TypeId == filter.Type.TypeId) &&
                      (!filter.SearchByDate || (p.Timestamp > filter.DateStart.Ticks) && (p.Timestamp <= filter.DateEnd.Ticks)) &&
                      (!filter.SearchByCost || (p.TotalCost >= filter.CostStart) && (p.TotalCost <= filter.CostEnd))
