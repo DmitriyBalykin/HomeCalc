@@ -8,6 +8,8 @@ namespace HomeCalc.ChartsLib.Helpers
 {
     public class ChartPlotInfo
     {
+        public const double CHART_START_END_INDENTATION = 20;
+
         public DateTime MinX { get; set; }
         public DateTime MaxX { get; set; }
         public double MinY { get; set; }
@@ -19,6 +21,10 @@ namespace HomeCalc.ChartsLib.Helpers
         {
             get
             {
+                if (MaxX != null && MaxX != DateTime.MinValue && MaxX == MinX)
+                {
+                    return 1;
+                }
                 return (MaxX - MinX).Days;
             }
         }
@@ -41,7 +47,7 @@ namespace HomeCalc.ChartsLib.Helpers
         {
             get
             {
-                return MaxWidth/DaysWidth;
+                return (MaxWidth - 2*CHART_START_END_INDENTATION) / DaysWidth;
             }
         }
         public double HeightScale

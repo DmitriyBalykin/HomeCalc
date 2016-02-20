@@ -243,9 +243,13 @@ namespace HomeCalc.ChartsLib.Charts
             }
 
             //Frame
+            //left
             DrawLine(0, 0, 0, info.MaxY, info, frameBrush);
+            //right
             DrawLine(info.Width, 0, info.Width, info.MaxY, info, frameBrush);
+            //bottom
             DrawLine(0, info.MaxY, info.Width, info.MaxY, info, frameBrush);
+            //top
             DrawLine(0, 0, info.Width, 0, info, frameBrush);
         }
 
