@@ -65,6 +65,7 @@
     <Compile Include="ViewModels\OperationsViewModel.cs" />
     <Compile Include="ViewModels\SearchComboViewModel.cs" />
     <Compile Include="ViewModels\AnalyticsViewModel.cs" />
+    <Compile Include="ViewModels\UpdateViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
