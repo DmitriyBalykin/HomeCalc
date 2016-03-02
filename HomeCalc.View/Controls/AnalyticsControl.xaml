@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              Width="Auto"
              Height="Auto"
-             MinWidth="850"
+             MinWidth="900"
              MinHeight="300">
 
     <UserControl.Resources>

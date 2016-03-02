@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
-             Width="850"
+             Width="900"
              Height="Auto"
              MaxHeight="1000">
 

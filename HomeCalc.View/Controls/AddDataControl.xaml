@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="850">
+             d:DesignHeight="200" d:DesignWidth="900">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -25,11 +25,11 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120" />
             <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="330" />
             <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="100" />
-            <ColumnDefinition Width="100" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="110" />
+            <ColumnDefinition Width="110" />
+            <ColumnDefinition Width="70" />
         </Grid.ColumnDefinitions>
         
         <TextBlock
