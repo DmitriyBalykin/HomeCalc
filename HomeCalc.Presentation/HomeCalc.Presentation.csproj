@@ -81,6 +81,10 @@
       <Project>{45a5a644-3c52-4602-ab93-bb5c535c22f3}</Project>
       <Name>HomeCalc.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Updater\Updater.csproj">
+      <Project>{a36c633a-fe99-4c11-94ab-76653c37085b}</Project>
+      <Name>Updater</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

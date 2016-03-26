@@ -10,6 +10,7 @@ namespace Updater
     {
         static void Main(string[] args)
         {
+            var info = Checker.GetUpdatesInformation();
         }
     }
 }
