@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Updater
 {
-    public static class Checker
+    public static class VersionChecker
     {
         private static string versionCheckPath = @"H:\workspace\HomeCalc\versionInfo.txt";
         public static VersionsInformation GetUpdatesInformation()
@@ -21,7 +21,7 @@ namespace Updater
             var versionInfo = new VersionsInformation();
             foreach (var block in versionBlocks)
             {
-                var blockParts = block.Split(',');
+                var blockParts = block.Split(new []{"::"}, StringSplitOptions.RemoveEmptyEntries);
                 if (blockParts.Length == 2)
                 {
                     var version = parseVersion(blockParts[0]);

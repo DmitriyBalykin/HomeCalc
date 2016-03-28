@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Updater;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -21,7 +22,23 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void CheckUpdatesCommandExecute(object obj)
         {
-            
+            var updatesInfo = VersionChecker.GetUpdatesInformation();
+
+            if (!updatesInfo.HasNewVersion)
+            {
+                VersionChanges = "Версія програми є найновішою.";
+                return;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
+            {
+                sb.AppendLine(updateVersion.ToString());
+                sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
+                sb.AppendLine();
+            }
+            VersionChanges = sb.ToString();
         }
 
         private void UpdateCommandExecute(object obj)
