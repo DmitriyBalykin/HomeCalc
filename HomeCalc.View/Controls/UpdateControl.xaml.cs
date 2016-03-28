@@ -13,7 +13,12 @@ namespace HomeCalc.View.Controls
         public UpdateControl()
         {
             InitializeComponent();
-            this.DataContext = new UpdateViewModel();
+
+            var updateViewModel = new UpdateViewModel();
+
+            updateViewModel.CloseApplicationEventHandler += (o, e) => Application.Current.Shutdown();
+
+            this.DataContext = updateViewModel;
         }
     }
 }

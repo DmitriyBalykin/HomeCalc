@@ -44,9 +44,10 @@
     <Compile Include="..\HomeCalc.View\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Checker.cs" />
+    <Compile Include="VersionsChecker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="VersionInformation.cs" />
+    <Compile Include="VersionUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

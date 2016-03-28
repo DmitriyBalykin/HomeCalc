@@ -13,6 +13,7 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class UpdateViewModel : ViewModel
     {
+        public event EventHandler CloseApplicationEventHandler;
         public UpdateViewModel()
         {
             logger = LogService.GetLogger();
@@ -43,7 +44,20 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void UpdateCommandExecute(object obj)
         {
+            if (CloseApplicationEventHandler != null)
+	        {
+		         CloseApplicationEventHandler(this, EventArgs.Empty);
+	        }
+            
+            var updateStartResult = VersionUpdater.Update();
 
+            if (string.IsNullOrEmpty(updateStartResult))
+            {
+                if (CloseApplicationEventHandler != null)
+                {
+                    CloseApplicationEventHandler(this, EventArgs.Empty);
+                }
+            }
         }
 
         private string versionChanges;
