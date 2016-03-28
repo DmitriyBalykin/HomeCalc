@@ -1,4 +1,16 @@
 {
-1.0.2905.40750,
-test version
+1.0.1.0::
+test version 3, latest available
+}
+{
+1.0.0.99::
+test version 2, a bit fresher
+}
+{
+1.0.0.40::
+test version 1, very old
+}
+{
+0.8.0.40::
+this info should not be shown
 }
