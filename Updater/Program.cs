@@ -28,19 +28,20 @@ namespace Updater
 
                 Console.ReadLine();
             }
-            else if(args[0] == "start")
+            else
             {
-                RunUpdate();
+                switch (args[0])
+                {
+                    case "update-start":
+                        VersionUpdater.StartUpdate();
+                        break;
+                    case "update-app":
+                        VersionUpdater.UpdateApplication();
+                        break;
+                    default:
+                        break;
+                }
             }
-        }
-
-        private static void RunUpdate()
-        {
-            //wait until main application exits
-            //clear main application folder
-            //copy files to main application folder
-            //start main application
-            //exit
         }
     }
 }

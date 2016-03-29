@@ -49,7 +49,7 @@ namespace HomeCalc.Presentation.ViewModels
 		         CloseApplicationEventHandler(this, EventArgs.Empty);
 	        }
             
-            var updateStartResult = VersionUpdater.Update();
+            var updateStartResult = VersionUpdater.StartUpdate();
 
             if (string.IsNullOrEmpty(updateStartResult))
             {
