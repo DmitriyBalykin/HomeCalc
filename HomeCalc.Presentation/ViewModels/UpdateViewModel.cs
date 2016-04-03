@@ -4,6 +4,7 @@ using HomeCalc.Presentation.BasicModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class UpdateViewModel : ViewModel
     {
+        Logger logger = LogService.GetLogger();
         public event EventHandler CloseApplicationEventHandler;
         public UpdateViewModel()
         {
@@ -23,41 +25,46 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void CheckUpdatesCommandExecute(object obj)
         {
-            var updatesInfo = VersionChecker.GetUpdatesInformation();
-
-            if (!updatesInfo.HasNewVersion)
+            try
             {
-                VersionChanges = "Версія програми є найновішою.";
-                return;
+                VersionChecker.GetUpdatesInformation().ContinueWith(task => 
+                {
+                    var updatesInfo = task.Result;
+                    if (!updatesInfo.HasNewVersion)
+                    {
+                        VersionChanges = "Версія програми є найновішою.";
+                        return;
+                    }
+
+                    var sb = new StringBuilder();
+
+                    foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
+                    {
+                        sb.AppendLine(updateVersion.ToString());
+                        sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
+                        sb.AppendLine();
+                    }
+                    VersionChanges = sb.ToString();
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
             }
-
-            var sb = new StringBuilder();
-
-            foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
+            catch (WebException ex)
             {
-                sb.AppendLine(updateVersion.ToString());
-                sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
-                sb.AppendLine();
+                logger.Error("Error occured during update download");
+                logger.Error(ex.Message);
             }
-            VersionChanges = sb.ToString();
+            
         }
 
         private void UpdateCommandExecute(object obj)
         {
-            if (CloseApplicationEventHandler != null)
-	        {
-		         CloseApplicationEventHandler(this, EventArgs.Empty);
-	        }
-            
-            var updateStartResult = VersionUpdater.StartUpdate();
 
-            if (string.IsNullOrEmpty(updateStartResult))
+            VersionUpdater.StartUpdate(() => 
             {
                 if (CloseApplicationEventHandler != null)
                 {
                     CloseApplicationEventHandler(this, EventArgs.Empty);
                 }
-            }
+            });
         }
 
         private string versionChanges;

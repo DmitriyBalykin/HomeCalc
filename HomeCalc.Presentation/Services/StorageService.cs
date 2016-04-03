@@ -37,7 +37,7 @@ namespace HomeCalc.Presentation.Models
             Task.Factory.StartNew(() =>
             {
                 purchaseHistory = LoadPurchaseList(SearchRequest.Requests.Empty);
-            }).ContinueWith( t => AnnounceHistoryUpdate());
+            }).ContinueWith( t => AnnounceHistoryUpdate(), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         private void AnnounceHistoryUpdate()

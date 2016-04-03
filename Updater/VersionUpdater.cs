@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,23 +15,32 @@ namespace Updater
 {
     public class VersionUpdater
     {
-        private static string versionBinaryPath = @"H:\HomeCalcUpdate\";
+        private static string versionBinaryPath = @"http://www.homecalc.com.ua/distributives/";
+
+        private static string versionBinaryFileName = @"HomeCalcUpdate.zip";
+
 
         private static Logger logger = LogService.GetLogger();
 
-        private static object monitor = new object();
-
-        public static string StartUpdate()
+        public static void StartUpdate(Action successAction)
         {
             logger.Info("Starting update");
 
-            string result = null;
+            var updateDirectoryPath = GetUpdateDirectory();
+            var sourcePath = Path.Combine(versionBinaryPath, versionBinaryFileName);
+            var destPath = Path.Combine(updateDirectoryPath, versionBinaryFileName);
 
-            result = CopyFiles();
-
-            result += RunUpdater();
-
-            return result;
+            var taskCancellationTokenSource = new CancellationTokenSource();
+            var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            Task.Factory
+                .StartNew(() => Helpers.CleanDirectory(updateDirectoryPath, taskCancellationTokenSource), taskCancellationTokenSource.Token)
+                .ContinueWith(task =>
+                    Helpers.DownloadFile(sourcePath, destPath, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
+                .ContinueWith(task =>
+                    Helpers.UnpackFile(destPath, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
+                .ContinueWith(task =>
+                    RunUpdater(taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
+                .ContinueWith(task => successAction(), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         public static void UpdateApplication(bool startApp = true)
@@ -43,14 +54,18 @@ namespace Updater
                 logger.Info("HomeCalc application still running, waiting 5 seconds");
                 Thread.Sleep(5000);
             }
-
+            if (MainAppRunning())
+            {
+                logger.Info("Cannot stop HomeCalc application, exiting...");
+                return;
+            }
             var updateFolder = AppDomain.CurrentDomain.BaseDirectory;
             var appFolder = Directory.GetDirectoryRoot(updateFolder);
 
             try
             {
                 logger.Info("Starting application folder cleanup");
-                Directory.EnumerateFileSystemEntries(appFolder).ToList().ForEach(item => File.Delete(item));
+                Helpers.CleanDirectory(appFolder).Wait();
             }
             catch (IOException ex)
             {
@@ -62,7 +77,7 @@ namespace Updater
             try
             {
                 logger.Info("Starting application files copying");
-                CopyAllFiles(updateFolder, appFolder);
+                Helpers.CopyAllFiles(updateFolder, appFolder).Wait();
             }
             catch (IOException ex)
             {
@@ -86,84 +101,24 @@ namespace Updater
             return processes.Any(process => process.ProcessName.Contains("HomeCalc"));
         }
 
-        private static string RunUpdater()
+        private static void RunUpdater(CancellationTokenSource tokenSource)
         {
             var updateDirectoryPath = GetUpdateDirectory();
             var updateExe = Path.Combine(updateDirectoryPath, "Updater.exe");
 
             if (!File.Exists(updateExe))
             {
-                return "Updater executive file not found";
+                //throw new Exception("Updater executive file not found");
+                tokenSource.Cancel();
             }
 
             Process.Start(updateExe, "update-app");
-
-            return null;
         }
-
-        private static string CopyFiles()
-        {
-            var updateDirectoryPath = GetUpdateDirectory();
-
-            lock (monitor)
-            {
-                if (!Directory.Exists(versionBinaryPath) || Directory.EnumerateFiles(versionBinaryPath).Count() == 0)
-                {
-                    return "Update sourcedirectory is empty";
-                }
-                if (!Directory.Exists(updateDirectoryPath))
-                {
-                    try
-                    {
-                        Directory.CreateDirectory(updateDirectoryPath);
-                    }
-                    catch (IOException ex)
-                    {
-                        return ex.Message;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        Directory.EnumerateFiles(updateDirectoryPath).ToList().ForEach(filePath => File.Delete(filePath));
-                    }
-                    catch (IOException ex)
-                    {
-                        return ex.Message;
-                    }
-                }
-
-                try
-                {
-                    CopyAllFiles(versionBinaryPath, updateDirectoryPath);
-                }
-                catch (IOException ex)
-                {
-                    return ex.Message;
-                }
-            }
-
-            return null;
-        }
-
         private static string GetUpdateDirectory()
         {
             var currentDirPath = AppDomain.CurrentDomain.BaseDirectory;
 
             return Path.Combine(currentDirPath, "Update");
-        }
-
-        private static void CopyAllFiles(string source, string destination)
-        {
-            var itemsToCopy = Directory.EnumerateFileSystemEntries(source);
-            foreach (var itemPath in itemsToCopy)
-            {
-                var itemName = Path.GetFileName(itemPath);
-                var destinationPath = Path.Combine(destination, itemName);
-                File.Copy(itemPath, destinationPath);
-
-            }
         }
     }
 }
