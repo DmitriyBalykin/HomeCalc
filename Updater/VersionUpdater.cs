@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core;
+using HomeCalc.Core.LogService;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +22,7 @@ namespace Updater
 
 
         private static Logger logger = LogService.GetLogger();
+        private static StatusService status = StatusService.GetInstance();
 
         public static void StartUpdate(Action successAction)
         {
@@ -30,8 +32,9 @@ namespace Updater
             var sourcePath = Path.Combine(versionBinaryPath, versionBinaryFileName);
             var destPath = Path.Combine(updateDirectoryPath, versionBinaryFileName);
 
-            var taskCancellationTokenSource = new CancellationTokenSource();
+            var taskCancellationTokenSource = new ReportingCancellationTokenSource("Update");
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            
             Task.Factory
                 .StartNew(() => Helpers.CleanDirectory(updateDirectoryPath, taskCancellationTokenSource), taskCancellationTokenSource.Token)
                 .ContinueWith(task =>
@@ -51,7 +54,9 @@ namespace Updater
             while (retriesCount > 0 && MainAppRunning())
             {
                 retriesCount--;
-                logger.Info("HomeCalc application still running, waiting 5 seconds");
+                var message = "HomeCalc application still running, waiting 5 seconds";
+                logger.Info(message);
+                Console.WriteLine(message);
                 Thread.Sleep(5000);
             }
             if (MainAppRunning())
@@ -60,12 +65,12 @@ namespace Updater
                 return;
             }
             var updateFolder = AppDomain.CurrentDomain.BaseDirectory;
-            var appFolder = Directory.GetDirectoryRoot(updateFolder);
+            var appFolder = Directory.GetParent(updateFolder).FullName;
 
             try
             {
                 logger.Info("Starting application folder cleanup");
-                Helpers.CleanDirectory(appFolder).Wait();
+                Helpers.CleanDirectory(appFolder, new []{"Updater"});
             }
             catch (IOException ex)
             {
@@ -77,7 +82,7 @@ namespace Updater
             try
             {
                 logger.Info("Starting application files copying");
-                Helpers.CopyAllFiles(updateFolder, appFolder).Wait();
+                Helpers.CopyAllFiles(updateFolder, appFolder);
             }
             catch (IOException ex)
             {
@@ -90,7 +95,15 @@ namespace Updater
             {
                 logger.Info("Starting application.");
                 var appExePath = Path.Combine(appFolder, "HomeCalc.View.exe");
-                Process.Start(appExePath);
+                try
+                {
+                    Process.Start(appExePath);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex.Message);
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
@@ -98,7 +111,7 @@ namespace Updater
         {
             var processes = Process.GetProcesses();
 
-            return processes.Any(process => process.ProcessName.Contains("HomeCalc"));
+            return processes.Any(process => process.ProcessName.Equals("HomeCalc.View.exe"));
         }
 
         private static void RunUpdater(CancellationTokenSource tokenSource)
@@ -110,6 +123,8 @@ namespace Updater
             {
                 //throw new Exception("Updater executive file not found");
                 tokenSource.Cancel();
+                status.Post("Помилка запуску оновлення");
+                return;
             }
 
             Process.Start(updateExe, "update-app");

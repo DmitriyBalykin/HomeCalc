@@ -11,6 +11,7 @@ namespace Updater
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(string.Join(" ", args));
             if (args.Length == 0)
             {
                 try

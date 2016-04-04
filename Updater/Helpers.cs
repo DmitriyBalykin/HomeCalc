@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core;
+using HomeCalc.Core.LogService;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,124 +15,137 @@ namespace Updater
     public class Helpers
     {
         private static Logger logger = LogService.GetLogger();
-        public static Task CopyAllFiles(string source, string destination, CancellationTokenSource tokenSource = null)
+        private static StatusService status = StatusService.GetInstance();
+        public static void CopyAllFiles(string source, string destination, ReportingCancellationTokenSource tokenSource = null)
         {
-            if (tokenSource == null)
+            try
             {
-                tokenSource = new CancellationTokenSource();
-            }
-            return Task.Factory.StartNew(() => 
-            {
-                try
-                {
-                    logger.Info(string.Format("Starting copying files from {0} to {1}", source, destination));
+                logger.Info(string.Format("Starting copying files from {0} to {1}", source, destination));
 
-                    var itemsToCopy = Directory.EnumerateFileSystemEntries(source);
-                    foreach (var itemPath in itemsToCopy)
-                    {
-                        var itemName = Path.GetFileName(itemPath);
-                        var destinationPath = Path.Combine(destination, itemName);
-                        File.Copy(itemPath, destinationPath);
-                    }
-                }
-                catch (IOException ex)
+                var itemsToCopy = Directory.EnumerateFileSystemEntries(source);
+                foreach (var itemPath in itemsToCopy)
                 {
-                    logger.Error("File copying failed");
-                    logger.Error(ex.Message);
-                    tokenSource.Cancel();
-                    return;
+                    var itemName = Path.GetFileName(itemPath);
+                    var destinationPath = Path.Combine(destination, itemName);
+                    File.SetAttributes(destinationPath, FileAttributes.Normal);
+                    File.Copy(itemPath, destinationPath, true);
+                    throw new IOException("test io exception copy files");
                 }
-                logger.Info(string.Format("File copying finished succesfully"));
-            }, tokenSource.Token);
+            }
+            catch (IOException ex)
+            {
+                var message = "File copying failed";
+                logger.Error(message);
+                logger.Error(ex.Message);
+                if (tokenSource != null)
+                {
+                    tokenSource.Cancel(message);
+                }
+                return;
+            }
+            logger.Info(string.Format("File copying finished succesfully"));
         }
 
-        public static Task CleanDirectory(string path, CancellationTokenSource tokenSource = null)
+        public static void CleanDirectory(string path, ReportingCancellationTokenSource tokenSource = null)
         {
-            if (tokenSource == null)
+            try
             {
-                tokenSource = new CancellationTokenSource();
+                logger.Info(string.Format("Starting folder {0} cleanup", path));
+                Directory.EnumerateFileSystemEntries(path).ToList().ForEach(item => 
+                {
+                    File.SetAttributes(item, FileAttributes.Normal);
+                    File.Delete(item); 
+                });
             }
-            return Task.Factory.StartNew(() => 
+            catch (IOException ex)
             {
-                try
+                var message = "Directory cleanup failed";
+                logger.Error(message);
+                logger.Error(ex.Message);
+                tokenSource.Cancel(message);
+                return;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var message = "Directory cleanup failed: you have no access permission";
+                logger.Error(message);
+                logger.Error(ex.Message);
+                if (tokenSource != null)
                 {
-                    logger.Info(string.Format("Starting folder {0} cleanup", path));
-                    Directory.EnumerateFileSystemEntries(path).ToList().ForEach(item => File.Delete(item));
+                    tokenSource.Cancel(message);
                 }
-                catch (IOException ex)
-                {
-                    logger.Error("Directory cleanup failed");
-                    logger.Error(ex.Message);
-                    tokenSource.Cancel();
-                    return;
-                }
-                logger.Info(string.Format("Directory cleanup finished succesfully"));
-            }, tokenSource.Token);
+                return;
+            }
+            logger.Info(string.Format("Directory cleanup finished succesfully"));
         }
 
-        public static Task DownloadFile(string source, string destination, CancellationTokenSource tokenSource = null)
+        public static void DownloadFile(string source, string destination, ReportingCancellationTokenSource tokenSource = null)
         {
-            if (tokenSource == null)
+            try
             {
-                tokenSource = new CancellationTokenSource();
-            }
-            return Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    logger.Info(string.Format("Starting file download from URL: {0} to directory: {1}", source, destination));
+                logger.Info(string.Format("Starting file download from URL: {0} to directory: {1}", source, destination));
 
-                    if (File.Exists(destination))
-                    {
-                        File.Delete(destination);
-                    }
-                    var webClient = new WebClient();
-                    webClient.DownloadFile(source, destination);
-                }
-                catch (IOException ex)
+                if (File.Exists(destination))
                 {
-                    logger.Error(string.Format("Cannot download file to path {0} : file exists and cannot be deleted", destination));
-                    logger.Error(ex.Message);
-                    tokenSource.Cancel();
-                    return;
+                    File.Delete(destination);
                 }
-                catch(WebException ex)
+                var webClient = new WebClient();
+                status.Post("Завантаження оновлення триває");
+                //status.StartProgress();
+                //webClient.DownloadProgressChanged += (o, e) => 
+                //{
+                //    status.UpdateProgress(e.ProgressPercentage); 
+                //};
+                webClient.DownloadFile(source, destination);
+            }
+            catch (IOException ex)
+            {
+                //status.StopProgress();
+                var message = string.Format("Cannot download file to path {0} : file exists and cannot be deleted", destination);
+                logger.Error(message);
+                logger.Error(ex.Message);
+                tokenSource.Cancel(message);
+                return;
+            }
+            catch (WebException ex)
+            {
+                //status.StopProgress();
+                var message = "File download failed";
+                logger.Error(message);
+                logger.Error(ex.Message);
+                if (tokenSource != null)
                 {
-                    logger.Error("File download failed");
-                    logger.Error(ex.Message);
-                    tokenSource.Cancel();
-                    return;
+                    tokenSource.Cancel(message);
                 }
-                logger.Info(string.Format("File download finished succesfully"));
-            }, tokenSource.Token);
+                return;
+            }
+            status.StopProgress();
+            logger.Info(string.Format("File download finished succesfully"));
         }
-        public static Task UnpackFile(string filePath, CancellationTokenSource tokenSource = null, string destination = null)
+        public static void UnpackFile(string filePath, ReportingCancellationTokenSource tokenSource = null, string destination = null)
         {
-            if (tokenSource == null)
+            try
             {
-                tokenSource = new CancellationTokenSource();
-            }
-            return Task.Factory.StartNew(() =>
-            {
-                try
+                if (destination == null)
                 {
-                    if (destination == null)
-                    {
-                        destination = Directory.GetDirectoryRoot(filePath);
-                    }
-                    logger.Info(string.Format("Starting file {0} unpack to path {1}", filePath, destination));
+                    destination = Directory.GetParent(filePath).FullName;
+                }
+                logger.Info(string.Format("Starting file {0} unpack to path {1}", filePath, destination));
 
-                    ZipFile.ExtractToDirectory(filePath, destination);
-                }
-                catch (IOException ex)
+                ZipFile.ExtractToDirectory(filePath, destination);
+            }
+            catch (IOException ex)
+            {
+                var message = string.Format("Cannot unpack file on a path {0}", filePath);
+                logger.Error(message);
+                logger.Error(ex.Message);
+                if (tokenSource != null)
                 {
-                    logger.Error(string.Format("Cannot unpack file on a path {0}", filePath));
-                    logger.Error(ex.Message);
-                    tokenSource.Cancel();
-                    return;
+                    tokenSource.Cancel(message);
                 }
-                logger.Info(string.Format("File unpack finished succesfully"));
-            }, tokenSource.Token);
+                return;
+            }
+            logger.Info(string.Format("File unpack finished succesfully"));
         }
     }
 }
