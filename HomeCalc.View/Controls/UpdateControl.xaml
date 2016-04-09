@@ -13,18 +13,18 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <Grid
-        Style="{StaticResource SettingsGridStyle}"
+        Style="{StaticResource SettingsGridStyle}" Margin="10,28" Width="880"
         >
         <Grid.RowDefinitions>
             <RowDefinition Height="35" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="300" />
-            <ColumnDefinition Width="300
-                              " />
         </Grid.ColumnDefinitions>
 
         <Button Grid.Row="0" Grid.Column="0"
@@ -35,10 +35,14 @@
             Content="Оновити" 
             Width="200"
             Command="{Binding Update}"/>
-        <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+        <Label Grid.Row="0" Grid.Column="2"
+               Content="{Binding CurrentVersion}"
+               />
+        <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
             IsReadOnly="True"
             Background="White"
             VerticalScrollBarVisibility="Auto"
+            Width="870"
             Height="200"
             Text="{Binding VersionChanges}"
             />

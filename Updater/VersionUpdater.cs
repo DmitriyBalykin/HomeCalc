@@ -36,7 +36,7 @@ namespace Updater
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             
             Task.Factory
-                .StartNew(() => Helpers.CleanDirectory(updateDirectoryPath, taskCancellationTokenSource), taskCancellationTokenSource.Token)
+                .StartNew(() => Helpers.CleanDirectory(updateDirectoryPath, null, taskCancellationTokenSource), taskCancellationTokenSource.Token)
                 .ContinueWith(task =>
                     Helpers.DownloadFile(sourcePath, destPath, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
                 .ContinueWith(task =>
@@ -64,13 +64,12 @@ namespace Updater
                 logger.Info("Cannot stop HomeCalc application, exiting...");
                 return;
             }
-            var updateFolder = AppDomain.CurrentDomain.BaseDirectory;
+            var updateFolder = Directory.GetCurrentDirectory();
             var appFolder = Directory.GetParent(updateFolder).FullName;
-
             try
             {
                 logger.Info("Starting application folder cleanup");
-                Helpers.CleanDirectory(appFolder, new []{"Updater"});
+                Helpers.CleanDirectory(appFolder, new []{"Updater", "Debug", "Release"});
             }
             catch (IOException ex)
             {

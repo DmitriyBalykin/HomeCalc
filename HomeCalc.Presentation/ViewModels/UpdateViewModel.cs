@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -80,6 +81,9 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        
+        public string CurrentVersion
+        {
+            get { return string.Format("Поточна версія: {0}", Assembly.GetExecutingAssembly().GetName().Version); }
+        }
     }
 }

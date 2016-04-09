@@ -26,10 +26,22 @@ namespace Updater
                 foreach (var itemPath in itemsToCopy)
                 {
                     var itemName = Path.GetFileName(itemPath);
-                    var destinationPath = Path.Combine(destination, itemName);
-                    File.SetAttributes(destinationPath, FileAttributes.Normal);
-                    File.Copy(itemPath, destinationPath, true);
-                    throw new IOException("test io exception copy files");
+                    var destinationItemPath = Path.Combine(destination, itemName);
+                    if (File.Exists(destinationItemPath))
+                    {
+                        File.SetAttributes(destinationItemPath, FileAttributes.Normal);
+                    }
+                    var attributes = File.GetAttributes(itemName);
+                    if (attributes.HasFlag(FileAttributes.Directory))
+                    {
+                        Directory.CreateDirectory(destinationItemPath);
+                        CopyAllFiles(itemName, destinationItemPath, tokenSource);
+                    }
+                    else
+                    {
+                        File.Copy(itemPath, destinationItemPath, true);
+                    }
+                    //throw new IOException("test io exception copy files");
                 }
             }
             catch (IOException ex)
@@ -46,15 +58,28 @@ namespace Updater
             logger.Info(string.Format("File copying finished succesfully"));
         }
 
-        public static void CleanDirectory(string path, ReportingCancellationTokenSource tokenSource = null)
+        public static void CleanDirectory(string path, string[] exceptions = null, ReportingCancellationTokenSource tokenSource = null)
         {
             try
             {
                 logger.Info(string.Format("Starting folder {0} cleanup", path));
                 Directory.EnumerateFileSystemEntries(path).ToList().ForEach(item => 
                 {
+                    var fileName = Path.GetFileName(item);
+                    if (exceptions != null && exceptions.Contains(fileName))
+                    {
+                        return;
+                    }
+                    var fileAttributes = File.GetAttributes(item);
                     File.SetAttributes(item, FileAttributes.Normal);
-                    File.Delete(item); 
+                    if (fileAttributes.HasFlag(FileAttributes.Directory))
+                    {
+                        Directory.Delete(item, true);
+                    }
+                    else
+                    {
+                        File.Delete(item); 
+                    }
                 });
             }
             catch (IOException ex)
