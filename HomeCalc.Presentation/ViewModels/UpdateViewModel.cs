@@ -16,6 +16,7 @@ namespace HomeCalc.Presentation.ViewModels
     public class UpdateViewModel : ViewModel
     {
         Logger logger = LogService.GetLogger();
+
         public event EventHandler CloseApplicationEventHandler;
         public UpdateViewModel()
         {
@@ -58,15 +59,35 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void UpdateCommandExecute(object obj)
         {
-
-            VersionUpdater.StartUpdate(() => 
+            VersionChecker.GetUpdatesInformation().ContinueWith(task =>
             {
-                if (CloseApplicationEventHandler != null)
+                var updatesInfo = task.Result;
+                if (!updatesInfo.HasNewVersion)
                 {
-                    CloseApplicationEventHandler(this, EventArgs.Empty);
+                    VersionChanges = "Версія програми є найновішою, оновлення не виконано.";
+                    return;
                 }
-            });
+
+                VersionUpdater.StartUpdate(() =>
+                {
+                    if (CloseApplicationEventHandler != null)
+                    {
+                        CloseApplicationEventHandler(this, EventArgs.Empty);
+                    }
+                });
+
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
         }
+
+        #region Helpers
+        
+
+        #endregion
+
+        #region Properties
+
+
 
         private string versionChanges;
         public string VersionChanges
@@ -85,5 +106,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             get { return string.Format("Поточна версія: {0}", Assembly.GetExecutingAssembly().GetName().Version); }
         }
+
+        #endregion
     }
 }
