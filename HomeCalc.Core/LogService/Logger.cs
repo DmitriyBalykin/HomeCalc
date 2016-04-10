@@ -21,14 +21,17 @@ namespace HomeCalc.Core.LogService
         public void Info(string message, params object[] args)
         {
             logger.Info(message, args);
+            Console.WriteLine(string.Format(message, args));
         }
         public void Warn(string message, params object[] args)
         {
             logger.Warn(message, args);
+            Console.WriteLine(string.Format("Warning: " + message, args));
         }
         public void Error(string message, params object[] args)
         {
             logger.Error(message, args);
+            Console.WriteLine(string.Format("Error: " + message, args));
         }
     }
 }
