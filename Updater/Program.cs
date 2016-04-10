@@ -11,7 +11,7 @@ namespace Updater
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(string.Join(" ", args));
+            Console.WriteLine("start arguments: " + string.Join(" ", args));
             if (args.Length == 0)
             {
                 try
@@ -56,6 +56,8 @@ namespace Updater
                         break;
                 }
             }
+
+            Console.ReadLine();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Updater
     {
         private static string versionBinaryPath = @"http://www.homecalc.com.ua/distributives/";
 
-        private static string versionBinaryFileName = @"HomeCalcUpdate.zip";
+        private static string versionBinaryFileName = @"HomeCalc.zip";
 
 
         private static Logger logger = LogService.GetLogger();
@@ -33,10 +33,13 @@ namespace Updater
             var destPath = Path.Combine(updateDirectoryPath, versionBinaryFileName);
 
             var taskCancellationTokenSource = new ReportingCancellationTokenSource("Update");
+            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             
             Task.Factory
-                .StartNew(() => Helpers.CleanDirectory(updateDirectoryPath, null, taskCancellationTokenSource), taskCancellationTokenSource.Token)
+                .StartNew(() => Helpers.CreateDirectory(updateDirectoryPath, taskCancellationTokenSource), taskCancellationTokenSource.Token)
+                .ContinueWith(task =>
+                    Helpers.CleanDirectory(updateDirectoryPath, null, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
                 .ContinueWith(task =>
                     Helpers.DownloadFile(sourcePath, destPath, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
                 .ContinueWith(task =>
@@ -48,7 +51,7 @@ namespace Updater
 
         public static void UpdateApplication(bool startApp = true)
         {
-            logger.Info("Starting application update");
+            logger.Info("Updater: Starting application update");
 
             var retriesCount = 10;
             while (retriesCount > 0 && MainAppRunning())
@@ -56,7 +59,6 @@ namespace Updater
                 retriesCount--;
                 var message = "HomeCalc application still running, waiting 5 seconds";
                 logger.Info(message);
-                Console.WriteLine(message);
                 Thread.Sleep(5000);
             }
             if (MainAppRunning())
@@ -64,16 +66,19 @@ namespace Updater
                 logger.Info("Cannot stop HomeCalc application, exiting...");
                 return;
             }
-            var updateFolder = Directory.GetCurrentDirectory();
+            var updateFolder = AppDomain.CurrentDomain.BaseDirectory.Trim(Path.DirectorySeparatorChar);
             var appFolder = Directory.GetParent(updateFolder).FullName;
+            logger.Info("Current updater application running directory: {0}", updateFolder);
+            logger.Info("Current updater parent directory: {0}", appFolder);
             try
             {
                 logger.Info("Starting application folder cleanup");
-                Helpers.CleanDirectory(appFolder, new []{"Updater", "Debug", "Release"});
+                Helpers.CleanDirectory(appFolder, new []{"Update", "Debug", "Release"});
             }
             catch (IOException ex)
             {
-                logger.Error("Application folder cleanup failed. Exiting...");
+                var message = "Application folder cleanup failed. Exiting...";
+                logger.Error(message);
                 logger.Error(ex.Message);
                 return;
             }
@@ -91,9 +96,9 @@ namespace Updater
             }
 
             if (startApp)
-            {
-                logger.Info("Starting application.");
+            {                
                 var appExePath = Path.Combine(appFolder, "HomeCalc.View.exe");
+                logger.Info("Starting application: {0}", appExePath);
                 try
                 {
                     Process.Start(appExePath);
@@ -101,7 +106,6 @@ namespace Updater
                 catch (Exception ex)
                 {
                     logger.Error(ex.Message);
-                    Console.WriteLine(ex.Message);
                 }
             }
         }
@@ -110,14 +114,14 @@ namespace Updater
         {
             var processes = Process.GetProcesses();
 
-            return processes.Any(process => process.ProcessName.Equals("HomeCalc.View.exe"));
+            return processes.Any(process => process.ProcessName.Equals("HomeCalc.View")) || processes.Any(process => process.ProcessName.Equals("HomeCalc.View.vshost"));
         }
 
         private static void RunUpdater(CancellationTokenSource tokenSource)
         {
             var updateDirectoryPath = GetUpdateDirectory();
             var updateExe = Path.Combine(updateDirectoryPath, "Updater.exe");
-
+            logger.Info("Starting Updater application");
             if (!File.Exists(updateExe))
             {
                 //throw new Exception("Updater executive file not found");

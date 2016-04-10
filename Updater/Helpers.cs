@@ -27,21 +27,24 @@ namespace Updater
                 {
                     var itemName = Path.GetFileName(itemPath);
                     var destinationItemPath = Path.Combine(destination, itemName);
+                    logger.Info("Preparing to copy file {0} to {1}", itemPath, destinationItemPath);
                     if (File.Exists(destinationItemPath))
                     {
                         File.SetAttributes(destinationItemPath, FileAttributes.Normal);
                     }
-                    var attributes = File.GetAttributes(itemName);
+                    var attributes = File.GetAttributes(itemPath);
                     if (attributes.HasFlag(FileAttributes.Directory))
                     {
+                        logger.Info("Copying directory {0}", itemName);
                         Directory.CreateDirectory(destinationItemPath);
-                        CopyAllFiles(itemName, destinationItemPath, tokenSource);
+
+                        CopyAllFiles(itemPath, destinationItemPath, tokenSource);
                     }
                     else
                     {
+                        logger.Info("Copying file {0}", itemName);
                         File.Copy(itemPath, destinationItemPath, true);
                     }
-                    //throw new IOException("test io exception copy files");
                 }
             }
             catch (IOException ex)
@@ -62,22 +65,44 @@ namespace Updater
         {
             try
             {
-                logger.Info(string.Format("Starting folder {0} cleanup", path));
+                var message = "";
+                if (exceptions == null)
+                {
+                    message = string.Format("Starting folder {0} cleanup", path);
+                }
+                else
+                {
+                    message = string.Format("Starting folder {0} cleanup, exceptions: {1}", path, string.Join("; ", exceptions));
+                }
+                logger.Info(message);
                 Directory.EnumerateFileSystemEntries(path).ToList().ForEach(item => 
                 {
                     var fileName = Path.GetFileName(item);
-                    if (exceptions != null && exceptions.Contains(fileName))
+                    logger.Info("***********************");
+                    logger.Info("Preparing to delete {0}", fileName);
+                    if (exceptions != null)
                     {
-                        return;
+                        if (exceptions.Contains(fileName))
+                        {
+                            logger.Info("Skipping {0} as exception", fileName);
+                            return;
+                        }
+                        else
+                        {
+                            logger.Info("File {0} not found in exceptions \"{1}\", deleting", fileName, string.Join("; ", exceptions));
+                        }
                     }
+                    
                     var fileAttributes = File.GetAttributes(item);
                     File.SetAttributes(item, FileAttributes.Normal);
                     if (fileAttributes.HasFlag(FileAttributes.Directory))
                     {
+                        logger.Info("Deleting folder {0}", item);
                         Directory.Delete(item, true);
                     }
                     else
                     {
+                        logger.Info("Deleting file {0}", item);
                         File.Delete(item); 
                     }
                 });
@@ -171,6 +196,37 @@ namespace Updater
                 return;
             }
             logger.Info(string.Format("File unpack finished succesfully"));
+        }
+
+        internal static void CreateDirectory(string destination, ReportingCancellationTokenSource taskCancellationTokenSource = null)
+        {
+            try
+            {
+                if (destination == null)
+                {
+                    throw new IOException("Directory path cannot be null");
+                }
+                if (Directory.Exists(destination))
+                {
+                    logger.Info(string.Format("Update directory with path {0} exists", destination));
+                    return;
+                }
+                logger.Info(string.Format("Creating directory with path {0}", destination));
+
+                Directory.CreateDirectory(destination);
+            }
+            catch (IOException ex)
+            {
+                var message = string.Format("Cannot create directory on a path {0}", destination);
+                logger.Error(message);
+                logger.Error(ex.Message);
+                if (taskCancellationTokenSource != null)
+                {
+                    taskCancellationTokenSource.Cancel(message);
+                }
+                return;
+            }
+            logger.Info(string.Format("Directory creation finished succesfully"));
         }
     }
 }
