@@ -24,7 +24,7 @@ namespace Updater
         private static Logger logger = LogService.GetLogger();
         private static StatusService status = StatusService.GetInstance();
 
-        public static void StartUpdate(Action successAction)
+        public static async Task StartUpdate(Action successAction)
         {
             logger.Info("Starting update");
 
@@ -35,18 +35,28 @@ namespace Updater
             var taskCancellationTokenSource = new ReportingCancellationTokenSource("Update");
             SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            
-            Task.Factory
-                .StartNew(() => Helpers.CreateDirectory(updateDirectoryPath, taskCancellationTokenSource), taskCancellationTokenSource.Token)
+
+            Console.WriteLine("Waiting to enter for debug");
+            Console.ReadLine();
+
+            try
+            {
+                await Task.Factory
+                .StartNew(() => Helpers.CreateDirectory(updateDirectoryPath, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskCreationOptions.None, taskScheduler)
                 .ContinueWith(task =>
-                    Helpers.CleanDirectory(updateDirectoryPath, null, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
+                    Helpers.CleanDirectory(updateDirectoryPath, taskCancellationTokenSource, null), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
                 .ContinueWith(task =>
                     Helpers.DownloadFile(sourcePath, destPath, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
                 .ContinueWith(task =>
                     Helpers.UnpackFile(destPath, taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
                 .ContinueWith(task =>
                     RunUpdater(taskCancellationTokenSource), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler)
-                .ContinueWith(task => successAction(), TaskContinuationOptions.OnlyOnRanToCompletion);
+                .ContinueWith(task => successAction(), taskCancellationTokenSource.Token, TaskContinuationOptions.OnlyOnRanToCompletion, taskScheduler);
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Update operation was cancelled");
+            }
         }
 
         public static void UpdateApplication(bool startApp = true)
@@ -70,28 +80,24 @@ namespace Updater
             var appFolder = Directory.GetParent(updateFolder).FullName;
             logger.Info("Current updater application running directory: {0}", updateFolder);
             logger.Info("Current updater parent directory: {0}", appFolder);
-            try
-            {
-                logger.Info("Starting application folder cleanup");
-                Helpers.CleanDirectory(appFolder, new []{"Update", "Debug", "Release"});
-            }
-            catch (IOException ex)
+
+            var cancellationTokenSource = new ReportingCancellationTokenSource();
+            
+            logger.Info("Starting application folder cleanup");
+            Helpers.CleanDirectory(appFolder, cancellationTokenSource, new []{"Update", "Debug", "Release"});
+            if (cancellationTokenSource.Token.IsCancellationRequested)
             {
                 var message = "Application folder cleanup failed. Exiting...";
                 logger.Error(message);
-                logger.Error(ex.Message);
                 return;
             }
 
-            try
+            logger.Info("Starting application files copying");
+            Helpers.CopyAllFiles(updateFolder, appFolder, cancellationTokenSource);
+            if (cancellationTokenSource.Token.IsCancellationRequested)
             {
-                logger.Info("Starting application files copying");
-                Helpers.CopyAllFiles(updateFolder, appFolder);
-            }
-            catch (IOException ex)
-            {
-                logger.Error("Application files copying failed. Exiting...");
-                logger.Error(ex.Message);
+                var message = "Application files copying failed. Exiting...";
+                logger.Error(message);
                 return;
             }
 
@@ -114,7 +120,8 @@ namespace Updater
         {
             var processes = Process.GetProcesses();
 
-            return processes.Any(process => process.ProcessName.Equals("HomeCalc.View")) || processes.Any(process => process.ProcessName.Equals("HomeCalc.View.vshost"));
+            //return processes.Any(process => process.ProcessName.Equals("HomeCalc.View")) || processes.Any(process => process.ProcessName.Equals("HomeCalc.View.vshost"));
+            return false;
         }
 
         private static void RunUpdater(CancellationTokenSource tokenSource)

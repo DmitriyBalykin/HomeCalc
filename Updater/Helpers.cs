@@ -16,7 +16,7 @@ namespace Updater
     {
         private static Logger logger = LogService.GetLogger();
         private static StatusService status = StatusService.GetInstance();
-        public static void CopyAllFiles(string source, string destination, ReportingCancellationTokenSource tokenSource = null)
+        public static void CopyAllFiles(string source, string destination, ReportingCancellationTokenSource tokenSource)
         {
             try
             {
@@ -52,16 +52,12 @@ namespace Updater
                 var message = "File copying failed";
                 logger.Error(message);
                 logger.Error(ex.Message);
-                if (tokenSource != null)
-                {
-                    tokenSource.Cancel(message);
-                }
-                return;
+                CancelTask(tokenSource);
             }
             logger.Info(string.Format("File copying finished succesfully"));
         }
 
-        public static void CleanDirectory(string path, string[] exceptions = null, ReportingCancellationTokenSource tokenSource = null)
+        public static void CleanDirectory(string path, ReportingCancellationTokenSource tokenSource, string[] exceptions = null)
         {
             try
             {
@@ -112,24 +108,19 @@ namespace Updater
                 var message = "Directory cleanup failed";
                 logger.Error(message);
                 logger.Error(ex.Message);
-                tokenSource.Cancel(message);
-                return;
+                CancelTask(tokenSource);
             }
             catch (UnauthorizedAccessException ex)
             {
                 var message = "Directory cleanup failed: you have no access permission";
                 logger.Error(message);
                 logger.Error(ex.Message);
-                if (tokenSource != null)
-                {
-                    tokenSource.Cancel(message);
-                }
-                return;
+                CancelTask(tokenSource);
             }
             logger.Info(string.Format("Directory cleanup finished succesfully"));
         }
 
-        public static void DownloadFile(string source, string destination, ReportingCancellationTokenSource tokenSource = null)
+        public static void DownloadFile(string source, string destination, ReportingCancellationTokenSource tokenSource)
         {
             try
             {
@@ -154,8 +145,7 @@ namespace Updater
                 var message = string.Format("Cannot download file to path {0} : file exists and cannot be deleted", destination);
                 logger.Error(message);
                 logger.Error(ex.Message);
-                tokenSource.Cancel(message);
-                return;
+                CancelTask(tokenSource);
             }
             catch (WebException ex)
             {
@@ -163,16 +153,15 @@ namespace Updater
                 var message = "File download failed";
                 logger.Error(message);
                 logger.Error(ex.Message);
-                if (tokenSource != null)
-                {
-                    tokenSource.Cancel(message);
-                }
-                return;
+                CancelTask(tokenSource);
             }
-            status.StopProgress();
+            finally
+            {
+                status.StopProgress();
+            }
             logger.Info(string.Format("File download finished succesfully"));
         }
-        public static void UnpackFile(string filePath, ReportingCancellationTokenSource tokenSource = null, string destination = null)
+        public static void UnpackFile(string filePath, ReportingCancellationTokenSource tokenSource, string destination = null)
         {
             try
             {
@@ -189,16 +178,12 @@ namespace Updater
                 var message = string.Format("Cannot unpack file on a path {0}", filePath);
                 logger.Error(message);
                 logger.Error(ex.Message);
-                if (tokenSource != null)
-                {
-                    tokenSource.Cancel(message);
-                }
-                return;
+                CancelTask(tokenSource);
             }
             logger.Info(string.Format("File unpack finished succesfully"));
         }
 
-        internal static void CreateDirectory(string destination, ReportingCancellationTokenSource taskCancellationTokenSource = null)
+        internal static void CreateDirectory(string destination, ReportingCancellationTokenSource taskCancellationTokenSource)
         {
             try
             {
@@ -220,13 +205,30 @@ namespace Updater
                 var message = string.Format("Cannot create directory on a path {0}", destination);
                 logger.Error(message);
                 logger.Error(ex.Message);
-                if (taskCancellationTokenSource != null)
-                {
-                    taskCancellationTokenSource.Cancel(message);
-                }
-                return;
+                CancelTask(taskCancellationTokenSource);
             }
             logger.Info(string.Format("Directory creation finished succesfully"));
+        }
+
+        private static void CancelTask(CancellationTokenSource cts)
+        {
+            try
+            {
+                logger.Info("OperationCanceledException is initiated");
+                if (cts != null)
+                {
+                    cts.Cancel();
+                    cts.Token.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    throw new OperationCanceledException();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                logger.Info("Handling OperationCanceledException");
+            }
         }
     }
 }

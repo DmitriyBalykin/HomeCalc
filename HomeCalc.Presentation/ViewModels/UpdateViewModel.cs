@@ -57,9 +57,9 @@ namespace HomeCalc.Presentation.ViewModels
             
         }
 
-        private void UpdateCommandExecute(object obj)
+        private async void UpdateCommandExecute(object obj)
         {
-            VersionChecker.GetUpdatesInformation().ContinueWith(task =>
+            await VersionChecker.GetUpdatesInformation().ContinueWith(async task =>
             {
                 var updatesInfo = task.Result;
                 if (!updatesInfo.HasNewVersion)
@@ -68,7 +68,7 @@ namespace HomeCalc.Presentation.ViewModels
                     return;
                 }
 
-                VersionUpdater.StartUpdate(() =>
+                await VersionUpdater.StartUpdate(() =>
                 {
                     if (CloseApplicationEventHandler != null)
                     {
