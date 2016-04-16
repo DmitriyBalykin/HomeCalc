@@ -29,8 +29,21 @@ namespace HomeCalc.Core.Helpers
             double result;
             return double.TryParse(str, out result);
         }
-        public static string GetCorrected(string str)
+        public static string GetCorrected(string str, int precision = 6)
         {
+            if (str == null)
+            {
+                return null;
+            }
+            int correcterValue = precision + 1;
+
+            str = str.Replace(INCORRECT_COMA, CORRECT_COMA);
+            int dividerPlace = str.IndexOf(CORRECT_COMA);
+            if (dividerPlace > -1 && (dividerPlace + correcterValue) < str.Length)
+            {
+                str = str.Substring(0, (dividerPlace + correcterValue));
+            }
+
             str = str.Replace(INCORRECT_COMA, CORRECT_COMA);
             return str;
         }

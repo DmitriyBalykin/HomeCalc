@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using HomeCalc.Presentation.Services;
 using System.Windows.Forms;
+using HomeCalc.Core.Helpers;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -325,9 +326,9 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 SearchByCost = true;
-                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostStart)
+                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostStart && StringHelper.IsNumber(value))
                 {
-                    var str = value.Replace(',', '.');
+                    var str = StringHelper.GetCorrected(value, 2);
                     try
                     {
                         costStart = Double.Parse(value);
@@ -348,9 +349,9 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 SearchByCost = true;
-                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostEnd)
+                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostEnd && StringHelper.IsNumber(value))
                 {
-                    var str = value.Replace(',', '.');
+                    var str = StringHelper.GetCorrected(value, 2);
                     try
                     {
                         costEnd = Double.Parse(value);
@@ -386,7 +387,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (value != totalCount)
                 {
-                    totalCount = value;
+                    totalCount = StringHelper.GetCorrected(value, 2);
                     OnPropertyChanged(() => TotalCount);
                 }
             }
@@ -402,7 +403,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (value != totalCost)
                 {
-                    totalCost = value;
+                    totalCost = StringHelper.GetCorrected(value, 2);
                     OnPropertyChanged(() => TotalCost);
                 }
             }

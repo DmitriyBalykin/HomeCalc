@@ -218,7 +218,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (itemCost != value && StringHelper.IsNumber(value))
                 {
-                    itemCost = StringHelper.GetCorrected(value);
+                    itemCost = StringHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
@@ -235,7 +235,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (totalCost != value && StringHelper.IsNumber(value))
                 {
-                    totalCost = StringHelper.GetCorrected(value);
+                    totalCost = StringHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
