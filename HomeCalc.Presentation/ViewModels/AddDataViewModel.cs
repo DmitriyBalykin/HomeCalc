@@ -21,7 +21,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             purchase = new Purchase();
 
-            AddCommand("Save", new DelegateCommand(SaveCommandExecute));
+            AddCommand("Save", new DelegateCommand(SaveCommandExecute, SaveCommandCanExecute));
 
             StoreService.TypesUpdated += StoreService_TypesUpdated;
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
@@ -56,6 +56,11 @@ namespace HomeCalc.Presentation.ViewModels
                 logger.Warn("Purchase not saved");
                 Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
             }
+        }
+
+        private bool SaveCommandCanExecute(object obj)
+        {
+            return !string.IsNullOrEmpty(Count) && !string.IsNullOrEmpty(ItemCost) && !string.IsNullOrEmpty(TotalCost);
         }
 
         private void SearchPurchase()
