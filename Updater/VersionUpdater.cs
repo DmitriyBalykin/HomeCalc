@@ -120,8 +120,7 @@ namespace Updater
         {
             var processes = Process.GetProcesses();
 
-            //return processes.Any(process => process.ProcessName.Equals("HomeCalc.View")) || processes.Any(process => process.ProcessName.Equals("HomeCalc.View.vshost"));
-            return false;
+            return processes.Any(process => process.ProcessName.Equals("HomeCalc.View")) || processes.Any(process => process.ProcessName.Equals("HomeCalc.View.vshost"));
         }
 
         private static void RunUpdater(CancellationTokenSource tokenSource)

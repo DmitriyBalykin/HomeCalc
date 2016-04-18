@@ -16,8 +16,12 @@ namespace Updater
     {
         private static Logger logger = LogService.GetLogger();
         private static StatusService status = StatusService.GetInstance();
-        public static void CopyAllFiles(string source, string destination, ReportingCancellationTokenSource tokenSource)
+        public static void CopyAllFiles(string source, string destination, ReportingCancellationTokenSource tokenSource, List<string> exclusions = null)
         {
+            if (exclusions == null)
+            {
+                exclusions = new List<string>();
+            }
             try
             {
                 logger.Info(string.Format("Starting copying files from {0} to {1}", source, destination));
@@ -26,6 +30,13 @@ namespace Updater
                 foreach (var itemPath in itemsToCopy)
                 {
                     var itemName = Path.GetFileName(itemPath);
+
+                    if (exclusions.Contains(itemName))
+                    {
+                        logger.Info("File {0} found in exclusion list, skipping", itemName);
+                        continue;
+                    }
+
                     var destinationItemPath = Path.Combine(destination, itemName);
                     logger.Info("Preparing to copy file {0} to {1}", itemPath, destinationItemPath);
                     if (File.Exists(destinationItemPath))

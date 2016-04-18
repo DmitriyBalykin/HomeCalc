@@ -56,8 +56,6 @@ namespace Updater
                         break;
                 }
             }
-
-            Console.ReadLine();
         }
     }
 }
