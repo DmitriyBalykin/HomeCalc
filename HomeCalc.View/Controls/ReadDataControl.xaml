@@ -103,8 +103,8 @@
                         <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
                         <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" IsReadOnly="True" />
                         <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
-                        <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost, StringFormat={}{0:.##}}" Width="110" />
-                        <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost, StringFormat={}{0:.##}}" Width="120" />
+                        <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost, StringFormat={}{0:0.##}}" Width="110" />
+                        <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost, StringFormat={}{0:0.##}}" Width="120" />
                     </DataGrid.Columns>
                 </DataGrid>
                 <StackPanel
