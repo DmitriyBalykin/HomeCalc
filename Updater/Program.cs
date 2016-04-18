@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HomeCalc.Core.LogService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,9 +10,11 @@ namespace Updater
 {
     class Program
     {
+        private static Logger logger = LogService.GetLogger();
+
         static void Main(string[] args)
         {
-            Console.WriteLine("start arguments: " + string.Join(" ", args));
+            logger.Info("start arguments: " + string.Join(" ", args));
             if (args.Length == 0)
             {
                 try
@@ -28,16 +31,16 @@ namespace Updater
                         {
                             result = "Found newer version: " + verInfo.LatestVersion;
                         }
-                        Console.WriteLine(result);
-                        Console.WriteLine("Press Enter to exit.");
+                        logger.Info(result);
+                        logger.Info("Press Enter to exit.");
                     }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
                     
                 }
                 catch (WebException ex)
                 {
-                    Console.WriteLine("Error occured during update download.");
-                    Console.WriteLine(ex.Message);
+                    logger.Info("Error occured during update download.");
+                    logger.Info(ex.Message);
                 }
 
                 Console.ReadLine();

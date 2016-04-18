@@ -130,7 +130,6 @@ namespace Updater
             logger.Info("Starting Updater application");
             if (!File.Exists(updateExe))
             {
-                //throw new Exception("Updater executive file not found");
                 tokenSource.Cancel();
                 status.Post("Помилка запуску оновлення");
                 return;

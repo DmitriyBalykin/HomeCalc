@@ -57,7 +57,9 @@
     <Compile Include="VersionUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="..\HomeCalc.View\App.config">
+      <Link>App.config</Link>
+    </None>
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
