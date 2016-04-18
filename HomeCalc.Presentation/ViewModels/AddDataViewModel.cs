@@ -17,6 +17,8 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
+        private const int MINIMAL_SEARCH_LENGTH = 3;
+
         public AddDataViewModel()
         {
             purchase = new Purchase();
@@ -50,6 +52,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 logger.Info("Purchase saved");
                 Status.Post("Покупка \"{0}\" збережена", PurchaseName);
+                CleanInputFields();
             }
             else
             {
@@ -57,15 +60,24 @@ namespace HomeCalc.Presentation.ViewModels
                 Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
             }
         }
-
         private bool SaveCommandCanExecute(object obj)
         {
             return !string.IsNullOrEmpty(Count) && !string.IsNullOrEmpty(ItemCost) && !string.IsNullOrEmpty(TotalCost);
         }
-
+        private void CleanInputFields()
+        {
+            PurchaseName = string.Empty;
+            Count = string.Empty;
+            ItemCost = string.Empty;
+            totalCost = string.Empty;
+        }
         private void SearchPurchase()
         {
-            var exactPurchases = StoreService.PurchaseHistory.Where(p => p.Name == purchase.Name);
+            if (purchase.Name.Length < MINIMAL_SEARCH_LENGTH)
+            {
+                return;
+            }
+            var exactPurchases = StoreService.PurchaseHistory.Where(p => p.Name.Equals(purchase.Name, StringComparison.InvariantCultureIgnoreCase));
             IEnumerable<Purchase> resultList;
             if (exactPurchases.Count() > 0)
             {
