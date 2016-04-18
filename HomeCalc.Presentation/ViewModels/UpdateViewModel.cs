@@ -29,7 +29,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             try
             {
-                VersionChecker.GetUpdatesInformation().ContinueWith(task => 
+                VersionChecker.GetUpdatesInformation(true).ContinueWith(task => 
                 {
                     var updatesInfo = task.Result;
                     if (!updatesInfo.HasNewVersion)
@@ -57,9 +57,41 @@ namespace HomeCalc.Presentation.ViewModels
             
         }
 
+        private void LoadUpdatesHistory()
+        {
+            try
+            {
+                VersionChecker.GetUpdatesInformation(false).ContinueWith(task =>
+                {
+                    var updatesInfo = task.Result;
+                    if (updatesInfo.ChangesByVersions.Keys.Count() == 0)
+                    {
+                        VersionChanges = "Історія оновлень не знайдена.";
+                        return;
+                    }
+
+                    var sb = new StringBuilder();
+
+                    foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
+                    {
+                        sb.AppendLine(updateVersion.ToString());
+                        sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
+                        sb.AppendLine();
+                    }
+                    VersionChanges = sb.ToString();
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+            }
+            catch (WebException ex)
+            {
+                logger.Error("Error occured during update download");
+                logger.Error(ex.Message);
+            }
+
+        }
+
         private async void UpdateCommandExecute(object obj)
         {
-            await VersionChecker.GetUpdatesInformation().ContinueWith(async task =>
+            await VersionChecker.GetUpdatesInformation(true).ContinueWith(async task =>
             {
                 var updatesInfo = task.Result;
                 if (!updatesInfo.HasNewVersion)
@@ -107,6 +139,28 @@ namespace HomeCalc.Presentation.ViewModels
             get { return string.Format("Поточна версія: {0}", Assembly.GetExecutingAssembly().GetName().Version); }
         }
 
+        private bool showUpdatesHistory;
+        public bool ShowUpdatesHistory
+        {
+            get { return showUpdatesHistory; }
+            set
+            {
+                if (value != showUpdatesHistory)
+                {
+                    showUpdatesHistory = value;
+                    OnPropertyChanged(() => ShowUpdatesHistory);
+
+                    if (value)
+                    {
+                        LoadUpdatesHistory();
+                    }
+                    else
+                    {
+                        VersionChanges = string.Empty;
+                    }
+                }
+            }
+        }
         #endregion
     }
 }

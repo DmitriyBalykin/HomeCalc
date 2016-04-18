@@ -19,7 +19,7 @@ namespace Updater
             {
                 try
                 {
-                    VersionChecker.GetUpdatesInformation().ContinueWith(task => 
+                    VersionChecker.GetUpdatesInformation(true).ContinueWith(task => 
                     {
                         var result = string.Empty;
                         var verInfo = task.Result;

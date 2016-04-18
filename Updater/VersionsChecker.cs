@@ -14,7 +14,7 @@ namespace Updater
         private static string versionCheckPath = @"http://www.homecalc.com.ua/distributives/";
         private static string versionCheckFilename = @"versionInfo.txt";
 
-        public static Task<VersionsInformation> GetUpdatesInformation()
+        public static Task<VersionsInformation> GetUpdatesInformation(bool compareVersion)
         {
             var webclient = new WebClient();
 
@@ -27,7 +27,7 @@ namespace Updater
                 {
                     File.Delete(destination);
                 }
-                return webclient.DownloadFileTaskAsync(source, destination).ContinueWith(result => ReadInformation(destination), TaskContinuationOptions.OnlyOnRanToCompletion);
+                return webclient.DownloadFileTaskAsync(source, destination).ContinueWith(result => ReadInformation(destination, compareVersion), TaskContinuationOptions.OnlyOnRanToCompletion);
             }
             catch(IOException exIo)
             {
@@ -39,7 +39,7 @@ namespace Updater
             }
         }
 
-        private static VersionsInformation ReadInformation(string filePath)
+        private static VersionsInformation ReadInformation(string filePath, bool compareVersion)
         {
             var fileContent = File.ReadAllText(filePath);
             var versionBlocks = fileContent.Split(new []{'{','}'}).Where(block => !string.IsNullOrEmpty(block)).ToList();
@@ -53,12 +53,14 @@ namespace Updater
                 if (blockParts.Length == 2)
                 {
                     var version = parseVersion(blockParts[0]);
-                    if (version > currentVersion)
+                    if (compareVersion && version <= currentVersion)
                     {
-                        var info = blockParts[1];
-                        versionInfo.SetLatestVersionIfEmpty(version);
-                        versionInfo.Add(version, info);
+                        continue;
                     }
+
+                    var info = blockParts[1];
+                    versionInfo.SetLatestVersionIfEmpty(version);
+                    versionInfo.Add(version, info);
                 }
             }
             return versionInfo;

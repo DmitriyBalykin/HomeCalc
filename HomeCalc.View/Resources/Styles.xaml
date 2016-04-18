@@ -231,4 +231,22 @@
             <Setter Property="Height" Value="20" />
         </Style.Setters>
     </Style>
+    <Style x:Key="CommonToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}">
+        <Style.Setters>
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="BorderBrush" Value="{StaticResource GlobalBackground}" />
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="true">
+                <Setter Property="Background" Value="{StaticResource CheckedButtonColor}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Background" Value="{StaticResource FocusedButtonColor}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
