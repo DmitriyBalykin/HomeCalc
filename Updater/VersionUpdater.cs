@@ -93,7 +93,7 @@ namespace Updater
             }
 
             logger.Info("Starting application files copying");
-            Helpers.CopyAllFiles(updateFolder, appFolder, cancellationTokenSource);
+            Helpers.CopyAllFiles(updateFolder, appFolder, cancellationTokenSource, new List<string> { "HomeCalc.zip", "HomeCalcUpdate.zip" });
             if (cancellationTokenSource.Token.IsCancellationRequested)
             {
                 var message = "Application files copying failed. Exiting...";
