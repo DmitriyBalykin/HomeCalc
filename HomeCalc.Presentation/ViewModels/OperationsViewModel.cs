@@ -60,7 +60,7 @@ namespace HomeCalc.Presentation.ViewModels
         private async void ImportDataCommandExecute(object obj)
         {
             Status.StartProgress();
-            await Migrator.MigrateFromCsv(ExistingPath, DataMigrationStatusUpdated).ContinueWith(t => DataMigrationFinished(t.Result));
+            await Migrator.MigrateFromCsv(ExistingPath, DataMigrationStatusUpdated).ContinueWith(t => DataMigrationFinished(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
         private void DataMigrationStatusUpdated(MigrationResultArgs e)
         {

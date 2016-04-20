@@ -77,6 +77,10 @@
                     Header="Аналітика">
                     <controls:AnalyticsControl/>
                 </TabItem>
+                <TabItem
+                    Header="Оновлення">
+                    <controls:UpdateControl/>
+                </TabItem>
             </TabControl>
             <StackPanel
                 Grid.Row="2"

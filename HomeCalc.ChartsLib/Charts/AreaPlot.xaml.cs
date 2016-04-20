@@ -23,6 +23,11 @@ namespace HomeCalc.ChartsLib.Charts
     public partial class AreaPlot : UserControl
     {
         Canvas plotArea;
+
+        private const double ARGUMENT_LABEL_VERTICAL_SHIFT = 10;
+        private const double VALUE_LABEL_HORIZONTAL_SHIFT = 0;
+        private const double MAX_DESIRED_X_VALUES = 12;
+        private const double MAX_DESIRED_Y_VALUES = 10;
         
         public AreaPlot()
         {
@@ -179,7 +184,7 @@ namespace HomeCalc.ChartsLib.Charts
             ChartPlotInfo plotInfo = CalculatePlotInfo();
 
             plotArea.Width = plotInfo.Width + plotInfo.LeftMarginWidth + plotInfo.RightMarginWidth;
-            plotArea.Height = plotInfo.PhysHeight + plotInfo.FooterHeight + plotInfo.HeaderHeight;
+            plotArea.Height = plotInfo.MaxHeight + plotInfo.FooterHeight + plotInfo.HeaderHeight;
 
             DrawLegend();
             DrawBackground(plotInfo);
@@ -204,56 +209,69 @@ namespace HomeCalc.ChartsLib.Charts
 
         private void DrawGrid(ChartPlotInfo info)
         {
-            //Frame
             var frameBrush = Brushes.SteelBlue;
             var gridBrush = Brushes.LightSteelBlue;
 
-            DrawLine(0, 0, 0, info.PhysHeight, info, frameBrush);
-            DrawLine(info.Width, 0, info.Width, info.PhysHeight, info, frameBrush);
-            DrawLine(0, info.PhysHeight, info.Width, info.PhysHeight, info, frameBrush);
-            DrawLine(0, 0, info.Width, 0, info, frameBrush);
-
             //Grid
-            var argumentDivideCoef = 10;
-            var dateGridStep = new TimeSpan((int)Math.Ceiling((double)info.DaysWidth / argumentDivideCoef), 0, 0, 0);
-
-            for (DateTime x = info.MinX; x < info.MaxX; x += dateGridStep)
+            for (DateTime x = info.MinX; x < info.MaxX; x += info.XStep)
             {
                 if (x > info.MinX)
                 {
                     DrawLine(x, 0, x, info.PhysHeight, info, gridBrush, true);
                 }
-
-                DrawLabel(x, -20, string.Format("{0:dd MMM yyyy}", x), info);
+                var labelModel = new LabelModel(info)
+                {
+                    Text = string.Format("{0:dd MMM yyyy}", x),
+                    XPhys = x,
+                    YPix = info.MaxHeight + ARGUMENT_LABEL_VERTICAL_SHIFT + info.HeaderHeight
+                };
+                
+                DrawLabel(labelModel, info);
             }
 
-            var valueDivideCoef = 6;
-            var valueGridStep = Math.Ceiling((info.PhysHeight / valueDivideCoef) / 100) * 100;
-
-            for (var y = info.MinY; y <= info.PhysHeight; y += valueGridStep)
+            for (var y = info.MinY; y <= info.MaxY; y += info.YStep)
             {
                 DrawLine(0, y, info.Width, y, info, gridBrush, true);
-                DrawLabel(-30, y + 20, string.Format("{0:F0}", y), info);
+
+                var labelModel = new LabelModel(info)
+                {
+                    Text = string.Format("{0:F1}", y),
+                    XPix = VALUE_LABEL_HORIZONTAL_SHIFT,
+                    YPhys = y
+                };
+                DrawLabel(labelModel, info);
             }
+
+            //Frame
+            //left
+            DrawLine(0, 0, 0, info.MaxY, info, frameBrush);
+            //right
+            DrawLine(info.Width, 0, info.Width, info.MaxY, info, frameBrush);
+            //bottom
+            DrawLine(0, info.MaxY, info.Width, info.MaxY, info, frameBrush);
+            //top
+            DrawLine(0, 0, info.Width, 0, info, frameBrush);
         }
 
-        private void DrawLabel(DateTime x, double y, string labelText, ChartPlotInfo info)
+        private void DrawLabel(LabelModel labelModel, ChartPlotInfo info, LabelAlign align = LabelAlign.Left)
         {
-            var dateLabelWidth = labelText.Length * 8;
+            switch (align)
+            {
+                case LabelAlign.Left:
+                    break;
+                case LabelAlign.Center:
+                    labelModel.XPix -= labelModel.Text.Length * 4;
+                    break;
+                case LabelAlign.Right:
+                    break;
+                default:
+                    break;
+            }
+            
             var textBlock = new TextBlock();
-            textBlock.Text = labelText;
+            textBlock.Text = labelModel.Text;
 
-            RenderElement(textBlock, GeometricHelper.DateToChart(x, info) - dateLabelWidth/2, GeometricHelper.YCoordToChart(y, info));
-        }
-
-
-        private void DrawLabel(double x, double y, string labelText, ChartPlotInfo info)
-        {
-            var dateLabelWidth = labelText.Length * 8;
-            var textBlock = new TextBlock();
-            textBlock.Text = labelText;
-
-            RenderElement(textBlock, GeometricHelper.XCoordToChart(x, info) - dateLabelWidth / 2, GeometricHelper.YCoordToChart(y, info));
+            RenderElement(textBlock, labelModel.XPix, labelModel.YPix);
         }
 
         private void DrawLine(DateTime x1, double y1, DateTime x2, double y2, ChartPlotInfo info, Brush brush, bool isDashed = false)
@@ -294,6 +312,27 @@ namespace HomeCalc.ChartsLib.Charts
 
             RenderElement(line);
         }
+
+        private void DrawCircle(DateTime dateTime, double p, ChartPlotInfo info, Brush brush)
+        {
+            var circle = new Ellipse();
+
+            circle.ToolTip = string.Format("Дата: {0:yyyy MMM dd}, значення: {1}", dateTime, p);
+
+            circle.Stroke = brush;
+            circle.Fill = Brushes.White;
+
+            circle.Width = 10;
+            circle.Height = 10;
+            circle.StrokeThickness = 2;
+            var x = GeometricHelper.DateToChart(dateTime, info) - circle.Width/2;
+            var y = GeometricHelper.YCoordToChart(p, info) - circle.Height/2;
+            Canvas.SetTop(circle, y);
+            Canvas.SetLeft(circle, x);
+
+            RenderElement(circle);
+        }
+
         private void DrawBezierSegment(Point p1, Point p2, Point p3, ChartPlotInfo info, Brush brush)
         {
             //var line = new BezierSegment();
@@ -338,6 +377,10 @@ namespace HomeCalc.ChartsLib.Charts
                     brush);
                 prevItem = item;
             }
+            foreach (var item in timeOrderedSeria)
+            {
+                DrawCircle(item.Argument, item.Value, info, brush);
+            }
         }
 
         private ChartPlotInfo CalculatePlotInfo()
@@ -371,6 +414,14 @@ namespace HomeCalc.ChartsLib.Charts
             plotInfo.MinX = minDate;
             plotInfo.MinY = 0;
 
+            plotInfo.XStep = new TimeSpan((int)Math.Ceiling(plotInfo.DaysWidth / MAX_DESIRED_X_VALUES), 0, 0, 0);
+
+            var valuesPower = Math.Log10(plotInfo.MaxY * 10);
+            var valuesPowerRounded = Math.Ceiling(valuesPower);
+            plotInfo.YStep = 100 / Math.Pow(10, valuesPowerRounded) / 2;
+            plotInfo.MaxY = Math.Ceiling(plotInfo.MaxY / plotInfo.YStep) * plotInfo.YStep;
+
+
             plotInfo.FooterHeight = 50;
             plotInfo.HeaderHeight = 50;
             plotInfo.LeftMarginWidth = 40;
@@ -378,7 +429,15 @@ namespace HomeCalc.ChartsLib.Charts
 
             return plotInfo;
         }
+
         #endregion
         
+    }
+
+    enum LabelAlign
+    {
+        Left = 0,
+        Center = 1,
+        Right = 2
     }
 }

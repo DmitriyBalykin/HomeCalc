@@ -18,11 +18,15 @@ namespace HomeCalc.ChartsLib.Helpers
         }
         public static double DateToChart(DateTime x, ChartPlotInfo info)
         {
-            return (x - info.MinX).Days * info.WidthScale + info.LeftMarginWidth;
+            if (info.DaysWidth == 1)
+            {
+                return info.MaxWidth / 2;
+            }
+            return (x - info.MinX).Days * info.WidthScale + info.LeftMarginWidth + ChartPlotInfo.CHART_START_END_INDENTATION;
         }
         public static double XCoordToChart(double x, ChartPlotInfo info)
         {
-            return x + info.LeftMarginWidth;
+            return x + info.LeftMarginWidth + ChartPlotInfo.CHART_START_END_INDENTATION;
         }
         public static double YCoordToChart(double y, ChartPlotInfo info)
         {

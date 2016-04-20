@@ -17,11 +17,13 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
+        private const int MINIMAL_SEARCH_LENGTH = 3;
+
         public AddDataViewModel()
         {
             purchase = new Purchase();
 
-            AddCommand("Save", new DelegateCommand(SaveCommandExecute));
+            AddCommand("Save", new DelegateCommand(SaveCommandExecute, SaveCommandCanExecute));
 
             StoreService.TypesUpdated += StoreService_TypesUpdated;
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
@@ -50,6 +52,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 logger.Info("Purchase saved");
                 Status.Post("Покупка \"{0}\" збережена", PurchaseName);
+                CleanInputFields();
             }
             else
             {
@@ -57,10 +60,24 @@ namespace HomeCalc.Presentation.ViewModels
                 Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
             }
         }
-
+        private bool SaveCommandCanExecute(object obj)
+        {
+            return !string.IsNullOrEmpty(Count) && !string.IsNullOrEmpty(ItemCost) && !string.IsNullOrEmpty(TotalCost);
+        }
+        private void CleanInputFields()
+        {
+            PurchaseName = string.Empty;
+            Count = string.Empty;
+            ItemCost = string.Empty;
+            totalCost = string.Empty;
+        }
         private void SearchPurchase()
         {
-            var exactPurchases = StoreService.PurchaseHistory.Where(p => p.Name == purchase.Name);
+            if (purchase.Name.Length < MINIMAL_SEARCH_LENGTH)
+            {
+                return;
+            }
+            var exactPurchases = StoreService.PurchaseHistory.Where(p => p.Name.Equals(purchase.Name, StringComparison.InvariantCultureIgnoreCase));
             IEnumerable<Purchase> resultList;
             if (exactPurchases.Count() > 0)
             {
@@ -76,31 +93,41 @@ namespace HomeCalc.Presentation.ViewModels
         }
         private void DoCalculations()
         {
-            if (purchase != null)
+            try
             {
-                purchase.ItemsNumber = StringHelper.ToNumber(Count);
-                purchase.ItemCost = StringHelper.ToNumber(ItemCost);
-                purchase.TotalCost = StringHelper.ToNumber(TotalCost);
-                    
-                DataService.PerformCalculation(purchase, actualCalculationTarget);
+                fieldCalculationInProgress = true;
 
-                if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.ItemCost)
+                if (purchase != null)
                 {
-                    ItemCost = purchase.ItemCost != 0 ? purchase.ItemCost.ToString() : null;
+                    purchase.ItemsNumber = StringHelper.ToNumber(Count);
+                    purchase.ItemCost = StringHelper.ToNumber(ItemCost);
+                    purchase.TotalCost = StringHelper.ToNumber(TotalCost);
+
+                    DataService.PerformCalculation(purchase, actualCalculationTarget);
+
+                    if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.ItemCost)
+                    {
+                        ItemCost = purchase.ItemCost != 0 ? purchase.ItemCost.ToString() : null;
+                    }
+                    if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.TotalCost)
+                    {
+                        TotalCost = purchase.TotalCost != 0 ? purchase.TotalCost.ToString() : null;
+                    }
+                    if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.ItemsNumber)
+                    {
+                        Count = purchase.ItemsNumber != 0 ? purchase.ItemsNumber.ToString() : null;
+                    }
+
+                    OnPropertyChanged(() => Count);
+                    OnPropertyChanged(() => ItemCost);
+                    OnPropertyChanged(() => TotalCost);
                 }
-                if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.TotalCost)
-                {
-                    TotalCost = purchase.TotalCost != 0 ? purchase.TotalCost.ToString() : null;
-                }
-                if (actualCalculationTarget == Services.DataService.CalculationTargetProperty.ItemsNumber)
-                {
-                    Count = purchase.ItemsNumber != 0 ? purchase.ItemsNumber.ToString() : null;
-                }
-                
-                OnPropertyChanged(() => Count);
-                OnPropertyChanged(() => ItemCost);
-                OnPropertyChanged(() => TotalCost);
             }
+            finally
+            {
+                fieldCalculationInProgress = false;
+            }
+            
         }
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
@@ -177,6 +204,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
+        private bool fieldCalculationInProgress = false;
         private string count;
         public string Count
         {
@@ -186,7 +214,10 @@ namespace HomeCalc.Presentation.ViewModels
                 if (count != value && StringHelper.IsNumber(value))
                 {
                     count = StringHelper.GetCorrected(value);
-                    DoCalculations();
+                    if (!fieldCalculationInProgress)
+                    {
+                        DoCalculations();
+                    }
                 }
             }
         }
@@ -199,8 +230,11 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (itemCost != value && StringHelper.IsNumber(value))
                 {
-                    itemCost = StringHelper.GetCorrected(value);
-                    DoCalculations();
+                    itemCost = StringHelper.GetCorrected(value, 2);
+                    if (!fieldCalculationInProgress)
+                    {
+                        DoCalculations();
+                    }
                 }
             }
         }
@@ -213,8 +247,11 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (totalCost != value && StringHelper.IsNumber(value))
                 {
-                    totalCost = StringHelper.GetCorrected(value);
-                    DoCalculations();
+                    totalCost = StringHelper.GetCorrected(value, 2);
+                    if (!fieldCalculationInProgress)
+                    {
+                        DoCalculations();
+                    }
                 }
             }
         }

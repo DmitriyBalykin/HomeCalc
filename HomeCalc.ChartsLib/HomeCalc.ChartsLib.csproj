@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,9 +48,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\HomeCalc.View\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Helpers\BrushGenerator.cs" />
     <Compile Include="Helpers\ChartPlotInfo.cs" />
     <Compile Include="Helpers\GeometricHelper.cs" />
+    <Compile Include="Models\LabelModel.cs" />
     <Compile Include="Models\SeriesDoubleBasedElement.cs" />
     <Compile Include="Models\SeriesStringBasedElement.cs" />
     <Compile Include="Models\SeriesDateBasedElement.cs" />
@@ -64,9 +69,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

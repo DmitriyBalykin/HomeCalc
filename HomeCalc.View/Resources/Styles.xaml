@@ -226,4 +226,9 @@
             </Style>
         </Style.Resources>
     </Style>
+    <Style TargetType="RadioButton">
+        <Style.Setters>
+            <Setter Property="Height" Value="20" />
+        </Style.Setters>
+    </Style>
 </ResourceDictionary>

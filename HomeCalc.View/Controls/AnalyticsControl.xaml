@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              Width="Auto"
              Height="Auto"
-             MinWidth="850"
+             MinWidth="900"
              MinHeight="300">
 
     <UserControl.Resources>
@@ -35,8 +35,14 @@
             <ComboBox ItemsSource="{Binding PurchaseTypesList}"
                      SelectedItem="{Binding PurchaseType}" />
 
-            <ComboBox ItemsSource="{Binding IntervalList}" SelectedItem="{Binding SelectedInterval}" DisplayMemberPath="DisplayName" />
-
+            <ComboBox
+                ItemsSource="{Binding IntervalList}"
+                SelectedItem="{Binding SelectedInterval, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsSynchronizedWithCurrentItem="True"
+                DisplayMemberPath="DisplayName" />
+            <RadioButton Content="Загальна Ціна" GroupName="ShowValueGroup" IsChecked="{Binding TotalCostChart, Mode=TwoWay}" />
+            <RadioButton Content="Ціна одиниці" GroupName="ShowValueGroup" IsChecked="{Binding ItemCostChart, Mode=TwoWay}" />
+            <RadioButton Content="Кількість" GroupName="ShowValueGroup" IsChecked="{Binding NumberChart, Mode=TwoWay}" />
 
             <Button Command="{Binding ShowData}">Показати дані</Button>
         </StackPanel>

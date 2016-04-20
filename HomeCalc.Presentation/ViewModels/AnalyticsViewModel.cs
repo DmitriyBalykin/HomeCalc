@@ -22,18 +22,26 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("ShowData", new DelegateCommand(ShowDataCommandExecuted));
 
             IntervalList = AggregationInterval.GetList();
+
+            PurchaseTypesList.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
+
+            SelectedInterval = IntervalList.FirstOrDefault();
+
+            PurchaseType = PurchaseTypesList.FirstOrDefault();
+
+            TotalCostChart = true;
         }
 
         private void ShowDataCommandExecuted(object obj)
         {
             var searchRequest = new SearchRequest
             {
-                //NameFilter = purchaseName,
+                Name = PurchaseName,
                 Type = PurchaseType,
                 DateStart = SearchFromDate,
                 DateEnd = SearchToDate,
-                SearchByName = false,
-                SearchByType = false,
+                SearchByName = !string.IsNullOrEmpty(PurchaseName),
+                SearchByType = PurchaseType.TypeId != -1,
                 SearchByDate = true,
                 SearchByCost = false,
             };
@@ -43,10 +51,12 @@ namespace HomeCalc.Presentation.ViewModels
                     {
                         return CutTimeTo(x.Date, SelectedInterval);
                     })
-                .Select(g => new SeriesDateBasedElement { Argument = g.Key, Value = g.Sum(p => p.TotalCost) }).ToList();
+                .Select(g => GetChartElement(g)).ToList();
 
             ChartSeries = new List<IEnumerable<SeriesDateBasedElement>> { chartData };
         }
+
+        
         #region properties
         private IEnumerable<IEnumerable<SeriesDateBasedElement>> chartSeries;
         public IEnumerable<IEnumerable<SeriesDateBasedElement>> ChartSeries
@@ -85,10 +95,97 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        
+
+        //TODO rework to listbox selector
+
+        ChartValueType chartValueType = ChartValueType.TotalCost;
+
+        private bool totalCostChart;
+        public bool TotalCostChart
+        {
+            get
+            {
+                return totalCostChart;
+            }
+            set
+            {
+                if (totalCostChart != value)
+                {
+                    totalCostChart = value;
+                    OnPropertyChanged(() => TotalCostChart);
+                }
+                if (value)
+                {
+                    chartValueType = ChartValueType.TotalCost;
+                }
+            }
+        }
+
+        private bool itemCostChart;
+        public bool ItemCostChart
+        {
+            get
+            {
+                return itemCostChart;
+            }
+            set
+            {
+                if (itemCostChart != value)
+                {
+                    itemCostChart = value;
+                    OnPropertyChanged(() => ItemCostChart);
+                }
+                if (value)
+                {
+                    chartValueType = ChartValueType.ItemCost;
+                }
+            }
+        }
+
+        private bool numberChart;
+        public bool NumberChart
+        {
+            get
+            {
+                return numberChart;
+            }
+            set
+            {
+                if (numberChart != value)
+                {
+                    numberChart = value;
+                    OnPropertyChanged(() => NumberChart);
+                }
+                if (value)
+                {
+                    chartValueType = ChartValueType.Number;
+                }
+            }
+        }
+
         #endregion
 
         #region Private
+        private SeriesDateBasedElement GetChartElement(IGrouping<DateTime, Purchase> g)
+        {
+            var seriesElement = new SeriesDateBasedElement{ Argument = g.Key };
+            switch (chartValueType)
+            {
+                case ChartValueType.TotalCost:
+                    var list = g.ToList();
+                    seriesElement.Value = g.Sum(purchase => purchase.TotalCost);
+                    break; 
+                case ChartValueType.ItemCost:
+                    list = g.ToList();
+                    seriesElement.Value = g.Average(purchase => purchase.ItemCost);
+                    break;
+                case ChartValueType.Number:
+                    list = g.ToList();
+                    seriesElement.Value = g.Sum(purchase => purchase.ItemsNumber);
+                    break;
+            }
+            return seriesElement;
+        }
 
         private DateTime CutTimeTo(DateTime dt, AggregationInterval intl)
         {
@@ -109,5 +206,12 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         #endregion
+    }
+
+    enum ChartValueType
+    {
+        TotalCost = 0,
+        ItemCost = 1,
+        Number = 2
     }
 }

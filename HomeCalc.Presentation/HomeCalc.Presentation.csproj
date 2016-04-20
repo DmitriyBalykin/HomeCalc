@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack">
@@ -48,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\HomeCalc.View\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="BasicModels\ViewModel.cs" />
     <Compile Include="Models\AggregationInterval.cs" />
     <Compile Include="Models\Purchase.cs" />
@@ -56,13 +60,13 @@
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\IStorageService.cs" />
     <Compile Include="Services\StorageService.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Migrator.cs" />
     <Compile Include="ViewModels\AddDataViewModel.cs" />
     <Compile Include="ViewModels\ReadDataViewModel.cs" />
     <Compile Include="ViewModels\OperationsViewModel.cs" />
     <Compile Include="ViewModels\SearchComboViewModel.cs" />
     <Compile Include="ViewModels\AnalyticsViewModel.cs" />
+    <Compile Include="ViewModels\UpdateViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +81,10 @@
     <ProjectReference Include="..\HomeCalc.Model\HomeCalc.Model.csproj">
       <Project>{45a5a644-3c52-4602-ab93-bb5c535c22f3}</Project>
       <Name>HomeCalc.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Updater\Updater.csproj">
+      <Project>{a36c633a-fe99-4c11-94ab-76653c37085b}</Project>
+      <Name>Updater</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

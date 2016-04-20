@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCalc.Presentation", "Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCalc.ChartsLib", "HomeCalc.ChartsLib\HomeCalc.ChartsLib.csproj", "{6675F7D6-AD85-407D-BE3C-06EE3C71A660}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{A36C633A-FE99-4C11-94AB-76653C37085B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{6675F7D6-AD85-407D-BE3C-06EE3C71A660}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6675F7D6-AD85-407D-BE3C-06EE3C71A660}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6675F7D6-AD85-407D-BE3C-06EE3C71A660}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A36C633A-FE99-4C11-94AB-76653C37085B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A36C633A-FE99-4C11-94AB-76653C37085B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A36C633A-FE99-4C11-94AB-76653C37085B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A36C633A-FE99-4C11-94AB-76653C37085B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="850">
+             d:DesignHeight="200" d:DesignWidth="900">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -25,11 +25,11 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120" />
             <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="330" />
             <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="100" />
-            <ColumnDefinition Width="100" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="110" />
+            <ColumnDefinition Width="110" />
+            <ColumnDefinition Width="70" />
         </Grid.ColumnDefinitions>
         
         <TextBlock
@@ -42,19 +42,19 @@
             />
         <TextBlock
             Grid.Row="0" Grid.Column="2"
-            Text="Название покупки"
+            Text="Назва покупки"
             />
         <TextBlock
             Grid.Row="0" Grid.Column="3"
-            Text="Количество"
+            Text="Кількість"
             />
         <TextBlock
             Grid.Row="0" Grid.Column="4"
-            Text="Цена за единицу"
+            Text="Вартість одиниці"
             />
         <TextBlock
             Grid.Row="0" Grid.Column="5"
-            Text="Общая цена"
+            Text="Загальна вартість"
             />
         
         <DatePicker
@@ -69,11 +69,11 @@
             DisplayMemberPath="Name"
             />
         <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemsCount}">
-            <TextBlock Text="Считать"  Margin="0,8" />
+            <TextBlock Text="Рахувати"  Margin="0,8" />
         </ToggleButton>
 
         <ToggleButton x:Name="CalcItemToggle" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemCost}">
-            <TextBlock Text="Считать"  Margin="0,8" />
+            <TextBlock Text="Рахувати"  Margin="0,8" />
         </ToggleButton>
 
         <controls:SearchComboBox Grid.Row="1" Grid.Column="2"
@@ -87,7 +87,7 @@
         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
         <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
         <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsCalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
-        <Button Grid.Row="1" Grid.Column="6" Content="Сохранить" Command="{Binding Save}" />
+        <Button Grid.Row="1" Grid.Column="6" Content="Зберегти" Command="{Binding Save}" />
 
         
     </Grid>
