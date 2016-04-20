@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
-using System.Data.Entity;
-using System.Data.Entity.Core.Common;
 using System.Data.SQLite;
 using System.Data.SQLite.EF6;
 using System.IO;
@@ -19,7 +17,8 @@ namespace HomeCalc.Model.DbService
     {
         private static string dbFilePath = "DataStorage.sqlite";
         private static string containerFolder = "HomeCalc";
-        private StorageConnection GetConnection()
+
+        public StorageConnection GetConnection()
         {
             
 #if DEBUG
@@ -42,7 +41,7 @@ namespace HomeCalc.Model.DbService
                 StorageConnection connection = new StorageConnection(connString);
                 if (connection != null && (connection.State == System.Data.ConnectionState.Connecting || connection.State == System.Data.ConnectionState.Open))
                 {
-                    InitializeDb(connection);
+                    InitializeDbScheme(connection);
                     return connection;
                 }
                 else
@@ -52,25 +51,8 @@ namespace HomeCalc.Model.DbService
             }
             
         }
-        public StorageContext GetContext()
-        {
-            try
-            {
-                StorageConnection connection = GetConnection();
-                StorageContext context = new StorageContext(connection.Connection);
-                if (connection.RecentlyInitiated)
-                {
-                    InitializeContext(context);    
-                }
-                return context;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
 
-        private void InitializeContext(StorageContext context)
+        private void InitializeDbContent(StorageConnection connection)
         {
             foreach (var value in DefaultDbContent.Values)
             {
@@ -95,13 +77,14 @@ namespace HomeCalc.Model.DbService
                             context.SaveChanges();
                         }
                         break;
+                        case ""
                     default:
                         break;
                 }
             }
         }
 
-        private void InitializeDb(StorageConnection connection)
+        private void InitializeDbScheme(StorageConnection connection)
         {
             foreach (var table in DefaultDbContent.Tables.Keys)
             {
@@ -123,33 +106,6 @@ namespace HomeCalc.Model.DbService
             catch (SQLiteException)
             {
                 return false;
-            }
-        }
-    }
-
-    class SQLiteDbConfiguration : DbConfiguration
-    {
-        public SQLiteDbConfiguration()
-        {
-            string assemblyName = typeof(SQLiteProviderFactory).Assembly.GetName().Name;
-            RegisterDbProviderFactories(assemblyName);
-            SetProviderFactory(assemblyName, SQLiteFactory.Instance);
-            SetProviderFactory(assemblyName, SQLiteProviderFactory.Instance);
-            SetProviderServices(assemblyName, (DbProviderServices)SQLiteProviderFactory.Instance.GetService(typeof (DbProviderServices)));
-        }
-
-        private void RegisterDbProviderFactories(string assemblyName)
-        {
-            var dataSet = ConfigurationManager.GetSection("system.data") as DataSet;
-            if (dataSet != null)
-            {
-                var dbProviderFactoriesDatatable = dataSet.Tables.OfType<DataTable>().FirstOrDefault(x => x.TableName == typeof(DbProviderFactories).Name);
-                var dataRow = dbProviderFactoriesDatatable.Rows.OfType<DataRow>().FirstOrDefault(x => x.ItemArray[2].ToString() == assemblyName);
-                if (dataRow != null)
-                {
-                    dbProviderFactoriesDatatable.Rows.Remove(dataRow);
-                }
-                dbProviderFactoriesDatatable.Rows.Add("SQLite Data Provider (Entity Framework 6)", ".NET Framework Data Provider for SQLite (Entity Framework 6)", assemblyName, typeof(SQLiteProviderFactory).Name);
             }
         }
     }

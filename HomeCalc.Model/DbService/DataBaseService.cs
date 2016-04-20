@@ -1,6 +1,7 @@
 ﻿using HomeCalc.Model.DataModels;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,50 +30,61 @@ namespace HomeCalc.Model.DbService
         }
         public bool SaveSettings(SettingsModel settings)
         {
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
-
+                //TODO
+                var query = string.Format("INSERT INTO SETTINGS ");
             }
             return false;
         }
         public SettingsModel LoadSettings()
         {
             SettingsModel settings = null;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
-
+                //TODO
             }
             return settings;
         }
-        public bool AddPurchase(PurchaseModel purchase)
+        public async Task<bool> AddPurchase(PurchaseModel purchase)
         {
             bool result = false;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {
-                    db.Purchase.Add(purchase);
-                    db.SaveChanges();
+                    var query = string.Format(
+                        "INSERT INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+                        purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
+
+                    await new SQLiteCommand(query, db.Connection).ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
                 }
                 catch (Exception)
                 {
                     result = false;
                 }
-                
             }
             return result;
         }
-        public bool SavePurchaseBulk(IEnumerable<PurchaseModel> purchases)
+        public async Task<bool> SavePurchaseBulk(IEnumerable<PurchaseModel> purchases)
         {
             bool result = false;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {
-                    db.Purchase.AddRange(purchases);
-                    db.SaveChanges();
-                    result = true;
+                    var transaction = db.Connection.BeginTransaction();
+                    
+                    foreach(var purchase in purchases)
+                    {
+                        var query = string.Format(
+                        "INSERT INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+                        purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
+
+                        await new SQLiteCommand(query, transaction.Connection).ExecuteNonQueryAsync().ConfigureAwait(false);
+                    }
+                    transaction.Commit();
                 }
                 catch (Exception)
                 {
@@ -85,7 +97,7 @@ namespace HomeCalc.Model.DbService
         public bool SavePurchaseType(PurchaseTypeModel purchaseType)
         {
             bool result = false;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {
@@ -104,7 +116,7 @@ namespace HomeCalc.Model.DbService
         public PurchaseModel LoadPurchase(int id)
         {
             PurchaseModel purchase = null;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 purchase = db.Purchase.Find(id);
             }
@@ -113,7 +125,7 @@ namespace HomeCalc.Model.DbService
         public IList<PurchaseModel> LoadPurchaseList(Func<PurchaseModel, bool> request)
         {
             IList<PurchaseModel> list = null;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 list = db.Purchase.Where(request).ToList();
             }
@@ -122,7 +134,7 @@ namespace HomeCalc.Model.DbService
         public IList<PurchaseModel> LoadCompletePurchaseList()
         {
             IList<PurchaseModel> list = null;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 list = db.Purchase.ToList();
             }
@@ -131,7 +143,7 @@ namespace HomeCalc.Model.DbService
         public IEnumerable<PurchaseTypeModel> LoadPurchaseTypeList()
         {
             IEnumerable<PurchaseTypeModel> list = null;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {
@@ -148,7 +160,7 @@ namespace HomeCalc.Model.DbService
         public bool UpdatePurchase(PurchaseModel purchase)
         {
             bool result = false;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {
@@ -174,7 +186,7 @@ namespace HomeCalc.Model.DbService
         public bool RemovePurchase(long purchaseId)
         {
             bool result = false;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {
@@ -196,7 +208,7 @@ namespace HomeCalc.Model.DbService
         public bool UpdatePurchaseType(PurchaseTypeModel type)
         {
             bool result = false;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {
@@ -218,7 +230,7 @@ namespace HomeCalc.Model.DbService
         public bool DeletePurchaseType(PurchaseTypeModel type)
         {
             bool result = false;
-            using (var db = dbManager.GetContext())
+            using (var db = dbManager.GetConnection())
             {
                 try
                 {

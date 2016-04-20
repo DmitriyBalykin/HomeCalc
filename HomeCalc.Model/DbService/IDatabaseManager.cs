@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HomeCalc.Model.DbConnectionWrappers;
 
 namespace HomeCalc.Model.DbService
 {
     public interface IDatabaseManager
     {
-        StorageContext GetContext();
+        StorageConnection GetConnection();
     }
 }

@@ -12,8 +12,8 @@ namespace HomeCalc.Model.DbService
         public static Dictionary<string, string> Tables { get
         {
             return new Dictionary<string,string>{
-                {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY, Name TEXT)"},
-                {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY, Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"}
+                {"PURCHASETYPEMODELS" , "(Name TEXT, TypeId INTEGER PRIMARY KEY)"},
+                {"PURCHASEMODELS" , "(Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, PurchaseId INTEGER PRIMARY KEY, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"}
             };
         } }
         public static List<DbItem<PurchaseTypeModel>> Values
