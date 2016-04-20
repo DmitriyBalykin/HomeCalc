@@ -16,6 +16,7 @@ namespace HomeCalc.Model.DbService
         { Initiated = false;  }
         public DbSet<PurchaseTypeModel> PurchaseType { get; set; }
         public DbSet<PurchaseModel> Purchase { get; set; }
+        public DbSet<SettingsModel> Settings { get; set; }
         public bool Initiated { get; set; }
         void IDisposable.Dispose()
         {

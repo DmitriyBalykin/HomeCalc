@@ -44,6 +44,58 @@ namespace HomeCalc.Model.DbService
             }
             return settings;
         }
+        public bool UpdateSettings(SettingsModel settings)
+        {
+            bool result = false;
+            using (var db = dbManager.GetContext())
+            {
+                try
+                {
+                    var storedPurchase = db.Purchase.Find(purchase.PurchaseId);
+                    if (storedPurchase != null)
+                    {
+                        storedPurchase.Name = purchase.Name;
+                        storedPurchase.ItemsNumber = purchase.ItemsNumber;
+                        storedPurchase.ItemCost = purchase.ItemCost;
+                        storedPurchase.TotalCost = purchase.TotalCost;
+                        storedPurchase.Timestamp = purchase.Timestamp;
+                        db.SaveChanges();
+                        result = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+        public bool DeleteSettings(SettingsModel settings)
+        {
+            bool result = false;
+            using (var db = dbManager.GetContext())
+            {
+                try
+                {
+                    var storedPurchase = db.Purchase.Find(settings.SettingsProfileId);
+                    if (storedPurchase != null)
+                    {
+                        storedPurchase.Name = purchase.Name;
+                        storedPurchase.ItemsNumber = purchase.ItemsNumber;
+                        storedPurchase.ItemCost = purchase.ItemCost;
+                        storedPurchase.TotalCost = purchase.TotalCost;
+                        storedPurchase.Timestamp = purchase.Timestamp;
+                        db.SaveChanges();
+                        result = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
         public bool AddPurchase(PurchaseModel purchase)
         {
             bool result = false;

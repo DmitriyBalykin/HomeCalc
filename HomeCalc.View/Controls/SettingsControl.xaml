@@ -15,9 +15,11 @@
     </UserControl.Resources>
 
     <Border Background="{StaticResource TitlePanelGradient}">
-        <TabControl>
-            <TabItem Header="Керування">
-                <Grid Style="{StaticResource SettingsGridStyle}">
+        <TabControl
+            Padding="30">
+            <TabItem Header="Вікна">
+                <Grid Style="{StaticResource SettingsGridStyle}"
+                      >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="300" />
                         <ColumnDefinition Width="50" />
@@ -30,22 +32,34 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Адаптувати розмір вікна до вмісту" />
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding AutoWindowSize}" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding AutoWindowSize}"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Вирівнювати вікно по центру екрану" />
                     <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding AutoWindowPosition}"  />
-                    
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Очищувати поля після збереження запису" />
-                    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ClearFieldsOnSave}"/>
-
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Зкидати конфігурацію обчислення після збереження запису" Height="30" Margin="10,10,0,0" Width="280" TextWrapping="Wrap" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ResetCalculation}" />
-
-                    
                 </Grid>
             </TabItem>
-            <TabItem Header="Додаткове">
-                
+            <TabItem Header="Збереження даних">
+                <Grid Style="{StaticResource SettingsGridStyle}"
+                      >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300" />
+                        <ColumnDefinition Width="50" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Очищувати поля після збереження запису" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ClearFieldsOnSave}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Зкидати конфігурацію обчислення після збереження запису" Height="30" TextWrapping="Wrap" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ResetCalculation}" />
+
+
+                </Grid>
             </TabItem>
         </TabControl>
     </Border>

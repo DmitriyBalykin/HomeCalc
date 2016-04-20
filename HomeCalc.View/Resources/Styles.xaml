@@ -208,6 +208,9 @@
         </Style.Resources>
     </Style>
     <Style x:Key="SettingsGridStyle" TargetType="Grid" BasedOn="{StaticResource BasicGridStyle}">
+        <Style.Setters>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style.Setters>
         <Style.Resources>
             <Style TargetType="TextBlock">
                 <Style.Setters>
