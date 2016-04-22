@@ -17,7 +17,7 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
-        private const int MINIMAL_SEARCH_LENGTH = 3;
+        private const int MINIMAL_SEARCH_LENGTH = 2;
 
         public AddDataViewModel()
         {
@@ -25,10 +25,8 @@ namespace HomeCalc.Presentation.ViewModels
 
             AddCommand("Save", new DelegateCommand(SaveCommandExecute, SaveCommandCanExecute));
 
-            StoreService.TypesUpdated += StoreService_TypesUpdated;
+            
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
-
-            typeSelectorItems = new ObservableCollection<PurchaseType>( StoreService.LoadPurchaseTypeList());
 
             PurchaseType = TypeSelectorItems.FirstOrDefault();
 
@@ -41,13 +39,10 @@ namespace HomeCalc.Presentation.ViewModels
         {
             PurchaseHistoryItems = new ObservableCollection<Purchase>(StoreService.PurchaseHistory);
         }
-        void StoreService_TypesUpdated(object sender, EventArgs e)
-        {
-            TypeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
-        }
 
         private void SaveCommandExecute(object obj)
         {
+            purchase.Name = purchase.Name.Trim();
             if (StoreService.AddPurchase(purchase))
             {
                 logger.Info("Purchase saved");
@@ -62,14 +57,18 @@ namespace HomeCalc.Presentation.ViewModels
         }
         private bool SaveCommandCanExecute(object obj)
         {
-            return !string.IsNullOrEmpty(Count) && !string.IsNullOrEmpty(ItemCost) && !string.IsNullOrEmpty(TotalCost);
+            return
+                !string.IsNullOrWhiteSpace(purchase.Name) &&
+                !string.IsNullOrWhiteSpace(Count) &&
+                !string.IsNullOrWhiteSpace(ItemCost) &&
+                !string.IsNullOrWhiteSpace(TotalCost);
         }
         private void CleanInputFields()
         {
             PurchaseName = string.Empty;
             Count = string.Empty;
             ItemCost = string.Empty;
-            totalCost = string.Empty;
+            TotalCost = string.Empty;
         }
         private void SearchPurchase()
         {
@@ -167,22 +166,6 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        private ObservableCollection<PurchaseType> typeSelectorItems;
-        public ObservableCollection<PurchaseType> TypeSelectorItems
-        { 
-            get
-            {
-                return typeSelectorItems; 
-            }
-            set
-            {
-                if (typeSelectorItems != value)
-                {
-                    typeSelectorItems = value;
-                    OnPropertyChanged(() => TypeSelectorItems);
-                }
-            }
-        }
 
         private DataService.CalculationTargetProperty actualCalculationTarget;
 
@@ -211,7 +194,7 @@ namespace HomeCalc.Presentation.ViewModels
             get { return count; }
             set
             {
-                if (count != value && StringHelper.IsNumber(value))
+                if ((count != value && StringHelper.IsNumber(value)) || value == string.Empty)
                 {
                     count = StringHelper.GetCorrected(value);
                     if (!fieldCalculationInProgress)
@@ -228,7 +211,7 @@ namespace HomeCalc.Presentation.ViewModels
             get { return itemCost; }
             set
             {
-                if (itemCost != value && StringHelper.IsNumber(value))
+                if ((itemCost != value && StringHelper.IsNumber(value)) || value == string.Empty)
                 {
                     itemCost = StringHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
@@ -245,7 +228,7 @@ namespace HomeCalc.Presentation.ViewModels
             get { return totalCost; }
             set
             {
-                if (totalCost != value && StringHelper.IsNumber(value))
+                if ((totalCost != value && StringHelper.IsNumber(value)) || value == string.Empty)
                 {
                     totalCost = StringHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)

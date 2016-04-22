@@ -32,7 +32,7 @@
             <DatePicker SelectedDate="{Binding SearchFromDate}" />
             <DatePicker SelectedDate="{Binding SearchToDate}" />
             <TextBox Text="{Binding PurchaseName}" />
-            <ComboBox ItemsSource="{Binding PurchaseTypesList}"
+            <ComboBox ItemsSource="{Binding TypeSelectorItems}"
                      SelectedItem="{Binding PurchaseType}" />
 
             <ComboBox

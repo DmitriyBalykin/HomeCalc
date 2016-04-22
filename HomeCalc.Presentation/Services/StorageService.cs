@@ -104,6 +104,17 @@ namespace HomeCalc.Presentation.Models
             }
             return result;
         }
+
+        public bool RemovePurchaseType(int p)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RenamePurchaseType(int p, string NewPurchaseType)
+        {
+            throw new NotImplementedException();
+        }
+
         public Purchase LoadPurchase(int id)
         {
             return ModelToPurchase(DBService.LoadPurchase(id));
@@ -219,6 +230,8 @@ namespace HomeCalc.Presentation.Models
                 return purchaseHistory;
             }
         }
+
+        
     }
 
     class PurchaseTypesCache

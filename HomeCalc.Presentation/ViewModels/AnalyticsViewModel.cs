@@ -23,11 +23,11 @@ namespace HomeCalc.Presentation.ViewModels
 
             IntervalList = AggregationInterval.GetList();
 
-            PurchaseTypesList.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
+            TypeSelectorItems.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
 
             SelectedInterval = IntervalList.FirstOrDefault();
 
-            PurchaseType = PurchaseTypesList.FirstOrDefault();
+            PurchaseType = TypeSelectorItems.FirstOrDefault();
 
             TotalCostChart = true;
         }
