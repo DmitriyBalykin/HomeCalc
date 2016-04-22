@@ -34,7 +34,7 @@ namespace HomeCalc.Presentation.ViewModels
 
             actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
 
-            Status.Post("Завантажено");
+            Status.Post("Все готово для роботи!");
         }
 
         void UpdatePurchaseHistory(object sender, EventArgs e)
@@ -148,7 +148,7 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 PurchaseHistoryItems = new ObservableCollection<Purchase>(value);
-                ShowPurchaseHistory = true;
+                ShowPurchaseHistory = PurchaseHistoryItems.Count() > 0;
             }
         }
         private ObservableCollection<Purchase> purchaseHistoryItems;
