@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Model.DataModels
 {
-    public class SettingsModel
+    public class SettingsStorageModel
     {
+        public Int64 SettingId { get; set; }
+        public string SettingName { get; set; }
+        public string SettingValue { get; set; }
     }
 }

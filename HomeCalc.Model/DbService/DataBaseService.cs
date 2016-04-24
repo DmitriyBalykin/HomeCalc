@@ -1,6 +1,8 @@
-﻿using HomeCalc.Model.DataModels;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Model.DataModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
@@ -10,11 +12,14 @@ namespace HomeCalc.Model.DbService
 {
     public class DataBaseService
     {
+
+        private Logger logger = LogService.GetLogger();
         private static DataBaseService instance;
         private IDatabaseManager dbManager;
         private static object monitor = new object();
         private DataBaseService(IDatabaseManager dbManager)
         {
+            logger.Info("New database instance initiated.");
             this.dbManager = dbManager;
         }
         public static DataBaseService GetInstance()
@@ -28,22 +33,52 @@ namespace HomeCalc.Model.DbService
             }
             return instance;
         }
-        public bool SaveSettings(SettingsModel settings)
+        public async Task<bool> SaveSettings(SettingsStorageModel settings)
         {
-            using (var db = dbManager.GetConnection())
+            bool result = false;
+            try
             {
-                //TODO
-                var query = string.Format("INSERT INTO SETTINGS ");
+                using (var db = dbManager.GetConnection())
+                {
+                    using (var command = db.Connection.CreateCommand())
+                    {
+                        command.CommandText = string.Format("INSERT INTO SETTINGS ({0}, {1})", settings.SettingName, settings.SettingValue);
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    }
+                }
+                result = true;
             }
-            return false;
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"SaveSettings\": {0}", ex.Message);
+            }
+
+            return result;
         }
-        public SettingsModel LoadSettings()
+        public async Task<IEnumerable<SettingsStorageModel>> LoadSettings()
         {
-            SettingsModel settings = null;
-            using (var db = dbManager.GetConnection())
+            IEnumerable<SettingsStorageModel> settings = new List<SettingsStorageModel>();
+            try
             {
-                //TODO
+                using (var db = dbManager.GetConnection())
+                {
+                    using (var command = db.Connection.CreateCommand())
+                    {
+                        command.CommandText = string.Format("SELECT * FROM SETTINGS");
+                        DbDataReader dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+                        while (var result = dbDataReader.)
+                        {
+                            
+                        }
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadSettings\": {0}", ex.Message);
+            }
+
             return settings;
         }
         public async Task<bool> AddPurchase(PurchaseModel purchase)

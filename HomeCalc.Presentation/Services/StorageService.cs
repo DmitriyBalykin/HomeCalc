@@ -57,11 +57,11 @@ namespace HomeCalc.Presentation.Models
             return instance;
         }
 
-        public bool SaveSettings(SettingsModel settings)
+        public bool SaveSettings(SettingsStorageModel settings)
         {
             return DBService.SaveSettings(settings);
         }
-        public SettingsModel LoadSettings()
+        public SettingsStorageModel LoadSettings()
         {
             return DBService.LoadSettings();
         }
