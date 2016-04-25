@@ -2,6 +2,7 @@
 using HomeCalc.Model.DataModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SQLite;
 using System.Linq;
@@ -42,8 +43,20 @@ namespace HomeCalc.Model.DbService
                 {
                     using (var command = db.Connection.CreateCommand())
                     {
-                        command.CommandText = string.Format("INSERT INTO SETTINGS ({0}, {1})", settings.SettingName, settings.SettingValue);
-                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
+                        {
+                            if (settings.SettingId == 0)
+                            {
+                                command.CommandText = string.Format("INSERT OR REPLACE INTO SETTINGS ({0}, {1}, {2})", settings.ProfileId, settings.SettingName, settings.SettingValue);
+                            }
+                            else
+                            {
+                                command.CommandText = string.Format("UPDATE SETTINGS SET ProfileId = {0}, SettingName = {1}, SettingValue {2} WHERE SettingId = {3}", settings.ProfileId, settings.SettingName, settings.SettingValue, settings.SettingId);
+                            }
+                            await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                            transaction.Commit();
+                        }
+                        
                     }
                 }
                 result = true;
@@ -57,7 +70,7 @@ namespace HomeCalc.Model.DbService
         }
         public async Task<IEnumerable<SettingsStorageModel>> LoadSettings()
         {
-            IEnumerable<SettingsStorageModel> settings = new List<SettingsStorageModel>();
+            var settings = new List<SettingsStorageModel>();
             try
             {
                 using (var db = dbManager.GetConnection())
@@ -66,10 +79,16 @@ namespace HomeCalc.Model.DbService
                     {
                         command.CommandText = string.Format("SELECT * FROM SETTINGS");
                         DbDataReader dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
-
-                        while (var result = dbDataReader.)
+                        //{"SETTINGMODELS" , "(ProfileId INTEGER, SettingName TEXT, SettingValue TEXT, SettingId INTEGER PRIMARY KEY)"}
+                        while (dbDataReader.HasRows && dbDataReader.Read())
                         {
-                            
+                            settings.Add(new SettingsStorageModel()
+                            {
+                                SettingId = dbDataReader.GetInt64(0),
+                                ProfileId = dbDataReader.GetInt64(1),
+                                SettingName = dbDataReader.GetString(2),
+                                SettingValue = dbDataReader.GetString(3)
+                            });
                         }
                     }
                 }
@@ -81,24 +100,37 @@ namespace HomeCalc.Model.DbService
 
             return settings;
         }
-        public async Task<bool> AddPurchase(PurchaseModel purchase)
+        public async Task<bool> SavePurchase(PurchaseModel purchase)
         {
             bool result = false;
-            using (var db = dbManager.GetConnection())
+            try
             {
-                try
+                using (var db = dbManager.GetConnection())
                 {
-                    var query = string.Format(
-                        "INSERT INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
+                    using (var command = db.Connection.CreateCommand())
+                    {
+                        if (purchase.PurchaseId == 0)
+                        {
+                            command.CommandText = string.Format(
+                            "INSERT OR REPLACE INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+                            purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
+                        }
+                        else
+                        {
+                            command.CommandText = string.Format(
+                            "UPDATE PURCHASEMODELS SET Name = {0}, Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
+                            purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId, purchase.PurchaseId);
+                        }
 
-                    await new SQLiteCommand(query, db.Connection).ExecuteNonQueryAsync().ConfigureAwait(false);
-                    result = true;
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        result = true;
+                    }
                 }
-                catch (Exception)
-                {
-                    result = false;
-                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error("Exception during execution method \"AddPurchase\": {0}", ex.Message);
             }
             return result;
         }
@@ -109,70 +141,125 @@ namespace HomeCalc.Model.DbService
             {
                 try
                 {
-                    var transaction = db.Connection.BeginTransaction();
-                    
-                    foreach(var purchase in purchases)
+                    using (var transaction = db.Connection.BeginTransaction())
                     {
-                        var query = string.Format(
-                        "INSERT INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
+                        using (var command = db.Connection.CreateCommand())
+                        {
+                            foreach (var purchase in purchases)
+                            {
+                                command.CommandText = string.Format(
+                                "INSERT INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+                                purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
 
-                        await new SQLiteCommand(query, transaction.Connection).ExecuteNonQueryAsync().ConfigureAwait(false);
+                                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                            }
+                            transaction.Commit();
+                        }
                     }
-                    transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     result = false;
+                    logger.Error("Exception during execution method \"SavePurchaseBulk\": {0}", ex.Message);
                 }
 
             }
             return result;
         }
-        public bool SavePurchaseType(PurchaseTypeModel purchaseType)
+        public async Task<bool> SavePurchaseType(PurchaseTypeModel purchaseType)
         {
+
             bool result = false;
-            using (var db = dbManager.GetConnection())
+            try
             {
-                try
+                using (var db = dbManager.GetConnection())
                 {
-                    db.PurchaseType.Add(purchaseType);
-                    db.SaveChanges();
-                    result = true;
+                    using (var command = db.Connection.CreateCommand())
+                    {
+                        if (purchaseType.TypeId == 0)
+                        {
+                            command.CommandText = string.Format("INSERT OR REPLACE INTO PURCHASETYPEMODELS ({0})", purchaseType.Name);
+                        }
+                        else
+                        {
+                            command.CommandText = string.Format("INSERT OR REPLACE INTO PURCHASETYPEMODELS ({0})", purchaseType.Name);
+                        }
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        result = true;
+                    }
                 }
-                catch (Exception)
-                {
-                    result = false;
-                }
-                
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error("Exception during execution method \"SavePurchaseType\": {0}", ex.Message);
             }
             return result;
         }
-        public PurchaseModel LoadPurchase(int id)
+        public async Task<PurchaseModel> LoadPurchase(int id)
         {
             PurchaseModel purchase = null;
-            using (var db = dbManager.GetConnection())
+            try
             {
-                purchase = db.Purchase.Find(id);
+                using (var db = dbManager.GetConnection())
+                {
+                    using (var command = db.Connection.CreateCommand())
+                    {
+                        command.CommandText = string.Format("SELECT * FROM PURCHASEMODELS WHERE PurchaseId = {0}", id);
+                        var dbReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                        if (dbReader.HasRows && dbReader.Read())
+                        {
+                            //{"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                            purchase = new PurchaseModel
+                            {
+                                Name = dbReader.GetString(1),
+                                Timestamp = dbReader.GetInt64(2),
+                                TotalCost = dbReader.GetDouble(3),
+                                ItemCost = dbReader.GetDouble(4),
+                                ItemsNumber = dbReader.GetDouble(5),
+                                TypeId = dbReader.GetInt64(6)
+                            };
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadPurchase\": {0}", ex.Message);
             }
             return purchase;
         }
         public IList<PurchaseModel> LoadPurchaseList(Func<PurchaseModel, bool> request)
         {
             IList<PurchaseModel> list = null;
+            try
+            {
             using (var db = dbManager.GetConnection())
             {
                 list = db.Purchase.Where(request).ToList();
+            }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadPurchaseList\": {0}", ex.Message);
             }
             return list;
         }
         public IList<PurchaseModel> LoadCompletePurchaseList()
         {
             IList<PurchaseModel> list = null;
-            using (var db = dbManager.GetConnection())
+            try
             {
-                list = db.Purchase.ToList();
+                using (var db = dbManager.GetConnection())
+                {
+                    list = db.Purchase.ToList();
+                }
             }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadCompletePurchaseList\": {0}", ex.Message);
+            }
+            
             return list;
         }
         public IEnumerable<PurchaseTypeModel> LoadPurchaseTypeList()
@@ -184,40 +271,41 @@ namespace HomeCalc.Model.DbService
                 {
                     list = db.PurchaseType.ToList();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    
-                    throw;
+                    logger.Error("Exception during execution method \"LoadPurchaseTypeList\": {0}", ex.Message);
                 }
             }
             return list;
         }
-        public bool UpdatePurchase(PurchaseModel purchase)
-        {
-            bool result = false;
-            using (var db = dbManager.GetConnection())
-            {
-                try
-                {
-                    var storedPurchase = db.Purchase.Find(purchase.PurchaseId);
-                    if (storedPurchase != null)
-                    {
-                        storedPurchase.Name = purchase.Name;
-                        storedPurchase.ItemsNumber = purchase.ItemsNumber;
-                        storedPurchase.ItemCost = purchase.ItemCost;
-                        storedPurchase.TotalCost = purchase.TotalCost;
-                        storedPurchase.Timestamp = purchase.Timestamp;
-                        db.SaveChanges();
-                        result = true;
-                    }
-                }
-                catch (Exception)
-                {
-                    result = false;
-                }
-            }
-            return result;
-        }
+        // Use Save purchase instead
+        //public bool UpdatePurchase(PurchaseModel purchase)
+        //{
+        //    bool result = false;
+        //    using (var db = dbManager.GetConnection())
+        //    {
+        //        try
+        //        {
+        //            var storedPurchase = db.Purchase.Find(purchase.PurchaseId);
+        //            if (storedPurchase != null)
+        //            {
+        //                storedPurchase.Name = purchase.Name;
+        //                storedPurchase.ItemsNumber = purchase.ItemsNumber;
+        //                storedPurchase.ItemCost = purchase.ItemCost;
+        //                storedPurchase.TotalCost = purchase.TotalCost;
+        //                storedPurchase.Timestamp = purchase.Timestamp;
+        //                db.SaveChanges();
+        //                result = true;
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            result = false;
+        //            logger.Error("Exception during execution method \"UpdatePurchase\": {0}", ex.Message);
+        //        }
+        //    }
+        //    return result;
+        //}
         public bool RemovePurchase(long purchaseId)
         {
             bool result = false;
@@ -233,9 +321,10 @@ namespace HomeCalc.Model.DbService
                         result = true;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     result = false;
+                    logger.Error("Exception during execution method \"RemovePurchase\": {0}", ex.Message);
                 }
             }
             return result;
@@ -255,9 +344,10 @@ namespace HomeCalc.Model.DbService
                         result = true;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     result = false;
+                    logger.Error("Exception during execution method \"UpdatePurchaseType\": {0}", ex.Message);
                 }
             }
             return result;
@@ -277,9 +367,10 @@ namespace HomeCalc.Model.DbService
                         result = true;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     result = false;
+                    logger.Error("Exception during execution method \"DeletePurchaseType\": {0}", ex.Message);
                 }
             }
             return result;

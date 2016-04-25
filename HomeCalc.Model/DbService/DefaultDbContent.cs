@@ -9,13 +9,37 @@ namespace HomeCalc.Model.DbService
 {
     public static class DefaultDbContent
     {
-        public static Dictionary<string, string> Tables { get
+        public static Dictionary<string, string> OldTables { get
         {
             return new Dictionary<string,string>{
                 {"PURCHASETYPEMODELS" , "(Name TEXT, TypeId INTEGER PRIMARY KEY)"},
                 {"PURCHASEMODELS" , "(Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, PurchaseId INTEGER PRIMARY KEY, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"}
             };
         } }
+        public static Dictionary<string, string> AlterTables
+        {
+            get
+            {
+                return new Dictionary<string, string>{
+                {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}
+            };
+            }
+        }
+
+        public static Dictionary<string, string> Tables
+        {
+            get
+            {
+                return new Dictionary<string, string>{
+                {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}
+            };
+            }
+        }
+
         public static List<DbItem<PurchaseTypeModel>> Values
         {
             get
