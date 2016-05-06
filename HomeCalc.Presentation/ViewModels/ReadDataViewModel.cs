@@ -29,7 +29,7 @@ namespace HomeCalc.Presentation.ViewModels
             SearchFromDate = DateTime.Now.AddMonths(-1);
             SearchToDate = DateTime.Now;
 
-            PurchaseTypesList = new BindingList<PurchaseType>(StoreService.LoadPurchaseTypeList());
+            PurchaseTypesList = new BindingList<PurchaseType>(StoreService.LoadPurchaseTypeList().Result);
         }
 
         void SearchResultList_ListChanged(object sender, ListChangedEventArgs e)
@@ -52,7 +52,7 @@ namespace HomeCalc.Presentation.ViewModels
                         "Видалення запису",
                         MessageBoxButtons.OKCancel,
                         MessageBoxIcon.Question);
-                    if (result == DialogResult.OK && StoreService.RemovePurchase(purchase.Id))
+                    if (result == DialogResult.OK && StoreService.RemovePurchase(purchase.Id).Result)
                     {
                         BackupSearchList(SearchResultList);
                         Status.Post("Покупка \"{0}\" видалена", purchase.Name);
@@ -104,7 +104,7 @@ namespace HomeCalc.Presentation.ViewModels
                 OnPropertyChanged(() => SearchResultList);
                 BackupSearchList(SearchResultList);
                 //SearchResultList = new BindingList<Purchase>(SearchResultListBackup);
-                if (StoreService.UpdatePurchase(editingPurchase))
+                if (StoreService.UpdatePurchase(editingPurchase).Result)
                 {
                     Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
                 }
@@ -122,10 +122,10 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void SearchCommandExecute(object obj)
         {
-            var searchRequest = new SearchRequest
+            var searchRequest = new SearchRequestModel
             {
                 Name = purchaseName,
-                Type = PurchaseType,
+                TypeId = PurchaseType.TypeId,
                 CostStart = costStart,
                 CostEnd = costEnd,
                 DateStart = searchFromDate,
@@ -135,7 +135,7 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByDate = searchByDate,
                 SearchByCost = searchByCost,
             };
-            List<Purchase> results = StoreService.LoadPurchaseList(searchRequest).OrderBy(p => p.Date).ToList();
+            List<Purchase> results = StoreService.LoadPurchaseList(searchRequest).Result.OrderBy(p => p.Date).ToList();
             TotalCount = results.Sum(p => p.ItemsNumber).ToString();
             TotalCost = results.Sum(p => p.TotalCost).ToString();
             BackupSearchList(results);

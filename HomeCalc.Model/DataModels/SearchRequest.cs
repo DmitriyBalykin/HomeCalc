@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Presentation.Models
 {
-    public class SearchRequest
+    public class SearchRequestModel
     {
         public string Name { get; set; }
 
-        public PurchaseType Type { get; set; }
+        public int TypeId { get; set; }
 
         public double CostStart { get; set; }
 

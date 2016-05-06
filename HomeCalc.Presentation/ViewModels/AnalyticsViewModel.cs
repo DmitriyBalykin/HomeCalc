@@ -34,10 +34,10 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void ShowDataCommandExecuted(object obj)
         {
-            var searchRequest = new SearchRequest
+            var searchRequest = new SearchRequestModel
             {
                 Name = PurchaseName,
-                Type = PurchaseType,
+                TypeId = PurchaseType.TypeId,
                 DateStart = SearchFromDate,
                 DateEnd = SearchToDate,
                 SearchByName = !string.IsNullOrEmpty(PurchaseName),
