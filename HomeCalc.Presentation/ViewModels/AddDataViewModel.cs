@@ -30,7 +30,7 @@ namespace HomeCalc.Presentation.ViewModels
 
             LoadPurchaseTypes();
 
-            PurchaseType = TypeSelectorItems.FirstOrDefault();
+            
 
             actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
 
@@ -71,7 +71,14 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void LoadPurchaseTypes()
         {
-            Task.Factory.StartNew(async () => { typeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false)); });
+            Task.Factory.StartNew(async () => 
+            {
+                typeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
+                if (PurchaseType == null && TypeSelectorItems.Count() > 0)
+                {
+                    PurchaseType = TypeSelectorItems.FirstOrDefault();
+                }
+            });
         }
 
         private void CleanInputFields()

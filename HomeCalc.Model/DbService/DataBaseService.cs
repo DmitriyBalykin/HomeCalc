@@ -276,7 +276,7 @@ namespace HomeCalc.Model.DbService
                 using(var db = connection ?? dbManager.GetConnection())
                 using(var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT * FROM PURCHASELISTMODELS";
+                    command.CommandText = "SELECT * FROM PURCHASETYPEMODELS";
                     var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     while (dataReader.Read())
                     {
