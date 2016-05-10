@@ -28,7 +28,7 @@ namespace HomeCalc.Presentation.ViewModels
             StoreService.TypesUpdated += StoreService_TypesUpdated;
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
-            typeSelectorItems = new ObservableCollection<PurchaseType>( StoreService.LoadPurchaseTypeList());
+            LoadPurchaseTypes();
 
             PurchaseType = TypeSelectorItems.FirstOrDefault();
 
@@ -37,18 +37,19 @@ namespace HomeCalc.Presentation.ViewModels
             Status.Post("Завантажено");
         }
 
+        #region event handlers
         void UpdatePurchaseHistory(object sender, EventArgs e)
         {
             PurchaseHistoryItems = new ObservableCollection<Purchase>(StoreService.PurchaseHistory);
         }
         void StoreService_TypesUpdated(object sender, EventArgs e)
         {
-            TypeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
+            LoadPurchaseTypes();
         }
 
         private void SaveCommandExecute(object obj)
         {
-            if (StoreService.AddPurchase(purchase))
+            if (StoreService.AddPurchase(purchase).Result)
             {
                 logger.Info("Purchase saved");
                 Status.Post("Покупка \"{0}\" збережена", PurchaseName);
@@ -64,6 +65,15 @@ namespace HomeCalc.Presentation.ViewModels
         {
             return !string.IsNullOrEmpty(Count) && !string.IsNullOrEmpty(ItemCost) && !string.IsNullOrEmpty(TotalCost);
         }
+        #endregion
+
+        #region helpers
+
+        private void LoadPurchaseTypes()
+        {
+            Task.Factory.StartNew(async () => { typeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false)); });
+        }
+
         private void CleanInputFields()
         {
             PurchaseName = string.Empty;
@@ -129,6 +139,10 @@ namespace HomeCalc.Presentation.ViewModels
             }
             
         }
+
+        #endregion
+
+        #region properties
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
             get
@@ -358,6 +372,6 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        
+        #endregion
     }
 }

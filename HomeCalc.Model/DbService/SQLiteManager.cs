@@ -42,6 +42,7 @@ namespace HomeCalc.Model.DbService
                 if (connection != null && (connection.State == System.Data.ConnectionState.Connecting || connection.State == System.Data.ConnectionState.Open))
                 {
                     InitializeDbScheme(connection);
+                    InitializeDbContent(connection);
                     return connection;
                 }
                 else
@@ -54,30 +55,22 @@ namespace HomeCalc.Model.DbService
 
         private void InitializeDbContent(StorageConnection connection)
         {
+            var dbService = DataBaseService.GetInstance();
+            if (!connection.RecentlyInitiated)
+            {
+                return;
+            }
             foreach (var value in DefaultDbContent.Values)
             {
                 switch (value.Table)
                 {
                     case "PURCHASETYPEMODELS":
-                        bool dbInitiated = false;
-                        try
+                        var valueExist = dbService.LoadPurchaseTypeList(connection).Result.Any(p => p.Name == value.Value.Name);
+                        if (!valueExist)
                         {
-                            if (context.PurchaseType.Where(p => p.Name == value.Value.Name).Count() != 0)
-	                        {
-		                        dbInitiated = true;
-	                        }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                        }
-                        if (!dbInitiated)
-                        {
-                            context.PurchaseType.Add(new DataModels.PurchaseTypeModel { Name = value.Value.Name });
-                            context.SaveChanges();
+                            var result = dbService.SavePurchaseType(new DataModels.PurchaseTypeModel { Name = value.Value.Name }, connection).Result;
                         }
                         break;
-                        case ""
                     default:
                         break;
                 }

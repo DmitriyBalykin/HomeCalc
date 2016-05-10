@@ -46,7 +46,7 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByCost = false,
             };
 
-            var chartData = StoreService.LoadPurchaseList(searchRequest)
+            var chartData = StoreService.LoadPurchaseList(searchRequest).Result
                 .GroupBy(x =>
                     {
                         return CutTimeTo(x.Date, SelectedInterval);

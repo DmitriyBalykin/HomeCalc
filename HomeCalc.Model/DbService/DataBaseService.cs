@@ -1,5 +1,6 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Model.DataModels;
+using HomeCalc.Model.DbConnectionWrappers;
 using HomeCalc.Presentation.Models;
 using System;
 using System.Collections.Generic;
@@ -35,12 +36,12 @@ namespace HomeCalc.Model.DbService
             }
             return instance;
         }
-        public async Task<bool> SaveSettings(SettingsStorageModel settings)
+        public async Task<bool> SaveSettings(SettingsStorageModel settings, StorageConnection connection = null)
         {
             bool result = false;
             try
             {
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
@@ -64,12 +65,12 @@ namespace HomeCalc.Model.DbService
 
             return result;
         }
-        public async Task<IEnumerable<SettingsStorageModel>> LoadSettings()
+        public async Task<IEnumerable<SettingsStorageModel>> LoadSettings(StorageConnection connection = null)
         {
             var settings = new List<SettingsStorageModel>();
             try
             {
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = string.Format("SELECT * FROM SETTINGS");
@@ -94,12 +95,12 @@ namespace HomeCalc.Model.DbService
 
             return settings;
         }
-        public async Task<bool> SavePurchase(PurchaseModel purchase)
+        public async Task<bool> SavePurchase(PurchaseModel purchase, StorageConnection connection = null)
         {
             bool result = false;
             try
             {
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
                     if (purchase.PurchaseId == 0)
@@ -126,12 +127,12 @@ namespace HomeCalc.Model.DbService
             }
             return result;
         }
-        public async Task<bool> SavePurchaseBulk(IEnumerable<PurchaseModel> purchases)
+        public async Task<bool> SavePurchaseBulk(IEnumerable<PurchaseModel> purchases, StorageConnection connection = null)
         {
             bool result = false;
             try
             {
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var transaction = db.Connection.BeginTransaction())
                 using (var command = db.Connection.CreateCommand())
                 {
@@ -153,13 +154,13 @@ namespace HomeCalc.Model.DbService
             }
             return result;
         }
-        public async Task<bool> SavePurchaseType(PurchaseTypeModel purchaseType)
+        public async Task<bool> SavePurchaseType(PurchaseTypeModel purchaseType, StorageConnection connection = null)
         {
 
             bool result = false;
             try
             {
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
                     if (purchaseType.TypeId == 0)
@@ -181,12 +182,12 @@ namespace HomeCalc.Model.DbService
             }
             return result;
         }
-        public async Task<PurchaseModel> LoadPurchase(int id)
+        public async Task<PurchaseModel> LoadPurchase(int id, StorageConnection connection = null)
         {
             PurchaseModel purchase = null;
             try
             {
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = string.Format("SELECT * FROM PURCHASEMODELS WHERE PurchaseId = {0}", id);
@@ -213,12 +214,12 @@ namespace HomeCalc.Model.DbService
             }
             return purchase;
         }
-        public async Task<List<PurchaseModel>> LoadPurchaseList(SearchRequestModel filter)
+        public async Task<List<PurchaseModel>> LoadPurchaseList(SearchRequestModel filter, StorageConnection connection = null)
         {
             var list = new List<PurchaseModel>();
             try
             {//{"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
                     string queue = "SELECT * FROM PURCHASEMODELS";
@@ -263,16 +264,16 @@ namespace HomeCalc.Model.DbService
             }
             return list;
         }
-        public async Task<List<PurchaseModel>> LoadCompletePurchaseList()
+        public async Task<List<PurchaseModel>> LoadCompletePurchaseList(StorageConnection connection = null)
         {
-            return await LoadPurchaseList(new SearchRequestModel());
+            return await LoadPurchaseList(new SearchRequestModel(), connection);
         }
-        public async Task<IEnumerable<PurchaseTypeModel>> LoadPurchaseTypeList()
+        public async Task<IEnumerable<PurchaseTypeModel>> LoadPurchaseTypeList(StorageConnection connection = null)
         {
             var list = new List<PurchaseTypeModel>();
             try
             {
-                using(var db = dbManager.GetConnection())
+                using(var db = connection ?? dbManager.GetConnection())
                 using(var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = "SELECT * FROM PURCHASELISTMODELS";
@@ -297,7 +298,7 @@ namespace HomeCalc.Model.DbService
         //public bool UpdatePurchase(PurchaseModel purchase)
         //{
         //    bool result = false;
-        //    using (var db = dbManager.GetConnection())
+        //    using (var db = connection ?? dbManager.GetConnection())
         //    {
         //        try
         //        {
@@ -321,12 +322,12 @@ namespace HomeCalc.Model.DbService
         //    }
         //    return result;
         //}
-        public async Task<bool> RemovePurchase(long purchaseId)
+        public async Task<bool> RemovePurchase(long purchaseId, StorageConnection connection = null)
         {
             bool result = false;
             try
             {
-                using(var db = dbManager.GetConnection())
+                using(var db = connection ?? dbManager.GetConnection())
                 using(var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = string.Format("DELETE FROM PURCHASEMODELS WHERE PurchaseTypeId = {0}", purchaseId);
@@ -346,7 +347,7 @@ namespace HomeCalc.Model.DbService
         //public bool UpdatePurchaseType(PurchaseTypeModel type)
         //{
         //    bool result = false;
-        //    using (var db = dbManager.GetConnection())
+        //    using (var db = connection ?? dbManager.GetConnection())
         //    {
         //        try
         //        {
@@ -366,12 +367,12 @@ namespace HomeCalc.Model.DbService
         //    }
         //    return result;
         //}
-        public async Task<bool> DeletePurchaseType(PurchaseTypeModel type)
+        public async Task<bool> DeletePurchaseType(PurchaseTypeModel type, StorageConnection connection = null)
         {
             bool result = false;
             try
             {
-                using (var db = dbManager.GetConnection())
+                using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = string.Format("DELETE FROM PURCHASETYPEMODELS WHERE TypeId = {0}", type.TypeId);

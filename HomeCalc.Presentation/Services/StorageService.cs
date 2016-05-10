@@ -25,19 +25,16 @@ namespace HomeCalc.Presentation.Models
         {
             DBService = DataBaseService.GetInstance();
             Status = StatusService.GetInstance();
-            UpdateHistory();
+            Task.Factory.StartNew(async () => await UpdateHistory());
         }
 
         private async Task UpdateHistory()
         {
-            if (purchaseHistory == null)
+            purchaseHistory = await LoadPurchaseList(SearchRequestModel.Requests.Empty).ConfigureAwait(false);
+            if (purchaseHistory != null && purchaseHistory.Count() > 0)
             {
-                purchaseHistory = new List<Purchase>();
+                AnnounceHistoryUpdate();
             }
-            Task.Factory.StartNew(() =>
-            {
-                purchaseHistory = await LoadPurchaseList(SearchRequestModel.Requests.Empty).ConfigureAwait(false);
-            }).ContinueWith( t => AnnounceHistoryUpdate(), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         private void AnnounceHistoryUpdate()

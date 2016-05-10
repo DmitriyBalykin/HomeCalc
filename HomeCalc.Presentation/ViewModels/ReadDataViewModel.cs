@@ -42,7 +42,7 @@ namespace HomeCalc.Presentation.ViewModels
                     var referencePurchase = SearchResultListBackup.ElementAt(e.NewIndex);
                     if (!RecalculatePurchase(purchase, referencePurchase))
 	                {
-                        StoreService.UpdatePurchase(purchase);
+                        Task.Factory.StartNew(async () => await StoreService.UpdatePurchase(purchase));
 	                }
                     break;
                 case ListChangedType.ItemDeleted:
@@ -52,11 +52,15 @@ namespace HomeCalc.Presentation.ViewModels
                         "Видалення запису",
                         MessageBoxButtons.OKCancel,
                         MessageBoxIcon.Question);
-                    if (result == DialogResult.OK && StoreService.RemovePurchase(purchase.Id).Result)
+                    Task.Factory.StartNew(async () => 
                     {
-                        BackupSearchList(SearchResultList);
-                        Status.Post("Покупка \"{0}\" видалена", purchase.Name);
-                    }
+                        if (result == DialogResult.OK && await StoreService.RemovePurchase(purchase.Id))
+                        {
+                            BackupSearchList(SearchResultList);
+                            Status.Post("Покупка \"{0}\" видалена", purchase.Name);
+                        }
+                    });
+                    
                     break;
                 default:
                     break;

@@ -50,7 +50,7 @@ namespace Updater
                 switch (args[0])
                 {
                     case "update-start":
-                        VersionUpdater.StartUpdate(() => { });
+                        Task.Factory.StartNew(async () => await VersionUpdater.StartUpdate(() => { }));
                         break;
                     case "update-app":
                         VersionUpdater.UpdateApplication();

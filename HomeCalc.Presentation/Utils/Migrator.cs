@@ -43,7 +43,7 @@ namespace HomeCalc.Presentation.Utils
             MigrationResult migrationResult = null;
             try
             {
-                migrationResult = await Task.Run<MigrationResult>(() =>
+                migrationResult = await Task.Run<MigrationResult>(async () =>
                 {
                     var taskResult = new MigrationResult();
                     var storageService = StorageService.GetInstance();
@@ -67,7 +67,7 @@ namespace HomeCalc.Presentation.Utils
                                     ItemsNumber = double.Parse(columns[4].Replace('.', ',')),
                                     TotalCost = double.Parse(columns[6].Replace('.', ',')),
                                     Name = columns[3],
-                                    Type = storageService.ResolvePurchaseType(name: columns[2])
+                                    Type = await storageService.ResolvePurchaseType(name: columns[2])
                                 });
                             taskResult.AddSucceededLine();
                         }
@@ -77,7 +77,7 @@ namespace HomeCalc.Presentation.Utils
                         }
                         progress.Report(new MigrationResultArgs { Total = totalCount, Processed = taskResult.ResultProcessed });
                     }
-                    storageService.SavePurchaseBulk(purchaseList);
+                    await storageService.SavePurchaseBulk(purchaseList);
                     return taskResult;
                 });
             }

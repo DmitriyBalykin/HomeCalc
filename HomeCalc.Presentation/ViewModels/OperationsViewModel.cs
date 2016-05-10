@@ -32,7 +32,7 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void AddTypeCommandExecute(object obj)
         {
-            if (StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }))
+            if (StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }).Result)
             {
                 logger.Info("Purchase type saved");
                 Status.Post("Тип покупки \"{0}\" збережено", NewPurchaseType);
