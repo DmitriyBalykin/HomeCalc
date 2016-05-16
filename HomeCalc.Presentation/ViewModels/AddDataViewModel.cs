@@ -128,17 +128,19 @@ namespace HomeCalc.Presentation.ViewModels
             }
             
         }
-        private DateTime dateToStore = DateTime.Now;
-        public DateTime DateToStore {
+
+        public DateTime DateToStore
+        {
             get
             {
-                return dateToStore;
+                return purchase.Date;
             }
             set
             {
-                if (value != dateToStore)
+                if (value != purchase.Date)
                 {
-                    dateToStore = value;
+                    purchase.Date = value;
+                    OnPropertyChanged(() => DateToStore);
                 }
             }
         }
