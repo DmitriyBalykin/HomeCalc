@@ -17,7 +17,7 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
-        private const int MINIMAL_SEARCH_LENGTH = 3;
+        private const int MINIMAL_SEARCH_LENGTH = 2;
 
         public AddDataViewModel()
         {
@@ -25,16 +25,16 @@ namespace HomeCalc.Presentation.ViewModels
 
             AddCommand("Save", new DelegateCommand(SaveCommandExecute, SaveCommandCanExecute));
 
-            StoreService.TypesUpdated += StoreService_TypesUpdated;
+            
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
             LoadPurchaseTypes();
 
-            
+
 
             actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
 
-            Status.Post("Завантажено");
+            Status.Post("Все готово для роботи!");
         }
 
         #region event handlers
@@ -49,6 +49,7 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void SaveCommandExecute(object obj)
         {
+            purchase.Name = purchase.Name.Trim();
             if (StoreService.AddPurchase(purchase).Result)
             {
                 logger.Info("Purchase saved");
@@ -63,7 +64,11 @@ namespace HomeCalc.Presentation.ViewModels
         }
         private bool SaveCommandCanExecute(object obj)
         {
-            return !string.IsNullOrEmpty(Count) && !string.IsNullOrEmpty(ItemCost) && !string.IsNullOrEmpty(TotalCost);
+            return
+                !string.IsNullOrWhiteSpace(purchase.Name) &&
+                !string.IsNullOrWhiteSpace(Count) &&
+                !string.IsNullOrWhiteSpace(ItemCost) &&
+                !string.IsNullOrWhiteSpace(TotalCost);
         }
         #endregion
 
@@ -86,7 +91,7 @@ namespace HomeCalc.Presentation.ViewModels
             PurchaseName = string.Empty;
             Count = string.Empty;
             ItemCost = string.Empty;
-            totalCost = string.Empty;
+            TotalCost = string.Empty;
         }
         private void SearchPurchase()
         {
@@ -154,13 +159,14 @@ namespace HomeCalc.Presentation.ViewModels
         public DateTime DateToStore {
             get
             {
-                return dateToStore;
+                return purchase.Date;
             }
             set
             {
-                if (value != dateToStore)
+                if (value != purchase.Date)
                 {
-                    dateToStore = value;
+                    purchase.Date = value;
+                    OnPropertyChanged(() => DateToStore);
                 }
             }
         }
@@ -169,7 +175,7 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 PurchaseHistoryItems = new ObservableCollection<Purchase>(value);
-                ShowPurchaseHistory = true;
+                ShowPurchaseHistory = PurchaseHistoryItems.Count() > 0;
             }
         }
         private ObservableCollection<Purchase> purchaseHistoryItems;
@@ -185,22 +191,6 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     purchaseHistoryItems = value;
                     OnPropertyChanged(() => PurchaseHistoryItems);
-                }
-            }
-        }
-        private ObservableCollection<PurchaseType> typeSelectorItems;
-        public ObservableCollection<PurchaseType> TypeSelectorItems
-        { 
-            get
-            {
-                return typeSelectorItems; 
-            }
-            set
-            {
-                if (typeSelectorItems != value)
-                {
-                    typeSelectorItems = value;
-                    OnPropertyChanged(() => TypeSelectorItems);
                 }
             }
         }
@@ -232,7 +222,7 @@ namespace HomeCalc.Presentation.ViewModels
             get { return count; }
             set
             {
-                if (count != value && StringHelper.IsNumber(value))
+                if ((count != value && StringHelper.IsNumber(value)) || value == string.Empty)
                 {
                     count = StringHelper.GetCorrected(value);
                     if (!fieldCalculationInProgress)
@@ -249,7 +239,7 @@ namespace HomeCalc.Presentation.ViewModels
             get { return itemCost; }
             set
             {
-                if (itemCost != value && StringHelper.IsNumber(value))
+                if ((itemCost != value && StringHelper.IsNumber(value)) || value == string.Empty)
                 {
                     itemCost = StringHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
@@ -266,7 +256,7 @@ namespace HomeCalc.Presentation.ViewModels
             get { return totalCost; }
             set
             {
-                if (totalCost != value && StringHelper.IsNumber(value))
+                if ((totalCost != value && StringHelper.IsNumber(value)) || value == string.Empty)
                 {
                     totalCost = StringHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)

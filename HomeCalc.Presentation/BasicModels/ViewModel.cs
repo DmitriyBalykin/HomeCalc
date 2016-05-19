@@ -28,7 +28,10 @@ namespace HomeCalc.Presentation.BasicModels
             logger = new Logger(this.GetType().ToString());
             StoreService = StorageService.GetInstance();
             Status = StatusService.GetInstance();
+
+            InitializeProperties();
         }
+
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -72,19 +75,6 @@ namespace HomeCalc.Presentation.BasicModels
                 throw new ArgumentNullException("command");
             }
             commandCache.Remove(name);
-        }
-    }
-    public partial class ViewModel : DynamicObject
-    {
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            ICommand command;
-            if (!commandCache.TryGetValue(binder.Name, out command))
-            {
-                logger.Warn("Binding property not found: {0}", binder.Name);
-                return base.TryGetMember(binder, out result);
-            }
-            return (result = command) != null;
         }
     }
 }

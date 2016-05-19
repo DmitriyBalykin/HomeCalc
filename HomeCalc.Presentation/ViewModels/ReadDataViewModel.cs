@@ -28,8 +28,6 @@ namespace HomeCalc.Presentation.ViewModels
 
             SearchFromDate = DateTime.Now.AddMonths(-1);
             SearchToDate = DateTime.Now;
-
-            PurchaseTypesList = new BindingList<PurchaseType>(StoreService.LoadPurchaseTypeList().Result);
         }
 
         void SearchResultList_ListChanged(object sender, ListChangedEventArgs e)
@@ -56,9 +54,9 @@ namespace HomeCalc.Presentation.ViewModels
                     {
                         if (result == DialogResult.OK && await StoreService.RemovePurchase(purchase.Id))
                         {
-                            BackupSearchList(SearchResultList);
-                            Status.Post("Покупка \"{0}\" видалена", purchase.Name);
-                        }
+                        BackupSearchList(SearchResultList);
+                        Status.Post("Покупка \"{0}\" видалена", purchase.Name);
+                    }
                     });
                     
                     break;
@@ -146,21 +144,7 @@ namespace HomeCalc.Presentation.ViewModels
             SearchResultList = new BindingList<Purchase>(results);
             Status.Post("Пошук завершено, знайдено {0} записів", searchResultList.Count);
         }
-        private BindingList<PurchaseType> purchaseTypesList;
-        public BindingList<PurchaseType> PurchaseTypesList {
-            get
-            {
-                return purchaseTypesList;
-            }
-            set
-            {
-                if (value != purchaseTypesList)
-                {
-                    purchaseTypesList = value;
-                    OnPropertyChanged(() => PurchaseTypesList);
-                }
-            }
-        }
+
         private void BackupSearchList(IEnumerable<Purchase> list)
         {
             searchResultListBackup = list.Select(p => new Purchase(p)).ToList();

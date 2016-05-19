@@ -101,6 +101,17 @@ namespace HomeCalc.Presentation.Models
             }
             return result;
         }
+
+        public bool RemovePurchaseType(int p)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RenamePurchaseType(int p, string NewPurchaseType)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Purchase> LoadPurchase(int id)
         {
             return ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
@@ -211,6 +222,8 @@ namespace HomeCalc.Presentation.Models
                 return purchaseHistory;
             }
         }
+
+        
     }
 
     class PurchaseTypesCache
