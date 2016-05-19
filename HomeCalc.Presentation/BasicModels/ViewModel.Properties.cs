@@ -23,11 +23,11 @@ namespace HomeCalc.Presentation.BasicModels
         {
             StoreService.TypesUpdated += StoreService_TypesUpdated;
 
-            typeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
+            typeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList().Result);
         }
         void StoreService_TypesUpdated(object sender, EventArgs e)
         {
-            TypeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
+            TypeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList().Result);
         }
 
         private ObservableCollection<PurchaseType> typeSelectorItems;

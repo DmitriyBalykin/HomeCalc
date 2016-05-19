@@ -78,7 +78,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             Task.Factory.StartNew(async () => 
             {
-                typeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
+                TypeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
                 if (PurchaseType == null && TypeSelectorItems.Count() > 0)
                 {
                     PurchaseType = TypeSelectorItems.FirstOrDefault();
