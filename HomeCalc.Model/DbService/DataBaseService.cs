@@ -47,7 +47,7 @@ namespace HomeCalc.Model.DbService
                 {
                     if (settings.SettingId == 0)
                     {
-                        command.CommandText = string.Format("INSERT OR REPLACE INTO SETTINGS ({0}, {1}, {2})", settings.ProfileId, settings.SettingName, settings.SettingValue);
+                        command.CommandText = string.Format("INSERT OR REPLACE INTO SETTINGS(ProfileId, SettingName, SettingValue) VALUES ({0}, {1}, {2})", settings.ProfileId, settings.SettingName, settings.SettingValue);
                     }
                     else
                     {
@@ -106,13 +106,13 @@ namespace HomeCalc.Model.DbService
                     if (purchase.PurchaseId == 0)
                     {
                         command.CommandText = string.Format(
-                        "INSERT OR REPLACE INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+                        "INSERT OR REPLACE INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemsNumber, TypeId) VALUES (\"{0}\", {1}, {2}, {3}, {4}, {5})",
                         purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
                     }
                     else
                     {
                         command.CommandText = string.Format(
-                        "UPDATE PURCHASEMODELS SET Name = {0}, Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
+                        "UPDATE PURCHASEMODELS SET Name = \"{0}\", Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
                         purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId, purchase.PurchaseId);
                     }
 
@@ -139,7 +139,7 @@ namespace HomeCalc.Model.DbService
                     foreach (var purchase in purchases)
                     {
                         command.CommandText = string.Format(
-                        "INSERT INTO PURCHASEMODELS VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+                        "INSERT INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemNumber, TypeId) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
                         purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
 
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -165,11 +165,11 @@ namespace HomeCalc.Model.DbService
                 {
                     if (purchaseType.TypeId == 0)
                     {
-                        command.CommandText = string.Format("INSERT OR REPLACE INTO PURCHASETYPEMODELS ({0})", purchaseType.Name);
+                        command.CommandText = string.Format("INSERT OR REPLACE INTO PURCHASETYPEMODELS (Name) VALUES ({0})", purchaseType.Name);
                     }
                     else
                     {
-                        command.CommandText = string.Format("INSERT OR REPLACE INTO PURCHASETYPEMODELS ({0})", purchaseType.Name);
+                        command.CommandText = string.Format("UPDATE PURCHASETYPEMODELS SET Name = \"{0}\" WHERE TypeId = {1}", purchaseType.Name, purchaseType.TypeId);
                     }
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
@@ -245,7 +245,7 @@ namespace HomeCalc.Model.DbService
                     
                     while (dataReader.Read())
                     {
-                        list.Add(new PurchaseModel 
+                        list.Add(new PurchaseModel
                         {
                             PurchaseId = dataReader.GetInt64(0),
                             Name = dataReader.GetString(1),

@@ -16,7 +16,7 @@ using System.Windows.Input;
 
 namespace HomeCalc.Presentation.BasicModels
 {
-    public partial class ViewModel : INotifyPropertyChanged
+    public partial class ViewModel
     {
         protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -25,36 +25,22 @@ namespace HomeCalc.Presentation.BasicModels
         protected StatusService Status;
         public ViewModel()
         {
-            logger = new Logger(this.GetType().ToString());
-            StoreService = StorageService.GetInstance();
-            Status = StatusService.GetInstance();
-
+            InitializeServices();
             InitializeProperties();
         }
 
-        protected void OnPropertyChanged(string propertyName)
+        /*This method will be called after all initial data loading is finished*/
+        protected virtual void Initialize()
+        { }
+
+        private void InitializeServices()
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+            logger = new Logger(this.GetType().ToString());
+            StoreService = StorageService.GetInstance();
+            Status = StatusService.GetInstance();
         }
-        protected void OnPropertyChanged<T>(Expression<Func<T>> property)
-        {
-            if (property == null)
-            {
-                return;
-            }
-            var memberExpression = property.Body as MemberExpression;
-            if (memberExpression == null)
-            {
-                return;
-            }
-            if (PropertyChanged != null)
-            {
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(memberExpression.Member.Name));
-            }
-        }
+
+        
         private IDictionary<string, ICommand> commandCache = new Dictionary<string, ICommand>();
         public void AddCommand(string name, ICommand command)
         {

@@ -16,20 +16,23 @@ namespace HomeCalc.Presentation.ViewModels
     public class AnalyticsViewModel : ReadDataViewModel
     {
         public AnalyticsViewModel()
-            :base()
         {
-            logger = LogService.GetLogger();
             AddCommand("ShowData", new DelegateCommand(ShowDataCommandExecuted));
 
             IntervalList = AggregationInterval.GetList();
+
+            TotalCostChart = true;
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
 
             TypeSelectorItems.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
 
             SelectedInterval = IntervalList.FirstOrDefault();
 
             PurchaseType = TypeSelectorItems.FirstOrDefault();
-
-            TotalCostChart = true;
         }
 
         private void ShowDataCommandExecuted(object obj)
@@ -46,14 +49,19 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByCost = false,
             };
 
-            var chartData = StoreService.LoadPurchaseList(searchRequest).Result
-                .GroupBy(x =>
-                    {
-                        return CutTimeTo(x.Date, SelectedInterval);
-                    })
-                .Select(g => GetChartElement(g)).ToList();
+            Task.Factory.StartNew(async () => 
+            {
+                var chartData = (await StoreService.LoadPurchaseList(searchRequest))
+                                .GroupBy(x =>
+                                    {
+                                        return CutTimeTo(x.Date, SelectedInterval);
+                                    })
+                                .Select(g => GetChartElement(g)).ToList();
 
-            ChartSeries = new List<IEnumerable<SeriesDateBasedElement>> { chartData };
+                ChartSeries = new List<IEnumerable<SeriesDateBasedElement>> { chartData };
+            });
+
+            
         }
 
         

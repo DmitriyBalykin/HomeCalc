@@ -24,17 +24,22 @@ namespace HomeCalc.Presentation.ViewModels
             purchase = new Purchase();
 
             AddCommand("Save", new DelegateCommand(SaveCommandExecute, SaveCommandCanExecute));
-
             
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
-            LoadPurchaseTypes();
+            Status.Post("Все готово для роботи!");
+        }
 
+        protected override void Initialize()
+        {
+            base.Initialize();
 
+            if (PurchaseType == null && TypeSelectorItems.Count() > 0)
+            {
+                PurchaseType = TypeSelectorItems.FirstOrDefault();
+            }
 
             actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
-
-            Status.Post("Все готово для роботи!");
         }
 
         #region event handlers
@@ -42,25 +47,26 @@ namespace HomeCalc.Presentation.ViewModels
         {
             PurchaseHistoryItems = new ObservableCollection<Purchase>(StoreService.PurchaseHistory);
         }
-        void StoreService_TypesUpdated(object sender, EventArgs e)
-        {
-            LoadPurchaseTypes();
-        }
 
         private void SaveCommandExecute(object obj)
         {
             purchase.Name = purchase.Name.Trim();
-            if (StoreService.AddPurchase(purchase).Result)
+            Task.Factory.StartNew(async () => 
             {
-                logger.Info("Purchase saved");
-                Status.Post("Покупка \"{0}\" збережена", PurchaseName);
-                CleanInputFields();
-            }
-            else
-            {
-                logger.Warn("Purchase not saved");
-                Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
-            }
+                var result = await StoreService.AddPurchase(purchase);
+                if (result)
+                {
+                    logger.Info("Purchase saved");
+                    Status.Post("Покупка \"{0}\" збережена", PurchaseName);
+                    CleanInputFields();
+                }
+                else
+                {
+                    logger.Warn("Purchase not saved");
+                    Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
+                }
+            });
+            
         }
         private bool SaveCommandCanExecute(object obj)
         {

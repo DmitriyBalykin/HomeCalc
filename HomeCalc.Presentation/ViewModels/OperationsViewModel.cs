@@ -19,8 +19,6 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public OperationsViewModel()
         {
-            logger = LogService.GetLogger();
-
             //AddCommand("SelectPath", new DelegateCommand(SelectPathCommandExecute));
             //AddCommand("ImportData", new DelegateCommand(ImportDataCommandExecute, CanImportData));
             AddCommand("AddType", new DelegateCommand(AddTypeCommandExecute, CanAddType));
@@ -36,16 +34,20 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void AddTypeCommandExecute(object obj)
         {
-            if (StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }).Result)
+            Task.Factory.StartNew(async () => 
             {
-                logger.Info("Purchase type {0} saved", NewPurchaseType);
-                Status.Post("Тип покупки \"{0}\" збережено", NewPurchaseType);
-            }
-            else
-            {
-                logger.Warn("Purchase type {0} not saved", NewPurchaseType);
-                Status.Post("Помилка: тип покупки \"{0}\" не збережено", NewPurchaseType);
-            }
+                if (await StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }))
+                {
+                    logger.Info("Purchase type {0} saved", NewPurchaseType);
+                    Status.Post("Тип покупки \"{0}\" збережено", NewPurchaseType);
+                }
+                else
+                {
+                    logger.Warn("Purchase type {0} not saved", NewPurchaseType);
+                    Status.Post("Помилка: тип покупки \"{0}\" не збережено", NewPurchaseType);
+                }
+            });
+            
         }
 
         private bool CanRenameType(object obj)

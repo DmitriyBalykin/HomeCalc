@@ -17,19 +17,52 @@ using System.Windows.Input;
 
 namespace HomeCalc.Presentation.BasicModels
 {
-    public partial class ViewModel
+    public partial class ViewModel : INotifyPropertyChanged
     {
         private void InitializeProperties()
         {
             StoreService.TypesUpdated += StoreService_TypesUpdated;
 
-            typeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList().Result);
+            LoadData().ContinueWith(task => Initialize());
+        }
+        private Task LoadData()
+        {
+            return Task.Factory.StartNew(async () => 
+            {
+                TypeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
+            });
         }
         void StoreService_TypesUpdated(object sender, EventArgs e)
         {
-            TypeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList().Result);
+            LoadData();
         }
+        #region Properties Core
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        protected void OnPropertyChanged<T>(Expression<Func<T>> property)
+        {
+            if (property == null)
+            {
+                return;
+            }
+            var memberExpression = property.Body as MemberExpression;
+            if (memberExpression == null)
+            {
+                return;
+            }
+            if (PropertyChanged != null)
+            {
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(memberExpression.Member.Name));
+            }
+        }
+        #endregion
 
+        #region Common Properties
         private ObservableCollection<PurchaseType> typeSelectorItems;
         public ObservableCollection<PurchaseType> TypeSelectorItems
         {
@@ -46,5 +79,7 @@ namespace HomeCalc.Presentation.BasicModels
                 }
             }
         }
+        #endregion
+        
     }
 }

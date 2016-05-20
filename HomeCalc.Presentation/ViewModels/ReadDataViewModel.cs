@@ -20,7 +20,6 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public ReadDataViewModel()
         {
-            logger = LogService.GetLogger();
             AddCommand("Search", new DelegateCommand(SearchCommandExecute));
 
             AddCommand("Calculate", new DelegateCommand(CalculateCommandExecuted));
@@ -106,10 +105,14 @@ namespace HomeCalc.Presentation.ViewModels
                 OnPropertyChanged(() => SearchResultList);
                 BackupSearchList(SearchResultList);
                 //SearchResultList = new BindingList<Purchase>(SearchResultListBackup);
-                if (StoreService.UpdatePurchase(editingPurchase).Result)
+                Task.Factory.StartNew(async () => 
                 {
-                    Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
-                }
+                    if (await StoreService.UpdatePurchase(editingPurchase))
+                    {
+                        Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
+                    }
+                });
+                
             }
             else
             {
@@ -127,7 +130,7 @@ namespace HomeCalc.Presentation.ViewModels
             var searchRequest = new SearchRequestModel
             {
                 Name = purchaseName,
-                TypeId = PurchaseType.TypeId,
+                TypeId = PurchaseType != null ?PurchaseType.TypeId : -1,
                 CostStart = costStart,
                 CostEnd = costEnd,
                 DateStart = searchFromDate,
@@ -137,12 +140,18 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByDate = searchByDate,
                 SearchByCost = searchByCost,
             };
-            List<Purchase> results = StoreService.LoadPurchaseList(searchRequest).Result.OrderBy(p => p.Date).ToList();
-            TotalCount = results.Sum(p => p.ItemsNumber).ToString();
-            TotalCost = results.Sum(p => p.TotalCost).ToString();
-            BackupSearchList(results);
-            SearchResultList = new BindingList<Purchase>(results);
-            Status.Post("Пошук завершено, знайдено {0} записів", searchResultList.Count);
+
+            Task.Factory.StartNew(async () => 
+            {
+                List<Purchase> results = await StoreService.LoadPurchaseList(searchRequest).ConfigureAwait(false);
+                results = results.OrderBy(p => p.Date).ToList();
+                TotalCount = results.Sum(p => p.ItemsNumber).ToString();
+                TotalCost = results.Sum(p => p.TotalCost).ToString();
+                BackupSearchList(results);
+                SearchResultList = new BindingList<Purchase>(results);
+                Status.Post("Пошук завершено, знайдено {0} записів", searchResultList.Count);
+            });
+            
         }
 
         private void BackupSearchList(IEnumerable<Purchase> list)

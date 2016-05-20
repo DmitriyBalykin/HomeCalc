@@ -67,7 +67,7 @@ namespace HomeCalc.Presentation.Utils
                                     ItemsNumber = double.Parse(columns[4].Replace('.', ',')),
                                     TotalCost = double.Parse(columns[6].Replace('.', ',')),
                                     Name = columns[3],
-                                    Type = await storageService.ResolvePurchaseType(name: columns[2])
+                                    Type = storageService.ResolvePurchaseType(name: columns[2])
                                 });
                             taskResult.AddSucceededLine();
                         }
