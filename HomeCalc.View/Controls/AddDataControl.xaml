@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="900">
+             MinHeight="310"
+             d:DesignWidth="900">
 
     <UserControl.Resources>
         <ResourceDictionary>
