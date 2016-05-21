@@ -127,9 +127,9 @@ namespace HomeCalc.Presentation.ViewModels
 
                 if (purchase != null)
                 {
-                    purchase.ItemsNumber = StringHelper.ToNumber(Count);
-                    purchase.ItemCost = StringHelper.ToNumber(ItemCost);
-                    purchase.TotalCost = StringHelper.ToNumber(TotalCost);
+                    purchase.ItemsNumber = String2NumberHelper.ToNumber(Count);
+                    purchase.ItemCost = String2NumberHelper.ToNumber(ItemCost);
+                    purchase.TotalCost = String2NumberHelper.ToNumber(TotalCost);
 
                     DataService.PerformCalculation(purchase, actualCalculationTarget);
 
@@ -228,9 +228,9 @@ namespace HomeCalc.Presentation.ViewModels
             get { return count; }
             set
             {
-                if ((count != value && StringHelper.IsNumber(value)) || value == string.Empty)
+                if ((count != value && String2NumberHelper.IsNumber(value)) || value == string.Empty)
                 {
-                    count = StringHelper.GetCorrected(value);
+                    count = String2NumberHelper.GetCorrected(value);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
@@ -245,9 +245,9 @@ namespace HomeCalc.Presentation.ViewModels
             get { return itemCost; }
             set
             {
-                if ((itemCost != value && StringHelper.IsNumber(value)) || value == string.Empty)
+                if ((itemCost != value && String2NumberHelper.IsNumber(value)) || value == string.Empty)
                 {
-                    itemCost = StringHelper.GetCorrected(value, 2);
+                    itemCost = String2NumberHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
@@ -262,9 +262,9 @@ namespace HomeCalc.Presentation.ViewModels
             get { return totalCost; }
             set
             {
-                if ((totalCost != value && StringHelper.IsNumber(value)) || value == string.Empty)
+                if ((totalCost != value && String2NumberHelper.IsNumber(value)) || value == string.Empty)
                 {
-                    totalCost = StringHelper.GetCorrected(value, 2);
+                    totalCost = String2NumberHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();

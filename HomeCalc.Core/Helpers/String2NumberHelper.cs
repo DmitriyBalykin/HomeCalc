@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Core.Helpers
 {
-    public static class StringHelper
+    public static class String2NumberHelper
     {
         private const char INCORRECT_COMA = '.';
         private const char CORRECT_COMA = ',';

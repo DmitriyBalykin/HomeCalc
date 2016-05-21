@@ -1,4 +1,5 @@
 ﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Helpers;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Model.DbConnectionWrappers;
 using HomeCalc.Presentation.Models;
@@ -75,7 +76,7 @@ namespace HomeCalc.Model.DbService
                 {
                     command.CommandText = string.Format("SELECT * FROM SETTINGS");
                     DbDataReader dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
-                    //{"SETTINGMODELS" , "(ProfileId INTEGER, SettingName TEXT, SettingValue TEXT, SettingId INTEGER PRIMARY KEY)"}
+
                     while (dbDataReader.HasRows && dbDataReader.Read())
                     {
                         settings.Add(new SettingsStorageModel()
@@ -218,28 +219,32 @@ namespace HomeCalc.Model.DbService
         {
             var list = new List<PurchaseModel>();
             try
-            {//{"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
+            {
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    string queue = "SELECT * FROM PURCHASEMODELS";
+                    string queue = "SELECT * FROM PURCHASEMODELS WHERE";
                     if (filter.SearchByName)
                     {
-                        queue = string.Format("{0} WHERE Name = {1} ", queue, filter.Name);
+                        queue = string.Format("{0} Name LIKE '%{1}%' ", queue, filter.Name.Trim(' '));
                     }
                     if (filter.SearchByType)
                     {
-                        queue = string.Format("{0} WHERE TypeId = {1} ", queue, filter.TypeId);
+                        queue = string.Format("{0} TypeId = {1} ", queue, filter.TypeId);
                     }
                     if (filter.SearchByDate)
                     {
-                        queue = string.Format("{0} WHERE Timestamp > {1} AND Timestamp <= {2} ", queue, filter.DateStart.Ticks, filter.DateEnd.Ticks);
+                        queue = string.Format("{0} Timestamp BETWEEN {1} AND {2} ", queue, filter.DateStart.Ticks, filter.DateEnd.Ticks);
                     }
                     if (filter.SearchByCost)
                     {
-                        queue = string.Format("{0} WHERE TotalCost > {1} AND TotalCost <= {2} ", queue, filter.CostStart, filter.CostEnd);
+                        queue = string.Format("{0} TotalCost BETWEEN {1} AND {2} ", queue, filter.CostStart, filter.CostEnd);
                     }
-                    command.CommandText = queue.Replace("  ", " AND ");
+
+                    command.CommandText = queue
+                        .TrimEnd(" WHERE")
+                        .TrimEnd(' ')
+                        .Replace("  ", " AND ");
 
                     var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     
@@ -294,34 +299,7 @@ namespace HomeCalc.Model.DbService
             }
             return list;
         }
-        // Use Save purchase instead
-        //public bool UpdatePurchase(PurchaseModel purchase)
-        //{
-        //    bool result = false;
-        //    using (var db = connection ?? dbManager.GetConnection())
-        //    {
-        //        try
-        //        {
-        //            var storedPurchase = db.Purchase.Find(purchase.PurchaseId);
-        //            if (storedPurchase != null)
-        //            {
-        //                storedPurchase.Name = purchase.Name;
-        //                storedPurchase.ItemsNumber = purchase.ItemsNumber;
-        //                storedPurchase.ItemCost = purchase.ItemCost;
-        //                storedPurchase.TotalCost = purchase.TotalCost;
-        //                storedPurchase.Timestamp = purchase.Timestamp;
-        //                db.SaveChanges();
-        //                result = true;
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            result = false;
-        //            logger.Error("Exception during execution method \"UpdatePurchase\": {0}", ex.Message);
-        //        }
-        //    }
-        //    return result;
-        //}
+
         public async Task<bool> RemovePurchase(long purchaseId, StorageConnection connection = null)
         {
             bool result = false;
@@ -343,30 +321,7 @@ namespace HomeCalc.Model.DbService
             
             return result;
         }
-        // Use SavePurchaseTypeInstead
-        //public bool UpdatePurchaseType(PurchaseTypeModel type)
-        //{
-        //    bool result = false;
-        //    using (var db = connection ?? dbManager.GetConnection())
-        //    {
-        //        try
-        //        {
-        //            var storedType = db.PurchaseType.Find(type.TypeId);
-        //            if (storedType != null)
-        //            {
-        //                storedType.Name = type.Name;
-        //                db.SaveChanges();
-        //                result = true;
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            result = false;
-        //            logger.Error("Exception during execution method \"UpdatePurchaseType\": {0}", ex.Message);
-        //        }
-        //    }
-        //    return result;
-        //}
+
         public async Task<bool> DeletePurchaseType(PurchaseTypeModel type, StorageConnection connection = null)
         {
             bool result = false;

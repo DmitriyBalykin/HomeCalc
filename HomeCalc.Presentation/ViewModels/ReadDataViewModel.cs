@@ -323,9 +323,9 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 SearchByCost = true;
-                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostStart && StringHelper.IsNumber(value))
+                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostStart && String2NumberHelper.IsNumber(value))
                 {
-                    var str = StringHelper.GetCorrected(value, 2);
+                    var str = String2NumberHelper.GetCorrected(value, 2);
                     try
                     {
                         costStart = Double.Parse(value);
@@ -346,9 +346,9 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 SearchByCost = true;
-                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostEnd && StringHelper.IsNumber(value))
+                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostEnd && String2NumberHelper.IsNumber(value))
                 {
-                    var str = StringHelper.GetCorrected(value, 2);
+                    var str = String2NumberHelper.GetCorrected(value, 2);
                     try
                     {
                         costEnd = Double.Parse(value);
@@ -384,7 +384,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (value != totalCount)
                 {
-                    totalCount = StringHelper.GetCorrected(value, 2);
+                    totalCount = String2NumberHelper.GetCorrected(value, 2);
                     OnPropertyChanged(() => TotalCount);
                 }
             }
@@ -400,7 +400,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (value != totalCost)
                 {
-                    totalCost = StringHelper.GetCorrected(value, 2);
+                    totalCost = String2NumberHelper.GetCorrected(value, 2);
                     OnPropertyChanged(() => TotalCost);
                 }
             }
