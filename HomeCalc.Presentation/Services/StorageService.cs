@@ -103,14 +103,25 @@ namespace HomeCalc.Presentation.Models
             return result;
         }
 
-        public bool RemovePurchaseType(int p)
+        public async Task<bool> RemovePurchaseType(PurchaseType pType)
         {
-            throw new NotImplementedException();
+            var result = await DBService.DeletePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
+            if (result)
+            {
+                TypeUpdated();
+            }
+            return result;
         }
 
-        public bool RenamePurchaseType(int p, string NewPurchaseType)
+        public async Task<bool> RenamePurchaseType(PurchaseType pType, string newPurchaseTypeName)
         {
-            throw new NotImplementedException();
+            pType.Name = newPurchaseTypeName;
+            var result = await DBService.SavePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
+            if (result)
+            {
+                TypeUpdated();
+            }
+            return result;
         }
 
         public async Task<Purchase> LoadPurchase(int id)

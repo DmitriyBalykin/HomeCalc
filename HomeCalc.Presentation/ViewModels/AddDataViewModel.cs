@@ -95,9 +95,12 @@ namespace HomeCalc.Presentation.ViewModels
         private void CleanInputFields()
         {
             PurchaseName = string.Empty;
+
+            fieldCalculationBlocked = true;
             Count = string.Empty;
             ItemCost = string.Empty;
             TotalCost = string.Empty;
+            fieldCalculationBlocked = false;
         }
         private void SearchPurchase()
         {
@@ -121,6 +124,10 @@ namespace HomeCalc.Presentation.ViewModels
         }
         private void DoCalculations()
         {
+            if (fieldCalculationBlocked)
+            {
+                return;
+            }
             try
             {
                 fieldCalculationInProgress = true;
@@ -222,6 +229,7 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         private bool fieldCalculationInProgress = false;
+        private bool fieldCalculationBlocked = false;
         private string count;
         public string Count
         {
@@ -234,6 +242,10 @@ namespace HomeCalc.Presentation.ViewModels
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
+                    }
+                    if (fieldCalculationBlocked)
+                    {
+                        OnPropertyChanged(() => Count);
                     }
                 }
             }
@@ -252,6 +264,10 @@ namespace HomeCalc.Presentation.ViewModels
                     {
                         DoCalculations();
                     }
+                    if (fieldCalculationBlocked)
+                    {
+                        OnPropertyChanged(() => ItemCost);
+                    }
                 }
             }
         }
@@ -268,6 +284,10 @@ namespace HomeCalc.Presentation.ViewModels
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
+                    }
+                    if (fieldCalculationBlocked)
+                    {
+                        OnPropertyChanged(() => TotalCost);
                     }
                 }
             }

@@ -267,6 +267,11 @@ namespace HomeCalc.Presentation.ViewModels
                     searchFromDate <= value)
                 {
                     searchToDate = value;
+                    if (searchToDate.Hour == 0 && searchToDate.Minute == 0 && searchToDate.Second == 0)
+                    {
+                        searchToDate = searchToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    }
+                    
                     OnPropertyChanged(() => SearchToDate);
                 }
             }

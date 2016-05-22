@@ -55,7 +55,9 @@
         <!--<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" />-->
 
         
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewPurchaseType, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 Text="{Binding NewPurchaseType, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding NewPurchaseTypeEditable, UpdateSourceTrigger=PropertyChanged}"/>
         <!--<Button Grid.Row="2" Grid.Column="2" Content="Додати" Command="{Binding AddType}"/>-->
 
     </Grid>

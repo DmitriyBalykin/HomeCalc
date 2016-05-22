@@ -11,6 +11,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace HomeCalc.Model.DbService
 {
@@ -21,6 +22,9 @@ namespace HomeCalc.Model.DbService
         private static DataBaseService instance;
         private IDatabaseManager dbManager;
         private static object monitor = new object();
+
+        private IFormatProvider formatCulture = CultureInfo.CreateSpecificCulture("en-US");
+
         private DataBaseService(IDatabaseManager dbManager)
         {
             logger.Info("New database instance initiated.");
@@ -48,11 +52,11 @@ namespace HomeCalc.Model.DbService
                 {
                     if (settings.SettingId == 0)
                     {
-                        command.CommandText = string.Format("INSERT OR REPLACE INTO SETTINGS(ProfileId, SettingName, SettingValue) VALUES ({0}, {1}, {2})", settings.ProfileId, settings.SettingName, settings.SettingValue);
+                        command.CommandText = string.Format("INSERT INTO SETTINGS(ProfileId, SettingName, SettingValue) VALUES ({0}, '{1}', '{2}')", settings.ProfileId, settings.SettingName, settings.SettingValue);
                     }
                     else
                     {
-                        command.CommandText = string.Format("UPDATE SETTINGS SET ProfileId = {0}, SettingName = {1}, SettingValue {2} WHERE SettingId = {3}", settings.ProfileId, settings.SettingName, settings.SettingValue, settings.SettingId);
+                        command.CommandText = string.Format("UPDATE SETTINGS SET ProfileId = {0}, SettingName = '{1}', SettingValue '{2}' WHERE SettingId = {3}", settings.ProfileId, settings.SettingName, settings.SettingValue, settings.SettingId);
                     }
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     transaction.Commit();
@@ -107,14 +111,14 @@ namespace HomeCalc.Model.DbService
                     if (purchase.PurchaseId == 0)
                     {
                         command.CommandText = string.Format(
-                        "INSERT OR REPLACE INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemsNumber, TypeId) VALUES (\"{0}\", {1}, {2}, {3}, {4}, {5})",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
+                        "INSERT INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemsNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
+                        purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId);
                     }
                     else
                     {
                         command.CommandText = string.Format(
-                        "UPDATE PURCHASEMODELS SET Name = \"{0}\", Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId, purchase.PurchaseId);
+                        "UPDATE PURCHASEMODELS SET Name = '{0}', Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
+                        purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId, purchase.PurchaseId);
                     }
 
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -140,8 +144,8 @@ namespace HomeCalc.Model.DbService
                     foreach (var purchase in purchases)
                     {
                         command.CommandText = string.Format(
-                        "INSERT INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemNumber, TypeId) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost, purchase.ItemCost, purchase.ItemsNumber, purchase.TypeId);
+                        "INSERT INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
+                        purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId);
 
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
@@ -166,11 +170,11 @@ namespace HomeCalc.Model.DbService
                 {
                     if (purchaseType.TypeId == 0)
                     {
-                        command.CommandText = string.Format("INSERT OR REPLACE INTO PURCHASETYPEMODELS (Name) VALUES ({0})", purchaseType.Name);
+                        command.CommandText = string.Format("INSERT INTO PURCHASETYPEMODELS (Name) VALUES ('{0}')", purchaseType.Name);
                     }
                     else
                     {
-                        command.CommandText = string.Format("UPDATE PURCHASETYPEMODELS SET Name = \"{0}\" WHERE TypeId = {1}", purchaseType.Name, purchaseType.TypeId);
+                        command.CommandText = string.Format("UPDATE PURCHASETYPEMODELS SET Name = '{0}' WHERE TypeId = {1}", purchaseType.Name, purchaseType.TypeId);
                     }
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
@@ -195,7 +199,6 @@ namespace HomeCalc.Model.DbService
                     var dbReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     if (dbReader.HasRows && dbReader.Read())
                     {
-                        //{"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
                         purchase = new PurchaseModel
                         {
                             PurchaseId = dbReader.GetInt64(0),

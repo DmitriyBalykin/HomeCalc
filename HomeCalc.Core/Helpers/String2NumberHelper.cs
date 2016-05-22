@@ -27,7 +27,8 @@ namespace HomeCalc.Core.Helpers
                 return false;
             }
             double result;
-            return double.TryParse(str, out result);
+            bool parsed = double.TryParse(str, out result);
+            return parsed && !double.IsNaN(result) && !double.IsInfinity(result);
         }
         public static string GetCorrected(string str, int precision = 6)
         {
