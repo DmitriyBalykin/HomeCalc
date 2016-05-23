@@ -15,7 +15,6 @@ namespace HomeCalc.Model.DbConnectionWrappers
         {
             Connection = new SQLiteConnection(connectionString);
             Connection.StateChange += Connection_StateChange;
-            RecentlyInitiated = false;
 
             Connection.Open();
         }
@@ -24,7 +23,6 @@ namespace HomeCalc.Model.DbConnectionWrappers
         {
             State = e.CurrentState;
         }
-        public bool RecentlyInitiated { get; set; }
         public ConnectionState State { get; set; }
 
         public void Dispose()
