@@ -51,10 +51,17 @@ namespace HomeCalc.Presentation.ViewModels
                         MessageBoxIcon.Question);
                     Task.Factory.StartNew(async () => 
                     {
-                        if (result == DialogResult.OK && await StoreService.RemovePurchase(purchase.Id))
+                        if (result == DialogResult.OK)
                         {
-                        BackupSearchList(SearchResultList);
-                        Status.Post("Покупка \"{0}\" видалена", purchase.Name);
+                            if (await StoreService.RemovePurchase(purchase.Id))
+                            {
+                                BackupSearchList(SearchResultList);
+                                Status.Post("Покупка \"{0}\" видалена", purchase.Name);
+                            }
+                            else
+                            {
+                                Status.Post("Помилка: покупка \"{0}\" не видалена", purchase.Name);
+                            }
                     }
                     });
                     
