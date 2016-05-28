@@ -13,7 +13,7 @@ namespace HomeCalc.Core.Helpers
         {
             if (str.EndsWith(toTrim, true, CultureInfo.InvariantCulture))
             {
-                str = str.Substring(0, str.Length - toTrim.Length - 1);
+                str = str.Substring(0, str.Length - toTrim.Length);
             }
             return str;
         }
