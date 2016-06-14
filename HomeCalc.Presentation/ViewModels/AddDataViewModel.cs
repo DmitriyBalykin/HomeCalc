@@ -120,7 +120,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 resultList = StoreService.PurchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture));
             }
-            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date).Take(10);
+            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date).Take(1);
         }
         private void DoCalculations()
         {

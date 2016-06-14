@@ -311,7 +311,7 @@ namespace HomeCalc.Model.DbService
                 using(var db = connection ?? dbManager.GetConnection())
                 using(var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("DELETE FROM PURCHASEMODELS WHERE PurchaseTypeId = {0}", purchaseId);
+                    command.CommandText = string.Format("DELETE FROM PURCHASEMODELS WHERE PurchaseId = {0}", purchaseId);
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
                 }
