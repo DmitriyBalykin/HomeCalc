@@ -7,6 +7,7 @@ using HomeCalc.Presentation.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,30 +19,87 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public OperationsViewModel()
         {
-            logger = LogService.GetLogger();
-
-            AddCommand("SelectPath", new DelegateCommand(SelectPathCommandExecute));
-            AddCommand("ImportData", new DelegateCommand(ImportDataCommandExecute, CanImportData));
+            //AddCommand("SelectPath", new DelegateCommand(SelectPathCommandExecute));
+            //AddCommand("ImportData", new DelegateCommand(ImportDataCommandExecute, CanImportData));
             AddCommand("AddType", new DelegateCommand(AddTypeCommandExecute, CanAddType));
-        }
+            AddCommand("RenameType", new DelegateCommand(RenameTypeCommandExecute, CanRenameType));
+            AddCommand("DeleteType", new DelegateCommand(DeleteTypeCommandExecute, CanDeleteType));
 
+            NewPurchaseTypeEditable = true;
+
+        }
+        #region commands
         private bool CanAddType(object obj)
         {
-            return !string.IsNullOrEmpty(NewPurchaseType);
+            return !string.IsNullOrWhiteSpace(NewPurchaseType);
         }
 
         private void AddTypeCommandExecute(object obj)
         {
-            if (StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }))
+            Task.Factory.StartNew(async () => 
             {
-                logger.Info("Purchase type saved");
-                Status.Post("Тип покупки \"{0}\" збережено", NewPurchaseType);
-            }
-            else
+                if (await StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }))
+                {
+                    logger.Info("Purchase type {0} saved", NewPurchaseType);
+                    Status.Post("Тип покупки \"{0}\" збережено", NewPurchaseType);
+                }
+                else
+                {
+                    logger.Warn("Purchase type {0} not saved", NewPurchaseType);
+                    Status.Post("Помилка: тип покупки \"{0}\" не збережено", NewPurchaseType);
+                }
+            });
+            
+        }
+
+        private bool CanRenameType(object obj)
+        {
+            return PurchaseType != null && !string.IsNullOrWhiteSpace(NewPurchaseType);
+        }
+
+        private void RenameTypeCommandExecute(object obj)
+        {
+            NewPurchaseTypeEditable = false;
+            Task.Factory.StartNew(async () =>
             {
-                logger.Warn("Purchase type not saved");
-                Status.Post("Помилка: тип покупки \"{0}\" не збережено", NewPurchaseType);
-            }
+                if (await StoreService.RenamePurchaseType(PurchaseType, NewPurchaseType))
+                {
+                    logger.Info("Purchase type {0} renamed", NewPurchaseType);
+                    Status.Post("Тип покупки \"{0}\" перейменовано", NewPurchaseType);
+                }
+                else
+                {
+                    logger.Warn("Purchase type {0} not renamed", NewPurchaseType);
+                    Status.Post("Помилка: тип покупки \"{0}\" не перейменовано", NewPurchaseType);
+                }
+                NewPurchaseType = string.Empty;
+                NewPurchaseTypeEditable = true;
+            });
+        }
+
+        private bool CanDeleteType(object obj)
+        {
+            return PurchaseType != null;
+        }
+
+        private void DeleteTypeCommandExecute(object obj)
+        {
+            Task.Factory.StartNew(async () => 
+            {
+                var typeToDeleteName = PurchaseType.Name;
+                if (await StoreService.RemovePurchaseType(PurchaseType))
+                {
+                    logger.Info("Purchase type {0} removed", typeToDeleteName);
+                    Status.Post("Тип покупки \"{0}\" видалено", typeToDeleteName);
+                }
+                else
+                {
+                    logger.Warn("Purchase type {0} not removed", typeToDeleteName);
+                    Status.Post("Помилка: тип покупки \"{0}\" не видалено", typeToDeleteName);
+                }
+                NewPurchaseType = string.Empty;
+                NewPurchaseTypeEditable = true;
+            });
         }
 
         private void SelectPathCommandExecute(object obj)
@@ -57,11 +115,14 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        private async void ImportDataCommandExecute(object obj)
-        {
-            Status.StartProgress();
-            await Migrator.MigrateFromCsv(ExistingPath, DataMigrationStatusUpdated).ContinueWith(t => DataMigrationFinished(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
-        }
+        //private async void ImportDataCommandExecute(object obj)
+        //{
+        //    Status.StartProgress();
+        //    await Migrator.MigrateFromCsv(ExistingPath, DataMigrationStatusUpdated).ContinueWith(t => DataMigrationFinished(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+        //}
+
+        #endregion
+
         private void DataMigrationStatusUpdated(MigrationResultArgs e)
         {
             Status.UpdateProgress(e.Percent);
@@ -110,6 +171,49 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     newPurchaseType = value;
                     OnPropertyChanged(() => NewPurchaseType);
+                }
+            }
+        }
+
+        private bool newPurchaseTypeEditable;
+        public bool NewPurchaseTypeEditable
+        {
+            get
+            {
+                return newPurchaseTypeEditable;
+            }
+            set
+            {
+                if (newPurchaseTypeEditable != value)
+                {
+                    newPurchaseTypeEditable = value;
+                    OnPropertyChanged(() => NewPurchaseTypeEditable);
+                }
+            }
+        }
+
+        private PurchaseType purchaseType;
+        public PurchaseType PurchaseType
+        {
+            get
+            {
+                return purchaseType;
+            }
+            set
+            {
+                PurchaseType type;
+                if (value != null)
+                {
+                    type = TypeSelectorItems.Where(e => e.Name == value.Name).FirstOrDefault();
+                }
+                else
+                {
+                    type = TypeSelectorItems.FirstOrDefault();
+                }
+                if (type != purchaseType)
+                {
+                    purchaseType = type;
+                    OnPropertyChanged(() => PurchaseType);
                 }
             }
         }

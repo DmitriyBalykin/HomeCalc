@@ -14,7 +14,6 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public SettingsViewModel()
         {
-            logger = LogService.GetLogger();
             AddCommand("Save", new DelegateCommand(SaveCommandExecute));
         }
 

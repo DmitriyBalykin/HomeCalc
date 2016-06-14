@@ -17,59 +17,90 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class AddDataViewModel : ViewModel
     {
-        private const int MINIMAL_SEARCH_LENGTH = 3;
+        private const int MINIMAL_SEARCH_LENGTH = 2;
 
         public AddDataViewModel()
         {
             purchase = new Purchase();
 
             AddCommand("Save", new DelegateCommand(SaveCommandExecute, SaveCommandCanExecute));
-
-            StoreService.TypesUpdated += StoreService_TypesUpdated;
+            
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
-            typeSelectorItems = new ObservableCollection<PurchaseType>( StoreService.LoadPurchaseTypeList());
-
-            PurchaseType = TypeSelectorItems.FirstOrDefault();
-
-            actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
-
-            Status.Post("Завантажено");
+            Status.Post("Все готово для роботи!");
         }
 
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            if (PurchaseType == null && TypeSelectorItems.Count() > 0)
+            {
+                PurchaseType = TypeSelectorItems.FirstOrDefault();
+            }
+
+            actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
+        }
+
+        #region event handlers
         void UpdatePurchaseHistory(object sender, EventArgs e)
         {
             PurchaseHistoryItems = new ObservableCollection<Purchase>(StoreService.PurchaseHistory);
         }
-        void StoreService_TypesUpdated(object sender, EventArgs e)
-        {
-            TypeSelectorItems = new ObservableCollection<PurchaseType>(StoreService.LoadPurchaseTypeList());
-        }
 
         private void SaveCommandExecute(object obj)
         {
-            if (StoreService.AddPurchase(purchase))
+            purchase.Name = purchase.Name.Trim();
+            Task.Factory.StartNew(async () => 
             {
-                logger.Info("Purchase saved");
-                Status.Post("Покупка \"{0}\" збережена", PurchaseName);
-                CleanInputFields();
-            }
-            else
-            {
-                logger.Warn("Purchase not saved");
-                Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
-            }
+                var result = await StoreService.AddPurchase(purchase);
+                if (result)
+                {
+                    logger.Info("Purchase saved");
+                    Status.Post("Покупка \"{0}\" збережена", PurchaseName);
+                    CleanInputFields();
+                }
+                else
+                {
+                    logger.Warn("Purchase not saved");
+                    Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
+                }
+            });
+            
         }
         private bool SaveCommandCanExecute(object obj)
         {
-            return !string.IsNullOrEmpty(Count) && !string.IsNullOrEmpty(ItemCost) && !string.IsNullOrEmpty(TotalCost);
+            return
+                !string.IsNullOrWhiteSpace(purchase.Name) &&
+                !string.IsNullOrWhiteSpace(Count) &&
+                !string.IsNullOrWhiteSpace(ItemCost) &&
+                !string.IsNullOrWhiteSpace(TotalCost);
         }
+        #endregion
+
+        #region helpers
+
+        private void LoadPurchaseTypes()
+        {
+            Task.Factory.StartNew(async () => 
+            {
+                TypeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
+                if (PurchaseType == null && TypeSelectorItems.Count() > 0)
+                {
+                    PurchaseType = TypeSelectorItems.FirstOrDefault();
+                }
+            });
+        }
+
         private void CleanInputFields()
         {
             PurchaseName = string.Empty;
+
+            fieldCalculationBlocked = true;
             Count = string.Empty;
             ItemCost = string.Empty;
-            totalCost = string.Empty;
+            TotalCost = string.Empty;
+            fieldCalculationBlocked = false;
         }
         private void SearchPurchase()
         {
@@ -89,19 +120,23 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 resultList = StoreService.PurchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture));
             }
-            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date).Take(10);
+            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date).Take(1);
         }
         private void DoCalculations()
         {
+            if (fieldCalculationBlocked)
+            {
+                return;
+            }
             try
             {
                 fieldCalculationInProgress = true;
 
                 if (purchase != null)
                 {
-                    purchase.ItemsNumber = StringHelper.ToNumber(Count);
-                    purchase.ItemCost = StringHelper.ToNumber(ItemCost);
-                    purchase.TotalCost = StringHelper.ToNumber(TotalCost);
+                    purchase.ItemsNumber = String2NumberHelper.ToNumber(Count);
+                    purchase.ItemCost = String2NumberHelper.ToNumber(ItemCost);
+                    purchase.TotalCost = String2NumberHelper.ToNumber(TotalCost);
 
                     DataService.PerformCalculation(purchase, actualCalculationTarget);
 
@@ -129,17 +164,22 @@ namespace HomeCalc.Presentation.ViewModels
             }
             
         }
+
+        #endregion
+
+        #region properties
         private DateTime dateToStore = DateTime.Now;
         public DateTime DateToStore {
             get
             {
-                return dateToStore;
+                return purchase.Date;
             }
             set
             {
-                if (value != dateToStore)
+                if (value != purchase.Date)
                 {
-                    dateToStore = value;
+                    purchase.Date = value;
+                    OnPropertyChanged(() => DateToStore);
                 }
             }
         }
@@ -148,7 +188,7 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 PurchaseHistoryItems = new ObservableCollection<Purchase>(value);
-                ShowPurchaseHistory = true;
+                ShowPurchaseHistory = PurchaseHistoryItems.Count() > 0;
             }
         }
         private ObservableCollection<Purchase> purchaseHistoryItems;
@@ -164,22 +204,6 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     purchaseHistoryItems = value;
                     OnPropertyChanged(() => PurchaseHistoryItems);
-                }
-            }
-        }
-        private ObservableCollection<PurchaseType> typeSelectorItems;
-        public ObservableCollection<PurchaseType> TypeSelectorItems
-        { 
-            get
-            {
-                return typeSelectorItems; 
-            }
-            set
-            {
-                if (typeSelectorItems != value)
-                {
-                    typeSelectorItems = value;
-                    OnPropertyChanged(() => TypeSelectorItems);
                 }
             }
         }
@@ -205,18 +229,23 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         private bool fieldCalculationInProgress = false;
+        private bool fieldCalculationBlocked = false;
         private string count;
         public string Count
         {
             get { return count; }
             set
             {
-                if (count != value && StringHelper.IsNumber(value))
+                if ((count != value && String2NumberHelper.IsNumber(value)) || value == string.Empty)
                 {
-                    count = StringHelper.GetCorrected(value);
+                    count = String2NumberHelper.GetCorrected(value);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
+                    }
+                    if (fieldCalculationBlocked)
+                    {
+                        OnPropertyChanged(() => Count);
                     }
                 }
             }
@@ -228,12 +257,16 @@ namespace HomeCalc.Presentation.ViewModels
             get { return itemCost; }
             set
             {
-                if (itemCost != value && StringHelper.IsNumber(value))
+                if ((itemCost != value && String2NumberHelper.IsNumber(value)) || value == string.Empty)
                 {
-                    itemCost = StringHelper.GetCorrected(value, 2);
+                    itemCost = String2NumberHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
+                    }
+                    if (fieldCalculationBlocked)
+                    {
+                        OnPropertyChanged(() => ItemCost);
                     }
                 }
             }
@@ -245,12 +278,16 @@ namespace HomeCalc.Presentation.ViewModels
             get { return totalCost; }
             set
             {
-                if (totalCost != value && StringHelper.IsNumber(value))
+                if ((totalCost != value && String2NumberHelper.IsNumber(value)) || value == string.Empty)
                 {
-                    totalCost = StringHelper.GetCorrected(value, 2);
+                    totalCost = String2NumberHelper.GetCorrected(value, 2);
                     if (!fieldCalculationInProgress)
                     {
                         DoCalculations();
+                    }
+                    if (fieldCalculationBlocked)
+                    {
+                        OnPropertyChanged(() => TotalCost);
                     }
                 }
             }
@@ -358,6 +395,6 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        
+        #endregion
     }
 }

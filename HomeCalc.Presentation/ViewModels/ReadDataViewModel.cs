@@ -20,7 +20,6 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public ReadDataViewModel()
         {
-            logger = LogService.GetLogger();
             AddCommand("Search", new DelegateCommand(SearchCommandExecute));
 
             AddCommand("Calculate", new DelegateCommand(CalculateCommandExecuted));
@@ -28,8 +27,6 @@ namespace HomeCalc.Presentation.ViewModels
 
             SearchFromDate = DateTime.Now.AddMonths(-1);
             SearchToDate = DateTime.Now;
-
-            PurchaseTypesList = new BindingList<PurchaseType>(StoreService.LoadPurchaseTypeList());
         }
 
         void SearchResultList_ListChanged(object sender, ListChangedEventArgs e)
@@ -42,7 +39,7 @@ namespace HomeCalc.Presentation.ViewModels
                     var referencePurchase = SearchResultListBackup.ElementAt(e.NewIndex);
                     if (!RecalculatePurchase(purchase, referencePurchase))
 	                {
-                        StoreService.UpdatePurchase(purchase);
+                        Task.Factory.StartNew(async () => await StoreService.UpdatePurchase(purchase));
 	                }
                     break;
                 case ListChangedType.ItemDeleted:
@@ -52,11 +49,22 @@ namespace HomeCalc.Presentation.ViewModels
                         "Видалення запису",
                         MessageBoxButtons.OKCancel,
                         MessageBoxIcon.Question);
-                    if (result == DialogResult.OK && StoreService.RemovePurchase(purchase.Id))
+                    Task.Factory.StartNew(async () => 
                     {
-                        BackupSearchList(SearchResultList);
-                        Status.Post("Покупка \"{0}\" видалена", purchase.Name);
+                        if (result == DialogResult.OK)
+                        {
+                            if (await StoreService.RemovePurchase(purchase.Id))
+                            {
+                                BackupSearchList(SearchResultList);
+                                Status.Post("Покупка \"{0}\" видалена", purchase.Name);
+                            }
+                            else
+                            {
+                                Status.Post("Помилка: покупка \"{0}\" не видалена", purchase.Name);
+                            }
                     }
+                    });
+                    
                     break;
                 default:
                     break;
@@ -104,10 +112,14 @@ namespace HomeCalc.Presentation.ViewModels
                 OnPropertyChanged(() => SearchResultList);
                 BackupSearchList(SearchResultList);
                 //SearchResultList = new BindingList<Purchase>(SearchResultListBackup);
-                if (StoreService.UpdatePurchase(editingPurchase))
+                Task.Factory.StartNew(async () => 
                 {
-                    Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
-                }
+                    if (await StoreService.UpdatePurchase(editingPurchase))
+                    {
+                        Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
+                    }
+                });
+                
             }
             else
             {
@@ -122,10 +134,10 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void SearchCommandExecute(object obj)
         {
-            var searchRequest = new SearchRequest
+            var searchRequest = new SearchRequestModel
             {
                 Name = purchaseName,
-                Type = PurchaseType,
+                TypeId = PurchaseType != null ?PurchaseType.TypeId : -1,
                 CostStart = costStart,
                 CostEnd = costEnd,
                 DateStart = searchFromDate,
@@ -135,28 +147,20 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByDate = searchByDate,
                 SearchByCost = searchByCost,
             };
-            List<Purchase> results = StoreService.LoadPurchaseList(searchRequest).OrderBy(p => p.Date).ToList();
-            TotalCount = results.Sum(p => p.ItemsNumber).ToString();
-            TotalCost = results.Sum(p => p.TotalCost).ToString();
-            BackupSearchList(results);
-            SearchResultList = new BindingList<Purchase>(results);
-            Status.Post("Пошук завершено, знайдено {0} записів", searchResultList.Count);
-        }
-        private BindingList<PurchaseType> purchaseTypesList;
-        public BindingList<PurchaseType> PurchaseTypesList {
-            get
+
+            Task.Factory.StartNew(async () => 
             {
-                return purchaseTypesList;
-            }
-            set
-            {
-                if (value != purchaseTypesList)
-                {
-                    purchaseTypesList = value;
-                    OnPropertyChanged(() => PurchaseTypesList);
-                }
-            }
+                List<Purchase> results = await StoreService.LoadPurchaseList(searchRequest).ConfigureAwait(false);
+                results = results.OrderBy(p => p.Date).ToList();
+                TotalCount = results.Sum(p => p.ItemsNumber).ToString();
+                TotalCost = results.Sum(p => p.TotalCost).ToString();
+                BackupSearchList(results);
+                SearchResultList = new BindingList<Purchase>(results);
+                Status.Post("Пошук завершено, знайдено {0} записів", searchResultList.Count);
+            });
+            
         }
+
         private void BackupSearchList(IEnumerable<Purchase> list)
         {
             searchResultListBackup = list.Select(p => new Purchase(p)).ToList();
@@ -270,6 +274,11 @@ namespace HomeCalc.Presentation.ViewModels
                     searchFromDate <= value)
                 {
                     searchToDate = value;
+                    if (searchToDate.Hour == 0 && searchToDate.Minute == 0 && searchToDate.Second == 0)
+                    {
+                        searchToDate = searchToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    }
+                    
                     OnPropertyChanged(() => SearchToDate);
                 }
             }
@@ -326,9 +335,9 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 SearchByCost = true;
-                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostStart && StringHelper.IsNumber(value))
+                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostStart && String2NumberHelper.IsNumber(value))
                 {
-                    var str = StringHelper.GetCorrected(value, 2);
+                    var str = String2NumberHelper.GetCorrected(value, 2);
                     try
                     {
                         costStart = Double.Parse(value);
@@ -349,9 +358,9 @@ namespace HomeCalc.Presentation.ViewModels
             set
             {
                 SearchByCost = true;
-                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostEnd && StringHelper.IsNumber(value))
+                if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value) && value != CostEnd && String2NumberHelper.IsNumber(value))
                 {
-                    var str = StringHelper.GetCorrected(value, 2);
+                    var str = String2NumberHelper.GetCorrected(value, 2);
                     try
                     {
                         costEnd = Double.Parse(value);
@@ -387,7 +396,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (value != totalCount)
                 {
-                    totalCount = StringHelper.GetCorrected(value, 2);
+                    totalCount = String2NumberHelper.GetCorrected(value, 2);
                     OnPropertyChanged(() => TotalCount);
                 }
             }
@@ -403,7 +412,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 if (value != totalCost)
                 {
-                    totalCost = StringHelper.GetCorrected(value, 2);
+                    totalCost = String2NumberHelper.GetCorrected(value, 2);
                     OnPropertyChanged(() => TotalCost);
                 }
             }

@@ -1,20 +1,25 @@
-﻿using System;
+﻿using HomeCalc.Model.DataModels;
+using HomeCalc.Model.DbConnectionWrappers;
+using HomeCalc.Presentation.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 namespace HomeCalc.Presentation.Services
 {
     interface IStorageService
     {
-        bool AddPurchase(HomeCalc.Presentation.Models.Purchase purchase);
+        Task<bool> AddPurchase(Purchase purchase);
         event EventHandler HistoryUpdated;
-        HomeCalc.Presentation.Models.Purchase LoadPurchase(int id);
-        System.Collections.Generic.List<HomeCalc.Presentation.Models.Purchase> LoadPurchaseList(HomeCalc.Presentation.Models.SearchRequest filter);
-        System.Collections.Generic.List<HomeCalc.Presentation.Models.Purchase> LoadPurchaseList(HomeCalc.Presentation.Models.SearchRequest.Requests enumFilter);
-        System.Collections.Generic.List<HomeCalc.Presentation.Models.PurchaseType> LoadPurchaseTypeList();
-        HomeCalc.Model.DataModels.SettingsModel LoadSettings();
-        HomeCalc.Presentation.Models.PurchaseType ResolvePurchaseType(int id = -1, string name = null);
-        bool SavePurchaseBulk(System.Collections.Generic.List<HomeCalc.Presentation.Models.Purchase> purchases);
-        bool SavePurchaseType(HomeCalc.Presentation.Models.PurchaseType purchaseType);
-        bool SaveSettings(HomeCalc.Model.DataModels.SettingsModel settings);
+        Task<Purchase> LoadPurchase(int id);
+        Task<List<Purchase>> LoadPurchaseList(SearchRequestModel filter);
+        Task<List<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter);
+        Task<List<PurchaseType>> LoadPurchaseTypeList();
+        Task<IEnumerable<SettingsStorageModel>> LoadSettings();
+        PurchaseType ResolvePurchaseType(long id, string name);
+        Task<bool> SavePurchaseBulk(List<Purchase> purchases);
+        Task<bool> SavePurchaseType(PurchaseType purchaseType);
+        Task<bool> SaveSettings(SettingsStorageModel settings);
         event EventHandler TypesUpdated;
-        bool UpdatePurchase(HomeCalc.Presentation.Models.Purchase purchase);
+        Task<bool> UpdatePurchase(Purchase purchase);
     }
 }

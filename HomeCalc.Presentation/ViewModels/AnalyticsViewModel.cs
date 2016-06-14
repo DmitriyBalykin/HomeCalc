@@ -16,28 +16,31 @@ namespace HomeCalc.Presentation.ViewModels
     public class AnalyticsViewModel : ReadDataViewModel
     {
         public AnalyticsViewModel()
-            :base()
         {
-            logger = LogService.GetLogger();
             AddCommand("ShowData", new DelegateCommand(ShowDataCommandExecuted));
 
             IntervalList = AggregationInterval.GetList();
 
-            PurchaseTypesList.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
+            TotalCostChart = true;
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            TypeSelectorItems.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
 
             SelectedInterval = IntervalList.FirstOrDefault();
 
-            PurchaseType = PurchaseTypesList.FirstOrDefault();
-
-            TotalCostChart = true;
+            PurchaseType = TypeSelectorItems.FirstOrDefault();
         }
 
         private void ShowDataCommandExecuted(object obj)
         {
-            var searchRequest = new SearchRequest
+            var searchRequest = new SearchRequestModel
             {
                 Name = PurchaseName,
-                Type = PurchaseType,
+                TypeId = PurchaseType.TypeId,
                 DateStart = SearchFromDate,
                 DateEnd = SearchToDate,
                 SearchByName = !string.IsNullOrEmpty(PurchaseName),
@@ -46,14 +49,19 @@ namespace HomeCalc.Presentation.ViewModels
                 SearchByCost = false,
             };
 
-            var chartData = StoreService.LoadPurchaseList(searchRequest)
-                .GroupBy(x =>
-                    {
-                        return CutTimeTo(x.Date, SelectedInterval);
-                    })
-                .Select(g => GetChartElement(g)).ToList();
+            Task.Factory.StartNew(async () => 
+            {
+                var chartData = (await StoreService.LoadPurchaseList(searchRequest))
+                                .GroupBy(x =>
+                                    {
+                                        return CutTimeTo(x.Date, SelectedInterval);
+                                    })
+                                .Select(g => GetChartElement(g)).ToList();
 
-            ChartSeries = new List<IEnumerable<SeriesDateBasedElement>> { chartData };
+                ChartSeries = new List<IEnumerable<SeriesDateBasedElement>> { chartData };
+            });
+
+            
         }
 
         

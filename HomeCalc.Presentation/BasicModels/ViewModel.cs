@@ -16,7 +16,7 @@ using System.Windows.Input;
 
 namespace HomeCalc.Presentation.BasicModels
 {
-    public partial class ViewModel : INotifyPropertyChanged
+    public partial class ViewModel
     {
         protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -25,33 +25,22 @@ namespace HomeCalc.Presentation.BasicModels
         protected StatusService Status;
         public ViewModel()
         {
+            InitializeServices();
+            InitializeProperties();
+        }
+
+        /*This method will be called after all initial data loading is finished*/
+        protected virtual void Initialize()
+        { }
+
+        private void InitializeServices()
+        {
             logger = new Logger(this.GetType().ToString());
             StoreService = StorageService.GetInstance();
             Status = StatusService.GetInstance();
         }
-        protected void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-        protected void OnPropertyChanged<T>(Expression<Func<T>> property)
-        {
-            if (property == null)
-            {
-                return;
-            }
-            var memberExpression = property.Body as MemberExpression;
-            if (memberExpression == null)
-            {
-                return;
-            }
-            if (PropertyChanged != null)
-            {
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(memberExpression.Member.Name));
-            }
-        }
+
+        
         private IDictionary<string, ICommand> commandCache = new Dictionary<string, ICommand>();
         public void AddCommand(string name, ICommand command)
         {
@@ -72,19 +61,6 @@ namespace HomeCalc.Presentation.BasicModels
                 throw new ArgumentNullException("command");
             }
             commandCache.Remove(name);
-        }
-    }
-    public partial class ViewModel : DynamicObject
-    {
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            ICommand command;
-            if (!commandCache.TryGetValue(binder.Name, out command))
-            {
-                logger.Warn("Binding property not found: {0}", binder.Name);
-                return base.TryGetMember(binder, out result);
-            }
-            return (result = command) != null;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HomeCalc.Core;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Model.DbService;
+using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Presentation.Models
 {
-    public class StorageService : HomeCalc.Presentation.Services.IStorageService
+    public class StorageService : IStorageService
     {
         DataBaseService DBService;
         private static StorageService instance;
@@ -25,19 +26,16 @@ namespace HomeCalc.Presentation.Models
         {
             DBService = DataBaseService.GetInstance();
             Status = StatusService.GetInstance();
-            UpdateHistory();
+            Task.Factory.StartNew(async () => await UpdateHistory());
         }
 
-        private void UpdateHistory()
+        private async Task UpdateHistory()
         {
-            if (purchaseHistory == null)
+            purchaseHistory = await LoadPurchaseList(SearchRequestModel.Requests.Empty).ConfigureAwait(false);
+            if (purchaseHistory != null && purchaseHistory.Count() > 0)
             {
-                purchaseHistory = new List<Purchase>();
+                AnnounceHistoryUpdate();
             }
-            Task.Factory.StartNew(() =>
-            {
-                purchaseHistory = LoadPurchaseList(SearchRequest.Requests.Empty);
-            }).ContinueWith( t => AnnounceHistoryUpdate(), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         private void AnnounceHistoryUpdate()
@@ -57,17 +55,17 @@ namespace HomeCalc.Presentation.Models
             return instance;
         }
 
-        public bool SaveSettings(SettingsModel settings)
+        public async Task<bool> SaveSettings(SettingsStorageModel settings)
         {
-            return DBService.SaveSettings(settings);
+            return await DBService.SaveSettings(settings).ConfigureAwait(false);
         }
-        public SettingsModel LoadSettings()
+        public async Task<IEnumerable<SettingsStorageModel>> LoadSettings()
         {
-            return DBService.LoadSettings();
+            return await DBService.LoadSettings().ConfigureAwait(false);
         }
-        public bool AddPurchase(Purchase purchase)
+        public async Task<bool> AddPurchase(Purchase purchase)
         {
-            var result = DBService.AddPurchase(PurchaseToModel(purchase));
+            var result = await DBService.SavePurchase(PurchaseToModel(purchase)).ConfigureAwait(false);
             if (result)
             {
                 purchaseHistory.Add(new Purchase(purchase));
@@ -75,18 +73,18 @@ namespace HomeCalc.Presentation.Models
             }
             return result;
         }
-        public bool UpdatePurchase(Purchase purchase)
+        public async Task<bool> UpdatePurchase(Purchase purchase)
         {
-            if (DBService.UpdatePurchase(PurchaseToModel(purchase)))
+            if (await DBService.SavePurchase(PurchaseToModel(purchase)).ConfigureAwait(false))
             {
                 Status.Post("Запис \"{0}\" оновлено", purchase.Name);
                 return true;
             }
             return false;
         }
-        public bool SavePurchaseBulk(List<Purchase> purchases)
+        public async Task<bool> SavePurchaseBulk(List<Purchase> purchases)
         {
-            var result = DBService.SavePurchaseBulk(purchases.Select(p => PurchaseToModel(p)));
+            var result = await DBService.SavePurchaseBulk(purchases.Select(p => PurchaseToModel(p))).ConfigureAwait(false);
             if (result)
             {
                 purchaseHistory.AddRange(purchases);
@@ -94,65 +92,83 @@ namespace HomeCalc.Presentation.Models
             }
             return result;
         }
-        public bool SavePurchaseType(PurchaseType purchaseType)
+        public async Task<bool> SavePurchaseType(PurchaseType purchaseType)
         {
             PurchaseTypesCache.IsActual = false;
-            var result = DBService.SavePurchaseType(TypeToModel(purchaseType));
+            var result = await DBService.SavePurchaseType(TypeToModel(purchaseType)).ConfigureAwait(false);
             if (result)
             {
                 TypeUpdated();
             }
             return result;
         }
-        public Purchase LoadPurchase(int id)
+
+        public async Task<bool> RemovePurchaseType(PurchaseType pType)
         {
-            return ModelToPurchase(DBService.LoadPurchase(id));
+            var result = await DBService.DeletePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
+            if (result)
+            {
+                TypeUpdated();
+            }
+            return result;
         }
-        public List<Purchase> LoadPurchaseList(SearchRequest.Requests enumFilter)
+
+        public async Task<bool> RenamePurchaseType(PurchaseType pType, string newPurchaseTypeName)
+        {
+            pType.Name = newPurchaseTypeName;
+            var result = await DBService.SavePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
+            if (result)
+            {
+                TypeUpdated();
+            }
+            return result;
+        }
+
+        public async Task<Purchase> LoadPurchase(int id)
+        {
+            return ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
+        }
+        public async Task<List<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter)
         {
             var list = new List<Purchase>();
             switch (enumFilter)
             {
-                case SearchRequest.Requests.Empty:
-                    list = DBService.LoadCompletePurchaseList().Select(p => ModelToPurchase(p)).ToList();
+                case SearchRequestModel.Requests.Empty:
+                    list = (await DBService.LoadCompletePurchaseList().ConfigureAwait(false)).Select(p => ModelToPurchase(p)).ToList();
                     break;
             }
             return list;
         }
-        public List<Purchase> LoadPurchaseList(SearchRequest filter)
+        public async Task<List<Purchase>> LoadPurchaseList(SearchRequestModel filter)
         {
-            return DBService.LoadPurchaseList(
-                p => (!filter.SearchByName || p.Name.Contains(filter.Name)) &&
-                     (!filter.SearchByType || p.TypeId == filter.Type.TypeId) &&
-                     (!filter.SearchByDate || (p.Timestamp > filter.DateStart.Ticks) && (p.Timestamp <= filter.DateEnd.Ticks)) &&
-                     (!filter.SearchByCost || (p.TotalCost >= filter.CostStart) && (p.TotalCost <= filter.CostEnd))
-                ).Select(p => ModelToPurchase(p)).ToList();
+            var convertedList = (await DBService.LoadPurchaseList(filter).ConfigureAwait(false)).Select(p => ModelToPurchase(p)).ToList();
+            return convertedList;
         }
-        public List<PurchaseType> LoadPurchaseTypeList()
+        public async Task<List<PurchaseType>> LoadPurchaseTypeList()
         {
             if (!PurchaseTypesCache.IsActual)
             {
-                PurchaseTypesCache.Cache = DBService.LoadPurchaseTypeList().Select(p => ModelToType(p)).ToList();
+                PurchaseTypesCache.Cache = (await DBService.LoadPurchaseTypeList().ConfigureAwait(false)).Select(p => ModelToType(p)).ToList();
             }
             return PurchaseTypesCache.Cache;
         }
-        public PurchaseType ResolvePurchaseType(int id = -1, string name = null)
+        public PurchaseType ResolvePurchaseType(long id = -1, string name = null)
         {
             if (id > -1)
             {
-                return LoadPurchaseTypeList().Where(type => type.TypeId == id).SingleOrDefault();
+                return PurchaseTypesCache.Cache.Where(type => type.TypeId == id).SingleOrDefault();
             }
             else if (name != null)
             {
-                var matchedType = LoadPurchaseTypeList().Where(type => type.Name == name).SingleOrDefault();
-                if (matchedType == null)
-                {
-                    SavePurchaseType(new PurchaseType {
-                        Name = name
-                    });
-                    //type id generated by DBMS as Primary Key
-                    matchedType = LoadPurchaseTypeList().Where(type => type.Name == name).SingleOrDefault();
-                }
+                var matchedType = PurchaseTypesCache.Cache.Where(type => type.Name == name).SingleOrDefault();
+                //if (matchedType == null)
+                //{
+                //    await SavePurchaseType(new PurchaseType {
+                //        Name = name
+                //    });
+                //    //type id generated by DBMS as Primary Key
+                //    matchedType = PurchaseTypesCache.Cache.Where(type => type.Name == name).SingleOrDefault();
+                //}
                 return matchedType;
             }
             else
@@ -164,6 +180,7 @@ namespace HomeCalc.Presentation.Models
         {
             return new PurchaseType { TypeId = (int)model.TypeId, Name = model.Name };
         }
+
         private PurchaseTypeModel TypeToModel(PurchaseType type)
         {
             return new PurchaseTypeModel { TypeId = type.TypeId, Name = type.Name };
@@ -177,7 +194,7 @@ namespace HomeCalc.Presentation.Models
                 ItemsNumber = model.ItemsNumber,
                 Name = model.Name,
                 TotalCost = model.TotalCost,
-                Type = ModelToType(model.Type)
+                Type = ResolvePurchaseType(model.TypeId)
             };
         }
         private PurchaseModel PurchaseToModel(Purchase purchase)
@@ -202,9 +219,9 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
-        internal bool RemovePurchase(int purchaseId)
+        internal async Task<bool> RemovePurchase(int purchaseId)
         {
-            bool result = DBService.RemovePurchase(purchaseId);
+            bool result = await DBService.RemovePurchase(purchaseId).ConfigureAwait(false);
             if (result)
             {
                 purchaseHistory.Remove(new Purchase { Id = purchaseId });
@@ -219,6 +236,8 @@ namespace HomeCalc.Presentation.Models
                 return purchaseHistory;
             }
         }
+
+        
     }
 
     class PurchaseTypesCache

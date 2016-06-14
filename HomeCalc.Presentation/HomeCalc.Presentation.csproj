@@ -52,11 +52,13 @@
     <Compile Include="..\HomeCalc.View\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BasicModels\ViewModel.Properties.cs" />
+    <Compile Include="BasicModels\ViewModel.Dynamic.cs" />
     <Compile Include="BasicModels\ViewModel.cs" />
     <Compile Include="Models\AggregationInterval.cs" />
     <Compile Include="Models\Purchase.cs" />
     <Compile Include="Models\PurchaseType.cs" />
-    <Compile Include="Models\SearchRequest.cs" />
+    <Compile Include="Models\SettingsModel.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\IStorageService.cs" />
     <Compile Include="Services\StorageService.cs" />

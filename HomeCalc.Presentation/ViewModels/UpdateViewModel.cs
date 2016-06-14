@@ -15,12 +15,9 @@ namespace HomeCalc.Presentation.ViewModels
 {
     public class UpdateViewModel : ViewModel
     {
-        Logger logger = LogService.GetLogger();
-
         public event EventHandler CloseApplicationEventHandler;
         public UpdateViewModel()
         {
-            logger = LogService.GetLogger();
             AddCommand("CheckUpdates", new DelegateCommand(CheckUpdatesCommandExecute));
             AddCommand("Update", new DelegateCommand(UpdateCommandExecute));
         }

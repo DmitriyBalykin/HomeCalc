@@ -132,7 +132,7 @@ namespace HomeCalc.View
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Top = System.Windows.SystemParameters.FullPrimaryScreenHeight / 2 - ActualHeight / 2;
+            //Top = System.Windows.SystemParameters.FullPrimaryScreenHeight / 2 - ActualHeight / 2;
         }
     }
 }

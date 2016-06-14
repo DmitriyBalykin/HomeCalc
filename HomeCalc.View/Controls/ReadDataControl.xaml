@@ -7,6 +7,7 @@
              mc:Ignorable="d" 
              Width="900"
              Height="Auto"
+             MinHeight="310"
              MaxHeight="1000">
 
     <UserControl.Resources>
@@ -64,7 +65,7 @@
                      Text="{Binding PurchaseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             
                 <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
-                     ItemsSource="{Binding PurchaseTypesList}"
+                     ItemsSource="{Binding TypeSelectorItems}"
                      SelectedItem="{Binding PurchaseType}"/>
 
                 <DockPanel Grid.Row="3" Grid.Column="2">
