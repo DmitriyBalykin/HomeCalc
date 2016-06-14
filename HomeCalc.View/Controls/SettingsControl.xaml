@@ -83,8 +83,7 @@
                         Width="50"
                         HorizontalAlignment="Right"
                         Content="Обрати"
-                        Command="{Binding ClearFieldsOnSave}
-                        "/>
+                        Command="{Binding SelectBackupPath}"/>
 
 
                 </Grid>

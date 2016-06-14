@@ -6,6 +6,7 @@ using HomeCalc.Presentation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,20 +17,29 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public SettingsViewModel()
         {
-            AddCommand("Save", new DelegateCommand(SaveCommandExecute));
-        }
+            AddCommand("SelectBackupPath", new DelegateCommand(SelectBackupPathCommandExecute));
 
-        private void SaveCommandExecute(object obj)
-        {
-            StoreService.SaveSettings(new SettingsModel
+            Task.Factory.StartNew(async () => 
             {
-                AutoWindowPosition = AutoWindowPosition,
-                AutoWindowSize = AutoWindowSize,
-                ClearFieldsOnSave = ClearFieldsOnSave,
-                ResetCalculation = ResetCalculation
+                var settings = await StoreService.LoadSettings();
+                AutoUpdateCheck = bool.Parse(settings.Single(setting => setting.SettingName == "AutoUpdateCheck").SettingValue);
+                AutoUpdate = bool.Parse(settings.Single(setting => setting.SettingName == "AutoUpdate").SettingValue);
+                BackupPath = settings.Single(setting => setting.SettingName == "BackupPath").SettingValue;
+                ShowPurchaseSubType = bool.Parse(settings.Single(setting => setting.SettingName == "ShowPurchaseSubType").SettingValue);
+                ShowPurchaseComment = bool.Parse(settings.Single(setting => setting.SettingName == "ShowPurchaseComment").SettingValue);
+                ShowPurchaseRate = bool.Parse(settings.Single(setting => setting.SettingName == "ShowPurchaseRate").SettingValue);
+                ShowStoreName = bool.Parse(settings.Single(setting => setting.SettingName == "ShowStoreName").SettingValue);
+                ShowStoreRate = bool.Parse(settings.Single(setting => setting.SettingName == "ShowStoreRate").SettingValue);
             });
+            
         }
 
+        private void SelectBackupPathCommandExecute(object obj)
+        {
+            //throw new NotImplementedException();
+        }
+
+        #region Properties
         private bool autoUpdateCheck;
         public bool AutoUpdateCheck
         {
@@ -39,7 +49,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != autoUpdateCheck)
                 {
                     autoUpdateCheck = value;
-                    OnPropertyChanged(() => AutoUpdateCheck);
+                    OnPropertyChanged(() => AutoUpdateCheck, autoUpdateCheck);
                 }
             }
         }
@@ -52,7 +62,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != autoUpdate)
                 {
                     autoUpdate = value;
-                    OnPropertyChanged(() => AutoUpdate);
+                    OnPropertyChanged(() => AutoUpdate, autoUpdate);
                 }
             }
         }
@@ -65,7 +75,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != backupPath)
                 {
                     backupPath = value;
-                    OnPropertyChanged(() => BackupPath);
+                    OnPropertyChanged(() => BackupPath, backupPath);
                 }
             }
         }
@@ -78,7 +88,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != showPurchaseSubType)
                 {
                     showPurchaseSubType = value;
-                    OnPropertyChanged(() => ShowPurchaseSubType);
+                    OnPropertyChanged(() => ShowPurchaseSubType, showPurchaseSubType);
                 }
             }
         }
@@ -91,7 +101,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != showPurchaseComment)
                 {
                     showPurchaseComment = value;
-                    OnPropertyChanged(() => ShowPurchaseComment);
+                    OnPropertyChanged(() => ShowPurchaseComment, showPurchaseComment);
                 }
             }
         }
@@ -104,7 +114,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != showPurchaseRate)
                 {
                     showPurchaseRate = value;
-                    OnPropertyChanged(() => ShowPurchaseRate);
+                    OnPropertyChanged(() => ShowPurchaseRate, showPurchaseRate);
                 }
             }
         }
@@ -117,7 +127,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != showStoreName)
                 {
                     showStoreName = value;
-                    OnPropertyChanged(() => ShowStoreName);
+                    OnPropertyChanged(() => ShowStoreName, showStoreName);
                 }
             }
         }
@@ -130,9 +140,14 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != showStoreRate)
                 {
                     showStoreRate = value;
-                    OnPropertyChanged(() => ShowStoreRate);
+                    OnPropertyChanged(() => ShowStoreRate, showStoreRate);
                 }
             }
         }
+        #endregion
+
+        #region Helpers
+        
+        #endregion
     }
 }

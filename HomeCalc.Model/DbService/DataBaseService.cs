@@ -48,18 +48,29 @@ namespace HomeCalc.Model.DbService
             {
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
-                using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    if (settings.SettingId == 0)
+                    command.CommandText = string.Format("SELECT * FROM SETTINGMODELS WHERE SettingName='{0}'", settings.SettingName);
+                    DbDataReader dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    if (dbDataReader.HasRows && dbDataReader.Read())
                     {
-                        command.CommandText = string.Format("INSERT INTO SETTINGS(ProfileId, SettingName, SettingValue) VALUES ({0}, '{1}', '{2}')", settings.ProfileId, settings.SettingName, settings.SettingValue);
+                        var settingToUpdate = new SettingsStorageModel()
+                        {
+                            SettingId = dbDataReader.GetInt64(0),
+                            ProfileId = dbDataReader.GetInt64(1),
+                            SettingName = dbDataReader.GetString(2),
+                            SettingValue = settings.SettingValue
+                        };
+                        dbDataReader.Close();
+                        command.CommandText = string.Format(
+                            "UPDATE SETTINGMODELS SET ProfileId = {0}, SettingName = '{1}', SettingValue = '{2}' WHERE SettingId = {3}",
+                            settingToUpdate.ProfileId, settingToUpdate.SettingName, settingToUpdate.SettingValue, settingToUpdate.SettingId);
                     }
                     else
                     {
-                        command.CommandText = string.Format("UPDATE SETTINGS SET ProfileId = {0}, SettingName = '{1}', SettingValue '{2}' WHERE SettingId = {3}", settings.ProfileId, settings.SettingName, settings.SettingValue, settings.SettingId);
+                        command.CommandText = string.Format("INSERT INTO SETTINGMODELS(ProfileId, SettingName, SettingValue) VALUES ({0}, '{1}', '{2}')",
+                            settings.ProfileId, settings.SettingName, settings.SettingValue);
                     }
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                    transaction.Commit();
                 }
                 result = true;
             }
@@ -78,7 +89,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT * FROM SETTINGS");
+                    command.CommandText = string.Format("SELECT * FROM SETTINGMODELS");
                     DbDataReader dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                     while (dbDataReader.HasRows && dbDataReader.Read())

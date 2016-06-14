@@ -18,7 +18,7 @@ namespace HomeCalc.Presentation.Services
         PurchaseType ResolvePurchaseType(long id, string name);
         Task<bool> SavePurchaseBulk(List<Purchase> purchases);
         Task<bool> SavePurchaseType(PurchaseType purchaseType);
-        Task<bool> SaveSettings(SettingsStorageModel settings);
+        Task<bool> SaveSettings(SettingsModel settings);
         event EventHandler TypesUpdated;
         Task<bool> UpdatePurchase(Purchase purchase);
     }

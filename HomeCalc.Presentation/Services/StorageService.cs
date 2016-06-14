@@ -217,7 +217,7 @@ namespace HomeCalc.Presentation.Models
                 ProfileId = 0,
                 SettingId = settings.SettingId,
                 SettingName = settings.SettingName,
-                SettingValue = settings.SettingStringValue == string.Empty ? settings.SettingBoolValue.ToString() : settings.SettingStringValue
+                SettingValue = string.IsNullOrEmpty(settings.SettingStringValue) ? settings.SettingBoolValue.ToString() : settings.SettingStringValue
             };
         }
         private SettingsModel StorageToSetting(SettingsStorageModel model)
