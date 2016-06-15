@@ -32,19 +32,19 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Показувати підтип покупки" />
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
+                    <CheckBox IsEnabled="False" Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Показувати коментар до покупки" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment}"/>
+                    <CheckBox IsEnabled="False" Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment}"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Показувати оцінку покупки" />
-                    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
+                    <CheckBox IsEnabled="False" Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Показувати назву магазину" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ShowStoreName}"/>
+                    <CheckBox IsEnabled="False" Grid.Row="3" Grid.Column="1" IsChecked="{Binding ShowStoreName}"/>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Показувати оцінку магазину" />
-                    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ShowStoreRating}"/>
+                    <CheckBox IsEnabled="False" Grid.Row="4" Grid.Column="1" IsChecked="{Binding ShowStoreRating}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Збереження даних">
@@ -61,25 +61,25 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Автоматична перевірка наявності оновлень" />
-                    <CheckBox Grid.Row="0" Grid.Column="1"
+                    <CheckBox IsEnabled="False" Grid.Row="0" Grid.Column="1"
                               IsChecked="{Binding AutoUpdateCheck}"
                               HorizontalAlignment="Left"
                               Margin="7"
                               />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Автоматичне оновлення" />
-                    <CheckBox Grid.Row="1" Grid.Column="1"
+                    <CheckBox IsEnabled="False" Grid.Row="1" Grid.Column="1"
                               IsChecked="{Binding AutoUpdate}"
                               HorizontalAlignment="Left"
                               Margin="7"
                               />
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Шлях до місця для резервування бази даних" />
-                    <TextBox Grid.Row="2" Grid.Column="1"
+                    <TextBox IsEnabled="False" Grid.Row="2" Grid.Column="1"
                              Text="{Binding BackupPath}"
                              HorizontalAlignment="Left"
                              Width="235"/>
-                    <Button Grid.Row="2" Grid.Column="1"
+                    <Button IsEnabled="False" Grid.Row="2" Grid.Column="1"
                         Width="50"
                         HorizontalAlignment="Right"
                         Content="Обрати"
