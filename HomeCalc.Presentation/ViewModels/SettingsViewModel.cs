@@ -3,10 +3,13 @@ using HomeCalc.Core.Presentation;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Presentation.BasicModels;
 using HomeCalc.Presentation.Models;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,24 +22,46 @@ namespace HomeCalc.Presentation.ViewModels
         {
             AddCommand("SelectBackupPath", new DelegateCommand(SelectBackupPathCommandExecute));
 
-            Task.Factory.StartNew(async () => 
+            AssignSettings();
+        }
+
+        private void AssignSettings()
+        {
+            Task.Factory.StartNew(async () =>
             {
                 var settings = await StoreService.LoadSettings();
-                AutoUpdateCheck = bool.Parse(settings.Single(setting => setting.SettingName == "AutoUpdateCheck").SettingValue);
-                AutoUpdate = bool.Parse(settings.Single(setting => setting.SettingName == "AutoUpdate").SettingValue);
-                BackupPath = settings.Single(setting => setting.SettingName == "BackupPath").SettingValue;
-                ShowPurchaseSubType = bool.Parse(settings.Single(setting => setting.SettingName == "ShowPurchaseSubType").SettingValue);
-                ShowPurchaseComment = bool.Parse(settings.Single(setting => setting.SettingName == "ShowPurchaseComment").SettingValue);
-                ShowPurchaseRate = bool.Parse(settings.Single(setting => setting.SettingName == "ShowPurchaseRate").SettingValue);
-                ShowStoreName = bool.Parse(settings.Single(setting => setting.SettingName == "ShowStoreName").SettingValue);
-                ShowStoreRate = bool.Parse(settings.Single(setting => setting.SettingName == "ShowStoreRate").SettingValue);
+                var properties = this.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    var settingModel = settings.Where(setting => setting.SettingName.Equals(property.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                    var settingValue = settingModel != null ? settingModel.SettingValue : String.Empty;
+                    if (!string.IsNullOrEmpty(settingValue))
+                    {
+                        bool boolValue;
+                        if (property.PropertyType == typeof(bool) && bool.TryParse(settingValue, out boolValue))
+                        {
+                            property.SetValue(this, boolValue);
+                        }
+                        else
+                        {
+                            property.SetValue(this, settingValue);
+                        }
+                    }
+                }
             });
-            
         }
 
         private void SelectBackupPathCommandExecute(object obj)
         {
-            //throw new NotImplementedException();
+            var dlg = new CommonOpenFileDialog();
+            dlg.Title = "Select existing installation path";
+            dlg.IsFolderPicker = true;
+            dlg.EnsurePathExists = true;
+            dlg.Multiselect = true;
+            if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                BackupPath = dlg.FileName;
+            }
         }
 
         #region Properties

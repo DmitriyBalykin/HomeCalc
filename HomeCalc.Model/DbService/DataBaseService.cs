@@ -50,17 +50,23 @@ namespace HomeCalc.Model.DbService
                 using (var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = string.Format("SELECT * FROM SETTINGMODELS WHERE SettingName='{0}'", settings.SettingName);
-                    DbDataReader dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
-                    if (dbDataReader.HasRows && dbDataReader.Read())
+                    SettingsStorageModel settingToUpdate = null;
+                    using (var dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                     {
-                        var settingToUpdate = new SettingsStorageModel()
+                        if (dbDataReader.HasRows && dbDataReader.Read())
                         {
-                            SettingId = dbDataReader.GetInt64(0),
-                            ProfileId = dbDataReader.GetInt64(1),
-                            SettingName = dbDataReader.GetString(2),
-                            SettingValue = settings.SettingValue
-                        };
+                            settingToUpdate = new SettingsStorageModel()
+                            {
+                                SettingId = dbDataReader.GetInt64(0),
+                                ProfileId = dbDataReader.GetInt64(1),
+                                SettingName = dbDataReader.GetString(2),
+                                SettingValue = settings.SettingValue
+                            };
+                        }
                         dbDataReader.Close();
+                    }
+                    if (settingToUpdate != null)
+	                {
                         command.CommandText = string.Format(
                             "UPDATE SETTINGMODELS SET ProfileId = {0}, SettingName = '{1}', SettingValue = '{2}' WHERE SettingId = {3}",
                             settingToUpdate.ProfileId, settingToUpdate.SettingName, settingToUpdate.SettingValue, settingToUpdate.SettingId);
