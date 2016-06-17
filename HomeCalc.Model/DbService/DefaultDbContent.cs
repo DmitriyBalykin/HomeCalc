@@ -53,6 +53,77 @@ namespace HomeCalc.Model.DbService
             };
             }
         }
+
+        public static List<SettingsStorageModel> Settings
+        {
+            get
+            {
+                var list = new List<SettingsStorageModel>();
+                list.Add(new SettingsStorageModel 
+                {
+                    ProfileId = 0,
+                    SettingId = 0,
+                    SettingName = "AutoUpdate",
+                    SettingValue = "false"
+                });
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 1,
+                    SettingName = "AutoUpdateCheck",
+                    SettingValue = "true"
+                });
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 2,
+                    SettingName = "BackupPath",
+                    SettingValue = ""
+                });
+
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 3,
+                    SettingName = "PurchaseSubType",
+                    SettingValue = ""
+                });
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 4,
+                    SettingName = "PurchaseComment",
+                    SettingValue = ""
+                });
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 5,
+                    SettingName = "PurchaseRate",
+                    SettingValue = ""
+                });
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 6,
+                    SettingName = "StoreName",
+                    SettingValue = ""
+                });
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 7,
+                    SettingName = "StoreRate",
+                    SettingValue = ""
+                });
+
+
+
+
+
+                return list;
+            }
+        }
     }
 
     public class DbItem<T>

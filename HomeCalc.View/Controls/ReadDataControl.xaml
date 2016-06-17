@@ -27,7 +27,7 @@
             Grid.Row="0"
             >
         <Grid
-            Style="{StaticResource SettingsGridStyle}">
+            Style="{StaticResource BasicGridStyle}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40" />
                     <RowDefinition Height="40" />

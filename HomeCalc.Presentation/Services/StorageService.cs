@@ -55,9 +55,9 @@ namespace HomeCalc.Presentation.Models
             return instance;
         }
 
-        public async Task<bool> SaveSettings(SettingsStorageModel settings)
+        public async Task<bool> SaveSettings(SettingsModel settings)
         {
-            return await DBService.SaveSettings(settings).ConfigureAwait(false);
+            return await DBService.SaveSettings(SettingToStorage(settings)).ConfigureAwait(false);
         }
         public async Task<IEnumerable<SettingsStorageModel>> LoadSettings()
         {
@@ -210,7 +210,28 @@ namespace HomeCalc.Presentation.Models
                 TypeId = purchase.Type.TypeId
             };
         }
-
+        private SettingsStorageModel SettingToStorage(SettingsModel settings)
+        {
+            return new SettingsStorageModel
+            {
+                ProfileId = 0,
+                SettingId = settings.SettingId,
+                SettingName = settings.SettingName,
+                SettingValue = string.IsNullOrEmpty(settings.SettingStringValue) ? settings.SettingBoolValue.ToString() : settings.SettingStringValue
+            };
+        }
+        private SettingsModel StorageToSetting(SettingsStorageModel model)
+        {
+            bool value;
+            bool isBool = bool.TryParse(model.SettingValue, out value);
+            return new SettingsModel
+            {
+                SettingId = model.SettingId,
+                SettingName = model.SettingName,
+                SettingBoolValue = isBool? value : (bool?)null,
+                SettingStringValue = isBool ? string.Empty : model.SettingValue
+            };
+        }
         private void TypeUpdated()
         {
             if (TypesUpdated != null)
