@@ -1,11 +1,10 @@
-﻿using HomeCalc.Core;
+﻿using HomeCalc.Core.Services;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Model.DbService;
 using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HomeCalc.Presentation.Models

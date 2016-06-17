@@ -61,7 +61,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Автоматична перевірка наявності оновлень" />
-                    <CheckBox IsEnabled="False" Grid.Row="0" Grid.Column="1"
+                    <CheckBox Grid.Row="0" Grid.Column="1"
                               IsChecked="{Binding AutoUpdateCheck}"
                               HorizontalAlignment="Left"
                               Margin="7"

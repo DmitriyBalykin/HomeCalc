@@ -20,70 +20,21 @@ namespace HomeCalc.Presentation.ViewModels
         {
             AddCommand("CheckUpdates", new DelegateCommand(CheckUpdatesCommandExecute));
             AddCommand("Update", new DelegateCommand(UpdateCommandExecute));
+
+            if (SettingsService.GetSetting("AutoUpdateCheck"))
+            {
+                VersionChanges = UpdateService.GetUpdatesInformation();    
+            }
         }
 
         private void CheckUpdatesCommandExecute(object obj)
         {
-            try
-            {
-                VersionChecker.GetUpdatesInformation(true).ContinueWith(task => 
-                {
-                    var updatesInfo = task.Result;
-                    if (!updatesInfo.HasNewVersion)
-                    {
-                        VersionChanges = "Версія програми є найновішою.";
-                        return;
-                    }
-
-                    var sb = new StringBuilder();
-
-                    foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
-                    {
-                        sb.AppendLine(updateVersion.ToString());
-                        sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
-                        sb.AppendLine();
-                    }
-                    VersionChanges = sb.ToString();
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-            }
-            catch (WebException ex)
-            {
-                logger.Error("Error occured during update download");
-                logger.Error(ex.Message);
-            }
-            
+            VersionChanges = UpdateService.GetUpdatesInformation();
         }
 
         private void LoadUpdatesHistory()
         {
-            try
-            {
-                VersionChecker.GetUpdatesInformation(false).ContinueWith(task =>
-                {
-                    var updatesInfo = task.Result;
-                    if (updatesInfo.ChangesByVersions.Keys.Count() == 0)
-                    {
-                        VersionChanges = "Історія оновлень не знайдена.";
-                        return;
-                    }
-
-                    var sb = new StringBuilder();
-
-                    foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
-                    {
-                        sb.AppendLine(updateVersion.ToString());
-                        sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
-                        sb.AppendLine();
-                    }
-                    VersionChanges = sb.ToString();
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-            }
-            catch (WebException ex)
-            {
-                logger.Error("Error occured during update download");
-                logger.Error(ex.Message);
-            }
-
+            VersionChanges = UpdateService.GetUpdatesHistory();
         }
 
         private async void UpdateCommandExecute(object obj)

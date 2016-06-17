@@ -1,17 +1,9 @@
-﻿using HomeCalc.Core;
-using HomeCalc.Core.LogService;
-using HomeCalc.Core.Presentation;
-using HomeCalc.Model.DbService;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Services;
 using HomeCalc.Presentation.Models;
-using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Dynamic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace HomeCalc.Presentation.BasicModels
@@ -23,6 +15,7 @@ namespace HomeCalc.Presentation.BasicModels
 
         protected StorageService StoreService;
         protected StatusService Status;
+        protected UpdateService UpdateService;
         public ViewModel()
         {
             InitializeServices();
@@ -38,6 +31,7 @@ namespace HomeCalc.Presentation.BasicModels
             logger = new Logger(this.GetType().ToString());
             StoreService = StorageService.GetInstance();
             Status = StatusService.GetInstance();
+            UpdateService = UpdateService.GetInstance();
         }
 
         

@@ -1,11 +1,6 @@
-﻿using HomeCalc.Core;
-using HomeCalc.Core.LogService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Services;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Updater
 {

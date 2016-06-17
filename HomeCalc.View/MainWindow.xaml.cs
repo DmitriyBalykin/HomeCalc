@@ -1,19 +1,8 @@
-﻿using HomeCalc.Core;
+﻿using HomeCalc.Core.Services;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace HomeCalc.View
 {
@@ -23,7 +12,7 @@ namespace HomeCalc.View
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         StatusService statusService;
-
+        UpdateService updateService;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindow()
@@ -33,12 +22,21 @@ namespace HomeCalc.View
             DataContext = this;
 
             statusService = StatusService.GetInstance();
+            updateService = UpdateService.GetInstance();
+
             statusService.StatusChanged += statusService_StatusChanged;
             statusService.ProgressUpdated += statusService_ProgressUpdated;
             statusService.ProgressStarted += statusService_ProgressStarted;
             statusService.ProgressStopped += statusService_ProgressStopped;
 
             Status = statusService.GetStatus();
+
+            updateService.UpdatesAvailableEvent += updateService_UpdatesAvailableEvent;
+        }
+
+        void updateService_UpdatesAvailableEvent(object sender, EventArgs e)
+        {
+            UpdateColorNotify = true;
         }
 
         void statusService_ProgressStopped(object sender, EventArgs e)
@@ -118,6 +116,23 @@ namespace HomeCalc.View
                 {
                     showProgress = value;
                     OnUpdateProperty("ShowProgress");
+                }
+            }
+        }
+
+        private bool updateColorNotify = true;
+        public bool UpdateColorNotify
+        {
+            get
+            {
+                return updateColorNotify;
+            }
+            set
+            {
+                if (value != updateColorNotify)
+                {
+                    updateColorNotify = value;
+                    OnUpdateProperty("UpdateColorNotify");
                 }
             }
         }

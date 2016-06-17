@@ -79,6 +79,16 @@
                 </TabItem>
                 <TabItem
                     Header="Оновлення">
+                    <TabItem.Background>
+                        <Binding Path="UpdateColorNotify" Converter="{StaticResource updateStatusToColorConverter}">
+                            <Binding.ConverterParameter>
+                                <x:Array Type="Brush">
+                                    <SolidColorBrush Color="LightGreen" />
+                                    <SolidColorBrush Color="{Binding Source={StaticResource SelectedBackground}, Path=Color}"/>
+                                </x:Array>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </TabItem.Background>
                     <controls:UpdateControl/>
                 </TabItem>
             </TabControl>

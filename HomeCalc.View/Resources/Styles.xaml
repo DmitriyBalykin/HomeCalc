@@ -5,6 +5,7 @@
 
     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
     <converters:InverseBooleanConverter x:Key="inverseBooleanConverter" />
+    <converters:UpdateStatusToColorConverter x:Key="updateStatusToColorConverter" />
     
     <SolidColorBrush x:Key="LightBackground" Color="#FFD2ECF3" />
     <SolidColorBrush x:Key="SelectedBackground" Color="#FFEBFAFF" />

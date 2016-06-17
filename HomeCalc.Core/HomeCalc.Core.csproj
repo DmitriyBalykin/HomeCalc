@@ -57,10 +57,11 @@
     <Compile Include="Helpers\UIDispatcherHelper.cs" />
     <Compile Include="LogService\Logger.cs" />
     <Compile Include="LogService\LogService.cs" />
+    <Compile Include="Presentation\Converters\UpdateStatusToColorConverter.cs" />
     <Compile Include="Presentation\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Presentation\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Presentation\DelegateCommand.cs" />
-    <Compile Include="StatusService.cs" />
+    <Compile Include="Services\StatusService.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
