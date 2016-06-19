@@ -22,10 +22,10 @@ namespace HomeCalc.Presentation.ViewModels
         {
             AddCommand("SelectBackupPath", new DelegateCommand(SelectBackupPathCommandExecute));
 
-            AssignSettings();
+            InitiateSettings();
         }
 
-        private void AssignSettings()
+        private void InitiateSettings()
         {
             Task.Factory.StartNew(async () =>
             {
@@ -33,19 +33,13 @@ namespace HomeCalc.Presentation.ViewModels
                 var properties = this.GetType().GetProperties();
                 foreach (var property in properties)
                 {
-                    var settingModel = settings.Where(setting => setting.SettingName.Equals(property.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                    var settingValue = settingModel != null ? settingModel.SettingValue : String.Empty;
-                    if (!string.IsNullOrEmpty(settingValue))
+                    if (property.PropertyType == typeof(bool))
                     {
-                        bool boolValue;
-                        if (property.PropertyType == typeof(bool) && bool.TryParse(settingValue, out boolValue))
-                        {
-                            property.SetValue(this, boolValue);
-                        }
-                        else
-                        {
-                            property.SetValue(this, settingValue);
-                        }
+                        property.SetValue(this, SettingsService.GetBooleanValue(property.Name));
+                    }
+                    else
+                    {
+                        property.SetValue(this, SettingsService.GetStringValue(property.Name));
                     }
                 }
             });

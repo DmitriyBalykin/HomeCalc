@@ -62,6 +62,7 @@
     <Compile Include="Presentation\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Presentation\DelegateCommand.cs" />
     <Compile Include="Services\StatusService.cs" />
+    <Compile Include="Utilities\Cache.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
   </ItemGroup>
   <ItemGroup>

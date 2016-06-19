@@ -1,4 +1,5 @@
 ﻿using HomeCalc.Core.Services;
+using HomeCalc.Core.Utilities;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Model.DbService;
 using HomeCalc.Presentation.Services;
@@ -20,6 +21,9 @@ namespace HomeCalc.Presentation.Models
         public event EventHandler HistoryUpdated;
 
         private StatusService Status;
+
+        private Cache<PurchaseType> PurchaseTypesCache = new Cache<PurchaseType>();
+        private Cache<SettingsModel> SettingsCache = new Cache<SettingsModel>();
 
         public StorageService()
         {
@@ -56,11 +60,17 @@ namespace HomeCalc.Presentation.Models
 
         public async Task<bool> SaveSettings(SettingsModel settings)
         {
+            SettingsCache.SetActual(false);
             return await DBService.SaveSettings(SettingToStorage(settings)).ConfigureAwait(false);
         }
-        public async Task<IEnumerable<SettingsStorageModel>> LoadSettings()
+        public async Task<List<SettingsModel>> LoadSettings()
         {
-            return await DBService.LoadSettings().ConfigureAwait(false);
+            var settings = (await DBService.LoadSettings().ConfigureAwait(false)).Select(settingModel => StorageToSetting(settingModel)).ToList();
+            if (!SettingsCache.IsActual())
+            {
+                SettingsCache.SetCache(settings);
+            }
+            return settings;
         }
         public async Task<bool> AddPurchase(Purchase purchase)
         {
@@ -93,7 +103,7 @@ namespace HomeCalc.Presentation.Models
         }
         public async Task<bool> SavePurchaseType(PurchaseType purchaseType)
         {
-            PurchaseTypesCache.IsActual = false;
+            PurchaseTypesCache.SetActual(false);
             var result = await DBService.SavePurchaseType(TypeToModel(purchaseType)).ConfigureAwait(false);
             if (result)
             {
@@ -145,21 +155,23 @@ namespace HomeCalc.Presentation.Models
         }
         public async Task<List<PurchaseType>> LoadPurchaseTypeList()
         {
-            if (!PurchaseTypesCache.IsActual)
+            if (!PurchaseTypesCache.IsActual())
             {
-                PurchaseTypesCache.Cache = (await DBService.LoadPurchaseTypeList().ConfigureAwait(false)).Select(p => ModelToType(p)).ToList();
+                PurchaseTypesCache.SetCache(
+                    (await DBService.LoadPurchaseTypeList().ConfigureAwait(false)).Select(p => ModelToType(p)).ToList()
+                    );
             }
-            return PurchaseTypesCache.Cache;
+            return PurchaseTypesCache.GetCache();
         }
         public PurchaseType ResolvePurchaseType(long id = -1, string name = null)
         {
             if (id > -1)
             {
-                return PurchaseTypesCache.Cache.Where(type => type.TypeId == id).SingleOrDefault();
+                return PurchaseTypesCache.GetCache().Where(type => type.TypeId == id).SingleOrDefault();
             }
             else if (name != null)
             {
-                var matchedType = PurchaseTypesCache.Cache.Where(type => type.Name == name).SingleOrDefault();
+                var matchedType = PurchaseTypesCache.GetCache().Where(type => type.Name == name).SingleOrDefault();
                 //if (matchedType == null)
                 //{
                 //    await SavePurchaseType(new PurchaseType {
@@ -227,7 +239,7 @@ namespace HomeCalc.Presentation.Models
             {
                 SettingId = model.SettingId,
                 SettingName = model.SettingName,
-                SettingBoolValue = isBool? value : (bool?)null,
+                SettingBoolValue = value,
                 SettingStringValue = isBool ? string.Empty : model.SettingValue
             };
         }
@@ -256,24 +268,6 @@ namespace HomeCalc.Presentation.Models
                 return purchaseHistory;
             }
         }
-
-        
     }
 
-    class PurchaseTypesCache
-    {
-        public static List<PurchaseType> Cache { get; set; }
-        private static bool isActual;
-        public static bool IsActual
-        {
-            get
-            {
-                return isActual && Cache.Count > 0;
-            }
-            set
-            {
-                isActual = value;
-            }
-        }
-    }
 }

@@ -1,6 +1,7 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Services;
 using HomeCalc.Presentation.Models;
+using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,7 @@ namespace HomeCalc.Presentation.BasicModels
         protected StorageService StoreService;
         protected StatusService Status;
         protected UpdateService UpdateService;
+        protected SettingsService SettingsService;
         public ViewModel()
         {
             InitializeServices();
@@ -32,6 +34,7 @@ namespace HomeCalc.Presentation.BasicModels
             StoreService = StorageService.GetInstance();
             Status = StatusService.GetInstance();
             UpdateService = UpdateService.GetInstance();
+            SettingsService = SettingsService.GetInstance();
         }
 
         

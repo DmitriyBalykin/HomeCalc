@@ -11,6 +11,6 @@ namespace HomeCalc.Presentation.Models
         public long SettingId { get; set; }
         public string SettingName { get; set; }
         public string SettingStringValue { get; set; }
-        public bool? SettingBoolValue { get; set; }
+        public bool SettingBoolValue { get; set; }
     }
 }

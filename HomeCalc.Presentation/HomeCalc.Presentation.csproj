@@ -61,6 +61,7 @@
     <Compile Include="Models\SettingsModel.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\IStorageService.cs" />
+    <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\StorageService.cs" />
     <Compile Include="Services\UpdateService.cs" />
     <Compile Include="Utils\Migrator.cs" />

@@ -1,6 +1,7 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Presentation.BasicModels;
+using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("CheckUpdates", new DelegateCommand(CheckUpdatesCommandExecute));
             AddCommand("Update", new DelegateCommand(UpdateCommandExecute));
 
-            if (SettingsService.GetSetting("AutoUpdateCheck"))
+            if (SettingsService.GetBooleanValue(SettingsService.AUTO_UPDATE_CHECK_KEY))
             {
                 VersionChanges = UpdateService.GetUpdatesInformation();    
             }

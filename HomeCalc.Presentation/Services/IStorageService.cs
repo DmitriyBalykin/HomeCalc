@@ -14,7 +14,7 @@ namespace HomeCalc.Presentation.Services
         Task<List<Purchase>> LoadPurchaseList(SearchRequestModel filter);
         Task<List<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter);
         Task<List<PurchaseType>> LoadPurchaseTypeList();
-        Task<IEnumerable<SettingsStorageModel>> LoadSettings();
+        Task<List<SettingsModel>> LoadSettings();
         PurchaseType ResolvePurchaseType(long id, string name);
         Task<bool> SavePurchaseBulk(List<Purchase> purchases);
         Task<bool> SavePurchaseType(PurchaseType purchaseType);
