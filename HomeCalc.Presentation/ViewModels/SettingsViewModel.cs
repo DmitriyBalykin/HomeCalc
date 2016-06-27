@@ -163,6 +163,19 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
+        private bool doDatabaseBackup;
+        public bool DoDatabaseBackup
+        {
+            get { return doDatabaseBackup; }
+            set
+            {
+                if (value != doDatabaseBackup)
+                {
+                    doDatabaseBackup = value;
+                    OnPropertyChanged(() => DoDatabaseBackup, doDatabaseBackup);
+                }
+            }
+        }
         #endregion
 
         #region Helpers

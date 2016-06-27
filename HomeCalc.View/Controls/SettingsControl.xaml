@@ -73,20 +73,27 @@
                               HorizontalAlignment="Left"
                               Margin="7"
                               />
-
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Шлях до місця для резервування бази даних" />
-                    <TextBox IsEnabled="False" Grid.Row="2" Grid.Column="1"
+                    <CheckBox x:Name="IsAutoBackup" Grid.Row="2" Grid.Column="1"
+                              IsChecked="{Binding DoDatabaseBackup}"
+                             Margin="7"
+                             HorizontalAlignment="Left"/>
+                    
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Шлях до місця для резервування бази даних" />
+                    <TextBox Grid.Row="3" Grid.Column="1"
+                             IsEnabled="{Binding ElementName=IsAutoBackup, Path=IsChecked}" 
                              Text="{Binding BackupPath}"
                              HorizontalAlignment="Left"
                              Width="235"/>
-                    <Button IsEnabled="False" Grid.Row="2" Grid.Column="1"
-                        Width="50"
-                        HorizontalAlignment="Right"
-                        Content="Обрати"
-                        Command="{Binding SelectBackupPath}"/>
+                    <Button Grid.Row="3" Grid.Column="1"
+                            IsEnabled="{Binding ElementName=IsAutoBackup, Path=IsChecked}" 
+                            Width="50"
+                            HorizontalAlignment="Right"
+                            Content="Обрати"
+                            Command="{Binding SelectBackupPath}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Виконувати резервування бази даних" />
+                    
 
-        
-    </Grid>
+                </Grid>
             </TabItem>
         </TabControl>
     </Border>

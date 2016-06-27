@@ -13,6 +13,7 @@ namespace HomeCalc.Presentation.Services
         public const string AUTO_UPDATE_KEY = "AutoUpdate";
         public const string AUTO_UPDATE_CHECK_KEY = "AutoUpdateCheck";
         public const string BACKUP_PATH_KEY = "BackupPath";
+        public const string DO_DATABASE_BACKUP = "DoDatabaseBackup";
         public const string SHOW_PURCHASE_SUBTYPE_KEY = "ShowPurchaseSubType";
         public const string SHOW_PURCHASE_COMMENT_KEY = "ShowPurchaseComment";
         public const string SHOW_PURCHASE_RATE_KEY = "ShowPurchaseRate";

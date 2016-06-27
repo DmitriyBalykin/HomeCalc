@@ -16,14 +16,12 @@ namespace HomeCalc.Model.DbService
 {
     class SQLiteManager : IDatabaseManager
     {
-        private static string dbFilePath = "DataStorage.sqlite";
-        private static string containerFolder = "HomeCalc";
         private object monitor = new object();
 
         public StorageConnection GetConnection()
         {
-            string fullDbFilePath;
-            string connString = GetConnectionString(out fullDbFilePath);
+            string fullDbFilePath = FilenameService.GetDBPath();
+            string connString = GetConnectionString();
 
             lock (monitor)
             {
@@ -72,23 +70,9 @@ namespace HomeCalc.Model.DbService
             }
         }
 
-        private string GetConnectionString(out string fullDbFilePath)
-        {
-#if DEBUG
-            dbFilePath = "DataStorage_Debug.sqlite";
-#endif
-            string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var containerFolderPath = Path.Combine(appDataFolder, containerFolder);
-
-            fullDbFilePath = Path.Combine(containerFolderPath, dbFilePath);
-            string connString = "Data Source=" + fullDbFilePath;
-
-            return connString;
-        }
         private string GetConnectionString()
         {
-            string fullDbFilePath;
-            return GetConnectionString(out fullDbFilePath);
+            return "Data Source=" + FilenameService.GetDBPath();
         }
 
         private void InitializeDbContent()
