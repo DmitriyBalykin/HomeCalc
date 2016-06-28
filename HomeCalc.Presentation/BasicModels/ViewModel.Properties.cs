@@ -61,41 +61,13 @@ namespace HomeCalc.Presentation.BasicModels
 
                 if (value != null)
                 {
-                    SaveSetting(property, value);
+                    SettingsService.SaveSetting(property, value);
                 }
             }
         }
         #endregion
         #region Helpers
-        private void SaveSetting<T>(Expression<Func<T>> setting, object value)
-        {
-            var expression = setting.Body as MemberExpression;
-            Task.Factory.StartNew(async () =>
-            {
-                if (expression != null)
-                {
-                    string settingName = expression.Member.Name;
-                    var boolValue = value as bool?;
-                    if (boolValue.HasValue)
-                    {
-                        await StoreService.SaveSettings(new SettingsModel
-                        {
-                            SettingName = settingName,
-                            SettingBoolValue = boolValue.Value
-                        }).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await StoreService.SaveSettings(new SettingsModel
-                        {
-                            SettingName = settingName,
-                            SettingStringValue = value.ToString()
-                        }).ConfigureAwait(false);
-                    }
-                }
-            });
-
-        }
+        
         #endregion
         #region Common Properties
         private ObservableCollection<PurchaseType> typeSelectorItems;

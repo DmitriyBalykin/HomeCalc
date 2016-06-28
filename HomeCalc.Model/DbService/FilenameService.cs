@@ -10,11 +10,11 @@ namespace HomeCalc.Model.DbService
     public class FilenameService
     {
 #if DEBUG
-        private const string DB_FILE_NAME = "DataStorage_backup.sqlite";
+        public const string DB_FILE_NAME = "DataStorage_backup.sqlite";
 #else
-        private const string DB_FILE_NAME = "DataStorage.sqlite";
+        public const string DB_FILE_NAME = "DataStorage.sqlite";
 #endif
-        private const string DB_FOLDER = "HomeCalc";
+        public const string DB_FOLDER = "HomeCalc";
 
         public static string GetDBPath()
         {
