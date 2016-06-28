@@ -41,18 +41,20 @@ namespace HomeCalc.Presentation.Services
 
         public bool GetBooleanValue(string settingKey)
         {
-            return storageService.LoadSettings().Result
+            var filtered = storageService.LoadSettings().Result
                 .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault()
-                .SettingBoolValue;
+                .FirstOrDefault();
+
+            return filtered == null ? false : filtered.SettingBoolValue;
         }
 
         public string GetStringValue(string settingKey)
         {
-            return storageService.LoadSettings().Result
+            var filtered = storageService.LoadSettings().Result
                 .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault()
-                .SettingStringValue;
+                .FirstOrDefault();
+
+            return filtered == null ? string.Empty : filtered.SettingStringValue;
         }
     }
 }
