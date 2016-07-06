@@ -20,10 +20,12 @@ namespace HomeCalc.Presentation.Services
             var logger = LogService.GetLogger();
             var statusService = StatusService.GetInstance();
             var settingsService = SettingsService.GetInstance();
+            var backupDirectory = settingsService.GetStringValue(SettingsService.BACKUP_PATH_KEY);
 
-            if (settingsService.GetBooleanValue(SettingsService.DO_DATABASE_BACKUP))
+            if (settingsService.GetBooleanValue(SettingsService.DO_DATABASE_BACKUP) &&
+                !string.IsNullOrWhiteSpace(backupDirectory))
             {
-                var backupPath = settingsService.GetStringValue(SettingsService.BACKUP_PATH_KEY);
+                var backupPath = Path.Combine(backupDirectory, FilenameService.DB_FILE_NAME);
                 var backupFolder = Directory.GetParent(backupPath);
                 if (!backupFolder.Exists)
                 {
@@ -34,16 +36,19 @@ namespace HomeCalc.Presentation.Services
                 //backing up of backup
                 var originPath = FilenameService.GetDBPath();
                 var backup2Path = backupPath + ".bak";
-                try
+                if (File.Exists(backupPath))
                 {
-                    File.Copy(backupPath, backup2Path, true);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error("Backup duplication failed.");
-                    logger.Error(ex.Message);
-                    MessageBox.Show("Помилка при резервуванні бази даних.");
-                    return;
+                    try
+                    {
+                        File.Copy(backupPath, backup2Path, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error("Backup duplication failed.");
+                        logger.Error(ex.Message);
+                        MessageBox.Show("Помилка при резервуванні бази даних.");
+                        return;
+                    }
                 }
                 //main backup step
                 try
@@ -62,10 +67,10 @@ namespace HomeCalc.Presentation.Services
                 string md5Backup = null;
                 using (var md5 = MD5.Create())
                 {
-                    using (var originStream = File.OpenRead(originPath))
-                    {
-                        md5Origin = BitConverter.ToString(md5.ComputeHash(originStream));
-                    }
+                    //using (var originStream = File.OpenRead(originPath))
+                    //{
+                    //    md5Origin = BitConverter.ToString(md5.ComputeHash(originStream));
+                    //}
                     using (var backupStream = File.OpenRead(backupPath))
                     {
                         md5Backup = BitConverter.ToString(md5.ComputeHash(backupStream));
@@ -74,14 +79,20 @@ namespace HomeCalc.Presentation.Services
                 if (md5Origin == md5Backup)
                 {
                     statusService.Post("Резервування бази даних виконано успішно");
-                    File.Delete(backup2Path);
+                    if (File.Exists(backup2Path))
+                    {
+                        File.Delete(backup2Path);
+                    }
                 }
                 else
                 {
                     logger.Error("Backup copying failed. MD5 hashes of source and destination not equals.");
                     MessageBox.Show("Помилка при резервуванні бази даних.");
                     File.Delete(backupPath);
-                    File.Move(backup2Path, backupPath);
+                    if (File.Exists(backup2Path))
+                    {
+                        File.Move(backup2Path, backupPath);
+                    }
                 }
             }
         }

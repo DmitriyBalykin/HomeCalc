@@ -74,7 +74,7 @@
                               Margin="7"
                               />
                     <CheckBox x:Name="IsAutoBackup" Grid.Row="2" Grid.Column="1"
-                              IsChecked="{Binding DoDatabaseBackup}"
+                              IsChecked="{Binding DoDatabaseBackup, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                              Margin="7"
                              HorizontalAlignment="Left"/>
                     

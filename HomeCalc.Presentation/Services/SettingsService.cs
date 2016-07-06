@@ -3,6 +3,7 @@ using HomeCalc.Presentation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,18 +42,50 @@ namespace HomeCalc.Presentation.Services
 
         public bool GetBooleanValue(string settingKey)
         {
-            return storageService.LoadSettings().Result
+            var filtered = storageService.LoadSettings().Result
                 .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault()
-                .SettingBoolValue;
+                .FirstOrDefault();
+
+            return filtered == null ? false : filtered.SettingBoolValue;
         }
 
         public string GetStringValue(string settingKey)
         {
-            return storageService.LoadSettings().Result
+            var filtered = storageService.LoadSettings().Result
                 .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault()
-                .SettingStringValue;
+                .FirstOrDefault();
+
+            return filtered == null ? string.Empty : filtered.SettingStringValue;
+        }
+
+        public void SaveSetting<T>(Expression<Func<T>> setting, object value)
+        {
+            var expression = setting.Body as MemberExpression;
+            Task.Factory.StartNew(async () =>
+            {
+                if (expression != null)
+                {
+                    string settingName = expression.Member.Name;
+                    var boolValue = value as bool?;
+                    if (boolValue.HasValue)
+                    {
+                        await storageService.SaveSettings(new SettingsModel
+                        {
+                            SettingName = settingName,
+                            SettingBoolValue = boolValue.Value
+                        }).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await storageService.SaveSettings(new SettingsModel
+                        {
+                            SettingName = settingName,
+                            SettingStringValue = value.ToString()
+                        }).ConfigureAwait(false);
+                    }
+                }
+            });
+
         }
     }
 }
