@@ -80,6 +80,10 @@ namespace Updater
                     message = string.Format("Starting folder {0} cleanup, exceptions: {1}", path, string.Join("; ", exceptions));
                 }
                 logger.Info(message);
+                if (!Directory.Exists(path))
+                {
+                    logger.Info("Cleanup folder {0} missing, exiting cleanup", path);
+                }
                 Directory.EnumerateFileSystemEntries(path).ToList().ForEach(item => 
                 {
                     var fileName = Path.GetFileName(item);
