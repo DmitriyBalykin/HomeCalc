@@ -27,7 +27,7 @@ namespace HomeCalc.Model.DbService
 
         private DataBaseService(IDatabaseManager dbManager)
         {
-            logger.Info("New database instance initiated.");
+            logger.Info("New database service instance initiated.");
             this.dbManager = dbManager;
         }
         public static DataBaseService GetInstance()
