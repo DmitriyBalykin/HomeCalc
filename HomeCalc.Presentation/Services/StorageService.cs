@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.Services;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Services;
 using HomeCalc.Core.Utilities;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Model.DbService;
@@ -25,8 +26,14 @@ namespace HomeCalc.Presentation.Models
         private Cache<PurchaseType> PurchaseTypesCache = new Cache<PurchaseType>();
         private Cache<SettingsModel> SettingsCache = new Cache<SettingsModel>();
 
+        private Logger logger;
+
         public StorageService()
         {
+            logger = LogService.GetLogger(); ;
+
+            logger.Debug("Storage service initiated");
+
             DBService = DataBaseService.GetInstance();
             Status = StatusService.GetInstance();
             Task.Factory.StartNew(async () => await UpdateHistory());
@@ -38,6 +45,11 @@ namespace HomeCalc.Presentation.Models
             if (purchaseHistory != null && purchaseHistory.Count() > 0)
             {
                 AnnounceHistoryUpdate();
+                logger.Debug("Purchase history updated");
+            }
+            else
+            {
+                logger.Debug("No purchase history updates found");
             }
         }
 
