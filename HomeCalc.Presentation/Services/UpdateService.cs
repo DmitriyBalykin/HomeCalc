@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core.Helpers;
+using HomeCalc.Core.LogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,37 +28,34 @@ namespace HomeCalc.Core.Services
             return instance;
         }
 
-        public string GetUpdatesInformation()
+        public async Task<string> GetUpdatesInformation()
         {
             string result = "";
             try
             {
-                VersionChecker.GetUpdatesInformation(true).ContinueWith(task =>
+                var updatesInfo = await VersionChecker.GetUpdatesInformation(true);
+
+                if (!updatesInfo.HasNewVersion)
                 {
-                    var updatesInfo = task.Result;
-                    if (!updatesInfo.HasNewVersion)
-                    {
-                        result = "Версія програми є найновішою.";
-                    }
-                    else
-                    {
-                        var sb = new StringBuilder();
+                    result = "Версія програми є найновішою.";
+                }
+                else
+                {
+                    var sb = new StringBuilder();
 
-                        foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
-                        {
-                            sb.AppendLine(updateVersion.ToString());
-                            sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
-                            sb.AppendLine();
-                        }
-                        result = sb.ToString();
-
-                        if (UpdatesAvailableEvent != null)
-                        {
-                            UpdatesAvailableEvent(null, EventArgs.Empty);
-                        }
+                    foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
+                    {
+                        sb.AppendLine(updateVersion.ToString());
+                        sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
+                        sb.AppendLine();
                     }
-                    
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                    result = sb.ToString();
+
+                    if (UpdatesAvailableEvent != null)
+                    {
+                        UpdatesAvailableEvent(null, EventArgs.Empty);
+                    }
+                }
             }
             catch (WebException ex)
             {
@@ -67,31 +65,28 @@ namespace HomeCalc.Core.Services
             return result;
         }
 
-        public string GetUpdatesHistory()
+        public async Task<string> GetUpdatesHistory()
         {
             string result = "";
             try
             {
-                VersionChecker.GetUpdatesInformation(false).ContinueWith(task =>
+                var updatesInfo = await VersionChecker.GetUpdatesInformation(false);
+                if (updatesInfo.ChangesByVersions.Keys.Count() == 0)
                 {
-                    var updatesInfo = task.Result;
-                    if (updatesInfo.ChangesByVersions.Keys.Count() == 0)
-                    {
-                        result = "Історія оновлень не знайдена.";
-                    }
-                    else
-                    {
-                        var sb = new StringBuilder();
+                    result = "Історія оновлень не знайдена.";
+                }
+                else
+                {
+                    var sb = new StringBuilder();
 
-                        foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
-                        {
-                            sb.AppendLine(updateVersion.ToString());
-                            sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
-                            sb.AppendLine();
-                        }
-                        result = sb.ToString();
+                    foreach (var updateVersion in updatesInfo.ChangesByVersions.Keys)
+                    {
+                        sb.AppendLine(updateVersion.ToString());
+                        sb.AppendLine(updatesInfo.ChangesByVersions[updateVersion]);
+                        sb.AppendLine();
                     }
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                    result = sb.ToString();
+                }
             }
             catch (WebException ex)
             {

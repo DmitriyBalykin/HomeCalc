@@ -238,8 +238,11 @@ namespace HomeCalc.Model.DbService
         public async Task<List<PurchaseModel>> LoadPurchaseList(SearchRequestModel filter, StorageConnection connection = null)
         {
             var list = new List<PurchaseModel>();
+
             try
             {
+                logger.Debug("DatabaseService.LoadPurchaseList: Loading purchase list");
+
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
@@ -266,6 +269,8 @@ namespace HomeCalc.Model.DbService
                         .TrimEnd(' ')
                         .Replace("  ", " AND ");
 
+                    logger.Debug("DatabaseService.LoadPurchaseList: queue: {0}", command.CommandText);
+
                     var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     
                     while (dataReader.Read())
@@ -281,6 +286,8 @@ namespace HomeCalc.Model.DbService
                             TypeId = dataReader.GetInt64(6)
                         });
                     }
+
+                    logger.Debug("DatabaseService.LoadPurchaseList: data fetched succesfully");
                 }
             }
             catch (Exception ex)
@@ -291,6 +298,7 @@ namespace HomeCalc.Model.DbService
         }
         public async Task<List<PurchaseModel>> LoadCompletePurchaseList(StorageConnection connection = null)
         {
+            logger.Debug("DatabaseService: Loading complete purchase list");
             return await LoadPurchaseList(new SearchRequestModel(), connection);
         }
         public async Task<IEnumerable<PurchaseTypeModel>> LoadPurchaseTypeList(StorageConnection connection = null)

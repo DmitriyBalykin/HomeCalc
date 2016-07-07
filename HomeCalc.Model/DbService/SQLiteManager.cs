@@ -28,9 +28,9 @@ namespace HomeCalc.Model.DbService
                 if (!File.Exists(fullDbFilePath))
                 {
                     SQLiteConnection.CreateFile(fullDbFilePath);
-                    InitializeDbScheme();
-                    InitializeDbContent();
                 }
+                InitializeDbScheme();
+                InitializeDbContent();
             }
 
             StorageConnection connection = CreateConnection(connString);

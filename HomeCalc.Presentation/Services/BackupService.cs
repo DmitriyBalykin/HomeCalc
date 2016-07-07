@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -67,11 +68,12 @@ namespace HomeCalc.Presentation.Services
                 string md5Backup = null;
                 using (var md5 = MD5.Create())
                 {
-                    //using (var originStream = File.OpenRead(originPath))
-                    //{
-                    //    md5Origin = BitConverter.ToString(md5.ComputeHash(originStream));
-                    //}
-                    using (var backupStream = File.OpenRead(backupPath))
+
+                    using (var originStream = File.Open(originPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        md5Origin = BitConverter.ToString(md5.ComputeHash(originStream));
+                    }
+                    using (var backupStream = File.Open(backupPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
                         md5Backup = BitConverter.ToString(md5.ComputeHash(backupStream));
                     }

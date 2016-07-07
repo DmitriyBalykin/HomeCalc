@@ -31,30 +31,42 @@ namespace HomeCalc.Presentation.Models
         public StorageService()
         {
             logger = LogService.GetLogger(); ;
-
-            logger.Debug("Storage service initiated");
-
             DBService = DataBaseService.GetInstance();
             Status = StatusService.GetInstance();
+
+            logger.Debug("Storage service initiated");
+            logger.Debug("Starting history update");
             Task.Factory.StartNew(async () => await UpdateHistory());
         }
 
         private async Task UpdateHistory()
         {
-            purchaseHistory = await LoadPurchaseList(SearchRequestModel.Requests.Empty).ConfigureAwait(false);
-            if (purchaseHistory != null && purchaseHistory.Count() > 0)
+            try
             {
-                AnnounceHistoryUpdate();
-                logger.Debug("Purchase history updated");
+                logger.Debug("Purchase history update started");
+                purchaseHistory = await LoadPurchaseList(SearchRequestModel.Requests.Empty).ConfigureAwait(false);
+                logger.Debug("Purchase data loaded");
+                if (purchaseHistory != null && purchaseHistory.Count() > 0)
+                {
+                    AnnounceHistoryUpdate();
+                    logger.Debug("Purchase history updated");
+                }
+                else
+                {
+                    logger.Debug("No purchase history updates found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                logger.Debug("No purchase history updates found");
+                logger.Error("History update failed");
+                logger.Error(ex.Message);
             }
+            
         }
 
         private void AnnounceHistoryUpdate()
         {
+            logger.Debug("Announce history update");
             if (HistoryUpdated != null)
             {
                 HistoryUpdated(null, EventArgs.Empty);
@@ -147,7 +159,7 @@ namespace HomeCalc.Presentation.Models
 
         public async Task<Purchase> LoadPurchase(int id)
         {
-            return ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
+            return await ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
         }
         public async Task<List<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter)
         {
@@ -155,14 +167,27 @@ namespace HomeCalc.Presentation.Models
             switch (enumFilter)
             {
                 case SearchRequestModel.Requests.Empty:
-                    list = (await DBService.LoadCompletePurchaseList().ConfigureAwait(false)).Select(p => ModelToPurchase(p)).ToList();
+                    logger.Debug("Selected load purchase with no filter");
+                    var modelsList = await DBService.LoadCompletePurchaseList().ConfigureAwait(false);
+                    foreach(var model in modelsList)
+                    {
+                        list.Add(await ModelToPurchase(model));
+                    }
                     break;
             }
+            logger.Debug("StorageService: purchase list loaded");
             return list;
         }
         public async Task<List<Purchase>> LoadPurchaseList(SearchRequestModel filter)
         {
-            var convertedList = (await DBService.LoadPurchaseList(filter).ConfigureAwait(false)).Select(p => ModelToPurchase(p)).ToList();
+            var convertedList = new List<Purchase>();
+
+            var modelsList = await DBService.LoadPurchaseList(filter).ConfigureAwait(false);
+            foreach (var model in modelsList)
+            {
+                convertedList.Add(await ModelToPurchase(model));
+            }
+
             return convertedList;
         }
         public async Task<List<PurchaseType>> LoadPurchaseTypeList()
@@ -175,14 +200,16 @@ namespace HomeCalc.Presentation.Models
             }
             return PurchaseTypesCache.GetCache();
         }
-        public PurchaseType ResolvePurchaseType(long id = -1, string name = null)
+        public async Task<PurchaseType> ResolvePurchaseType(long id = -1, string name = null)
         {
             if (id > -1)
             {
-                return PurchaseTypesCache.GetCache().Where(type => type.TypeId == id).SingleOrDefault();
+                logger.Debug("StorageService: resolving purchase type without name");
+                return (await LoadPurchaseTypeList()).Where(type => type.TypeId == id).SingleOrDefault();
             }
             else if (name != null)
             {
+                logger.Debug("StorageService: resolving purchase type with name");
                 var matchedType = PurchaseTypesCache.GetCache().Where(type => type.Name == name).SingleOrDefault();
                 //if (matchedType == null)
                 //{
@@ -196,6 +223,7 @@ namespace HomeCalc.Presentation.Models
             }
             else
             {
+                logger.Debug("StorageService: resolving failed, incorrect id: {0}", id);
                 return null;
             }
         }
@@ -208,8 +236,9 @@ namespace HomeCalc.Presentation.Models
         {
             return new PurchaseTypeModel { TypeId = type.TypeId, Name = type.Name };
         }
-        private Purchase ModelToPurchase(PurchaseModel model)
+        private async Task<Purchase> ModelToPurchase(PurchaseModel model)
         {
+            logger.Debug("StorageService: converting purchase storage model to purchase");
             return new Purchase {
                 Id = (int)model.PurchaseId,
                 Date = new DateTime(model.Timestamp),
@@ -217,7 +246,7 @@ namespace HomeCalc.Presentation.Models
                 ItemsNumber = model.ItemsNumber,
                 Name = model.Name,
                 TotalCost = model.TotalCost,
-                Type = ResolvePurchaseType(model.TypeId)
+                Type = await ResolvePurchaseType(model.TypeId)
             };
         }
         private PurchaseModel PurchaseToModel(Purchase purchase)

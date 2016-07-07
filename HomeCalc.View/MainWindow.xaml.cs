@@ -120,7 +120,7 @@ namespace HomeCalc.View
             }
         }
 
-        private bool updateColorNotify = true;
+        private bool updateColorNotify = false;
         public bool UpdateColorNotify
         {
             get

@@ -18,11 +18,13 @@ namespace HomeCalc.View
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             base.OnStartup(e);
+
+            RoutineService.RunStartupRoutines();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            BackupService.BackupDatabase();
+            RoutineService.RunClosingRoutines();
 
             base.OnExit(e);
         }

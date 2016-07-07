@@ -45,6 +45,7 @@ namespace HomeCalc.Presentation.ViewModels
         #region event handlers
         void UpdatePurchaseHistory(object sender, EventArgs e)
         {
+            logger.Debug("Purchase history updated, updating purchase list");
             PurchaseHistoryItems = new ObservableCollection<Purchase>(StoreService.PurchaseHistory);
         }
 

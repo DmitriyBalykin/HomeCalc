@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core.Helpers;
+using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Presentation.BasicModels;
 using HomeCalc.Presentation.Services;
@@ -24,18 +25,18 @@ namespace HomeCalc.Presentation.ViewModels
 
             if (SettingsService.GetBooleanValue(SettingsService.AUTO_UPDATE_CHECK_KEY))
             {
-                VersionChanges = UpdateService.GetUpdatesInformation();    
+                RefreshUpdatesInformation();
             }
         }
 
         private void CheckUpdatesCommandExecute(object obj)
         {
-            VersionChanges = UpdateService.GetUpdatesInformation();
+            RefreshUpdatesInformation();
         }
 
         private void LoadUpdatesHistory()
         {
-            VersionChanges = UpdateService.GetUpdatesHistory();
+            RefreshHistoryInformation();
         }
 
         private async void UpdateCommandExecute(object obj)
@@ -62,13 +63,27 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         #region Helpers
-        
+        private void RefreshUpdatesInformation()
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                var changes = await UpdateService.GetUpdatesInformation();
+                UIDispatcherHelper.CallOnUIThread(() => { VersionChanges = changes; });
+            });
+        }
+
+        private void RefreshHistoryInformation()
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                var history = await UpdateService.GetUpdatesHistory();
+                UIDispatcherHelper.CallOnUIThread(() => { VersionChanges = history; });
+            });
+        }
 
         #endregion
 
         #region Properties
-
-
 
         private string versionChanges;
         public string VersionChanges
