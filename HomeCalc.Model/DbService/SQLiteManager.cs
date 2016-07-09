@@ -1,4 +1,6 @@
-﻿using HomeCalc.Model.DbConnectionWrappers;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Services;
+using HomeCalc.Model.DbConnectionWrappers;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,59 +16,70 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Model.DbService
 {
-    class SQLiteManager : IDatabaseManager
+    class SQLiteManager: IDatabaseManager
     {
         private object monitor = new object();
+        private static object instanceMonitor = new object();
 
-        public StorageConnection GetConnection()
+        private bool storageInitiated = false;
+
+        private Logger logger = LogService.GetLogger();
+        private StatusService statusService = StatusService.GetInstance();
+
+        private SQLiteManager()
+        {
+            InitializeStorage();
+        }
+
+        private static IDatabaseManager instance;
+        public static IDatabaseManager GetInstance()
+        {
+            lock (instanceMonitor)
+            {
+                if (instance == null)
+                {
+                    instance = new SQLiteManager();
+                }
+            }
+            return instance;
+        }
+        private void InitializeStorage()
         {
             string fullDbFilePath = FilenameService.GetDBPath();
             string connString = GetConnectionString();
-
             lock (monitor)
             {
-                if (!File.Exists(fullDbFilePath))
+                try
                 {
-                    SQLiteConnection.CreateFile(fullDbFilePath);
+                    if (!File.Exists(fullDbFilePath))
+                    {
+                        SQLiteConnection.CreateFile(fullDbFilePath);
+                    }
+
+                    storageInitiated = true;
                 }
-                InitializeDbScheme();
-                InitializeDbContent();
-            }
-
-            StorageConnection connection = CreateConnection(connString);
-            if (connection != null)
-            {
-                return connection;
-            }
-            else
-            {
-                throw new Exception(string.Format("Database is not available with connection string {0}", connString));
+                catch (Exception)
+                {}
             }
         }
-        private StorageConnection GetConnectionUnsafe()
+        public StorageConnection GetConnection(bool skipInitiatedCheck = false)
         {
-            var connString = GetConnectionString();
-            StorageConnection connection = CreateConnection(connString);
-            if (connection != null)
+            if (!skipInitiatedCheck && !storageInitiated)
             {
-                return connection;
+                logger.Error("Cannot created connection to database: storage not initialized");
+                statusService.Post("Помилка: база даний не ініційована, продовження роботи неможливе");
             }
-            else
-            {
-                throw new Exception(string.Format("Database is not available with connection string {0}", connString));
-            }
-        }
+            string fullDbFilePath = FilenameService.GetDBPath();
+            string connString = GetConnectionString();
 
-        private StorageConnection CreateConnection(string connectionString)
-        {
-            StorageConnection connection = new StorageConnection(connectionString);
+            StorageConnection connection = new StorageConnection(connString);
             if (connection != null && (connection.State == System.Data.ConnectionState.Connecting || connection.State == System.Data.ConnectionState.Open))
             {
                 return connection;
             }
             else
             {
-                return null;
+                throw new Exception(string.Format("Database is not available with connection string {0}", connString));
             }
         }
 
@@ -75,65 +88,6 @@ namespace HomeCalc.Model.DbService
             return "Data Source=" + FilenameService.GetDBPath();
         }
 
-        private void InitializeDbContent()
-        {
-            var dbService = DataBaseService.GetInstance();
-            foreach (var value in DefaultDbContent.Values)
-            {
-                switch (value.Table)
-                {
-                    case "PURCHASETYPEMODELS":
-                        var valueExist = dbService.LoadPurchaseTypeList(GetConnectionUnsafe()).Result.Any(p => p.Name == value.Value.Name);
-                        if (!valueExist)
-                        {
-                            var result = dbService.SavePurchaseType(new DataModels.PurchaseTypeModel { Name = value.Value.Name }, GetConnectionUnsafe()).Result;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        private void InitializeDbScheme()
-        {
-            try
-            {
-                using (var connection = GetConnectionUnsafe())
-                using (var command = connection.Connection.CreateCommand())
-                {
-                    foreach (var table in DefaultDbContent.Tables.Keys)
-                    {
-                        if (!IsTableExists(table))
-                        {
-                            command.CommandText = string.Format("create table {0} {1}", table, DefaultDbContent.Tables[table]);
-                            command.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
-            catch (SQLiteException)
-            {
-                throw new Exception("Database initialization failed");
-            }
-        }
-
-        private bool IsTableExists(string table)
-        {
-            try
-            {
-                using (var connection = GetConnectionUnsafe())
-                using (var command = connection.Connection.CreateCommand())
-                {
-                    command.CommandText = string.Format("SELECT * FROM {0}", table);
-                    command.ExecuteNonQuery();
-                    return true;
-                }
-            }
-            catch (SQLiteException)
-            {
-                return false;
-            }
-        }
+        
     }
 }

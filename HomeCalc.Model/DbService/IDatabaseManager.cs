@@ -4,6 +4,6 @@ namespace HomeCalc.Model.DbService
 {
     public interface IDatabaseManager
     {
-        StorageConnection GetConnection();
+        StorageConnection GetConnection(bool skipInitiatedCheck = false);
     }
 }

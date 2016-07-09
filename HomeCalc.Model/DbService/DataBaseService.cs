@@ -25,10 +25,13 @@ namespace HomeCalc.Model.DbService
 
         private IFormatProvider formatCulture = CultureInfo.CreateSpecificCulture("en-US");
 
-        private DataBaseService(IDatabaseManager dbManager)
+        private DataBaseService()
         {
             logger.Info("New database service instance initiated.");
-            this.dbManager = dbManager;
+            dbManager = SQLiteManager.GetInstance();
+
+            InitializeDbScheme();
+            InitializeDbContent();
         }
         public static DataBaseService GetInstance()
         {
@@ -36,11 +39,73 @@ namespace HomeCalc.Model.DbService
             {
                 if (instance == null)
                 {
-                    instance = new DataBaseService(new SQLiteManager());
+                    instance = new DataBaseService();
                 }
             }
             return instance;
         }
+
+        #region Initialization
+        private void InitializeDbContent()
+        {
+            foreach (var value in DefaultDbContent.Values)
+            {
+                switch (value.Table)
+                {
+                    case "PURCHASETYPEMODELS":
+                        var valueExist = LoadPurchaseTypeList(dbManager.GetConnection(true)).Result.Any(p => p.Name == value.Value.Name);
+                        if (!valueExist)
+                        {
+                            var result = SavePurchaseType(new DataModels.PurchaseTypeModel { Name = value.Value.Name }, dbManager.GetConnection(true)).Result;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void InitializeDbScheme()
+        {
+            try
+            {
+                using (var connection = dbManager.GetConnection(true))
+                using (var command = connection.Connection.CreateCommand())
+                {
+                    foreach (var table in DefaultDbContent.Tables.Keys)
+                    {
+                        if (!IsTableExists(table))
+                        {
+                            command.CommandText = string.Format("create table {0} {1}", table, DefaultDbContent.Tables[table]);
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (SQLiteException)
+            {
+                throw new Exception("Database initialization failed");
+            }
+        }
+
+        private bool IsTableExists(string table)
+        {
+            try
+            {
+                using (var connection = dbManager.GetConnection(true))
+                using (var command = connection.Connection.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT * FROM {0}", table);
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+            }
+            catch (SQLiteException)
+            {
+                return false;
+            }
+        }
+        #endregion
         public async Task<bool> SaveSettings(SettingsStorageModel settings, StorageConnection connection = null)
         {
             bool result = false;

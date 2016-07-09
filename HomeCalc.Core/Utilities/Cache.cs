@@ -10,9 +10,9 @@ namespace HomeCalc.Core.Utilities
     {
         private List<T> cache { get; set; }
         private bool isActual;
-        public void SetActual(bool value)
+        public void SetNeedRefresh()
         {
-            isActual = value;
+            isActual = false;
         }
         public bool IsActual()
         {
@@ -22,6 +22,7 @@ namespace HomeCalc.Core.Utilities
         public void SetCache(List<T> list)
         {
             cache = list;
+            isActual = true;
         }
 
         public List<T> GetCache()

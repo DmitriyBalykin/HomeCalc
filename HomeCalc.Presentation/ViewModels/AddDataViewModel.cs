@@ -12,6 +12,7 @@ using HomeCalc.Presentation.Models;
 using System.Globalization;
 using HomeCalc.Presentation.Services;
 using HomeCalc.Core.Helpers;
+using HomeCalc.Presentation.Utils;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -46,7 +47,7 @@ namespace HomeCalc.Presentation.ViewModels
         void UpdatePurchaseHistory(object sender, EventArgs e)
         {
             logger.Debug("Purchase history updated, updating purchase list");
-            PurchaseHistoryItems = new ObservableCollection<Purchase>(StoreService.PurchaseHistory);
+            PurchaseHistoryItemsWrapper = StoreService.PurchaseHistory;
         }
 
         private void SaveCommandExecute(object obj)
@@ -121,7 +122,8 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 resultList = StoreService.PurchaseHistory.Where(p => p.Name.StartsWith(PurchaseName, true, CultureInfo.InvariantCulture));
             }
-            PurchaseHistoryItemsWrapper = resultList.OrderByDescending(p => p.Date).Take(1);
+            PurchaseHistoryItemsWrapper = resultList;
+            ShowPurchaseHistory = PurchaseHistoryItems.Count() > 0;
         }
         private void DoCalculations()
         {
@@ -188,8 +190,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             set
             {
-                PurchaseHistoryItems = new ObservableCollection<Purchase>(value);
-                ShowPurchaseHistory = PurchaseHistoryItems.Count() > 0;
+                PurchaseHistoryItems = new ObservableCollection<Purchase>(value.Distinct(new PurchaseForHistoryComparer()).OrderByDescending(p => p.Date).Take(10));
             }
         }
         private ObservableCollection<Purchase> purchaseHistoryItems;

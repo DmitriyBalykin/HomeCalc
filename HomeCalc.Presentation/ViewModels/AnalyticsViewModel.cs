@@ -19,8 +19,6 @@ namespace HomeCalc.Presentation.ViewModels
         {
             AddCommand("ShowData", new DelegateCommand(ShowDataCommandExecuted));
 
-            IntervalList = AggregationInterval.GetList();
-
             TotalCostChart = true;
         }
 
@@ -29,6 +27,8 @@ namespace HomeCalc.Presentation.ViewModels
             base.Initialize();
 
             TypeSelectorItems.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
+
+            IntervalList = AggregationInterval.GetList();
 
             SelectedInterval = IntervalList.FirstOrDefault();
 
