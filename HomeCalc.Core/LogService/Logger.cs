@@ -16,7 +16,9 @@ namespace HomeCalc.Core.LogService
         }
         public void Debug(string message, params object[] args)
         {
+#if DEBUG
             logger.Debug(message, args);
+#endif
         }
         public void Info(string message, params object[] args)
         {
