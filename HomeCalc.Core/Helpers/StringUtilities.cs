@@ -17,5 +17,11 @@ namespace HomeCalc.Core.Helpers
             }
             return str;
         }
+
+        public static string EscapeStringForDatabase(string p)
+        {
+            var result = p.Replace("'", "''");
+            return result;
+        }
     }
 }

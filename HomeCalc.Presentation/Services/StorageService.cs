@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core.Helpers;
+using HomeCalc.Core.LogService;
 using HomeCalc.Core.Services;
 using HomeCalc.Core.Utilities;
 using HomeCalc.Model.DataModels;
@@ -226,7 +227,7 @@ namespace HomeCalc.Presentation.Models
 
         private PurchaseTypeModel TypeToModel(PurchaseType type)
         {
-            return new PurchaseTypeModel { TypeId = type.TypeId, Name = type.Name };
+            return new PurchaseTypeModel { TypeId = type.TypeId, Name = StringUtilities.EscapeStringForDatabase(type.Name) };
         }
         private async Task<Purchase> ModelToPurchase(PurchaseModel model)
         {
@@ -247,7 +248,7 @@ namespace HomeCalc.Presentation.Models
             {
                 PurchaseId = purchase.Id,
                 Timestamp = purchase.Date.Ticks,
-                Name = purchase.Name,
+                Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
                 ItemsNumber = purchase.ItemsNumber,
                 ItemCost = purchase.ItemCost,
                 TotalCost = purchase.TotalCost,
