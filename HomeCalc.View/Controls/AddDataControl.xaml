@@ -15,69 +15,69 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    <Grid
+    <Grid>
+        <Grid
         Style="{StaticResource BasicGridStyle}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="120" />
-            <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="330" />
-            <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="110" />
-            <ColumnDefinition Width="110" />
-            <ColumnDefinition Width="70" />
-        </Grid.ColumnDefinitions>
-        
-        <TextBlock
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="330" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="70" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
             Grid.Row="0" Grid.Column="0"
             Text="Дата"
             />
-        <TextBlock
+            <TextBlock
             Grid.Row="0" Grid.Column="1"
             Text="Тип покупки"
             />
-        <TextBlock
+            <TextBlock
             Grid.Row="0" Grid.Column="2"
             Text="Назва покупки"
             />
-        <TextBlock
+            <TextBlock
             Grid.Row="0" Grid.Column="3"
             Text="Кількість"
             />
-        <TextBlock
+            <TextBlock
             Grid.Row="0" Grid.Column="4"
             Text="Вартість одиниці"
             />
-        <TextBlock
+            <TextBlock
             Grid.Row="0" Grid.Column="5"
             Text="Загальна вартість"
             />
-        
-        <DatePicker
+
+            <DatePicker
             Grid.Row="1" Grid.Column="0"
             SelectedDate="{Binding DateToStore}"
             />
-        <ComboBox
+            <ComboBox
             Grid.Row="1" Grid.Column="1"
             ItemsSource="{Binding TypeSelectorItems}"
             SelectedItem="{Binding PurchaseType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             IsSynchronizedWithCurrentItem="True"
             DisplayMemberPath="Name"
             />
-        <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemsCount}">
-            <TextBlock Text="Рахувати"  Margin="0,8" />
-        </ToggleButton>
+            <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemsCount}">
+                <TextBlock Text="Рахувати"  Margin="0,8" />
+            </ToggleButton>
 
-        <ToggleButton x:Name="CalcItemToggle" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemCost}">
-            <TextBlock Text="Рахувати"  Margin="0,8" />
-        </ToggleButton>
+            <ToggleButton x:Name="CalcItemToggle" Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemCost}">
+                <TextBlock Text="Рахувати"  Margin="0,8" />
+            </ToggleButton>
 
-        <controls:SearchComboBox Grid.Row="1" Grid.Column="2"
+            <controls:SearchComboBox Grid.Row="1" Grid.Column="2"
                   Text="{Binding PurchaseName}"
                   TextSearch.TextPath="Name"
                   IsTextSearchEnabled="False"
@@ -85,11 +85,42 @@
                   IsDropDownOpen="{Binding ShowPurchaseHistory}"
                   IsEditable="True"/>
 
-        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
-        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
-        <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsCalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
-        <Button Grid.Row="1" Grid.Column="6" Content="Зберегти" Command="{Binding Save}" />
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
+            <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
+            <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsCalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
+            <Button Grid.Row="1" Grid.Column="6" Content="Зберегти" Command="{Binding Save}" />
 
-        
+
+        </Grid>
+        <Expander HorizontalAlignment="Right"
+                  ExpandDirection="Left"
+                  BorderThickness="1"
+                  BorderBrush="AntiqueWhite"
+                  Background="{StaticResource SelectedBackground}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="500" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Оцінка покупки" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Коментар до покупки" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Назва магазину" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Оцінка магазину" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Коментар до магазину" VerticalAlignment="Center" />
+                <Slider Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" />
+                <TextBox Grid.Row="1" Grid.Column="1" TextWrapping="Wrap"/>
+                <TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap"/>
+                <Slider Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" />
+                <TextBox Grid.Row="4" Grid.Column="1" TextWrapping="Wrap"/>
+            </Grid>
+
+        </Expander>
     </Grid>
 </UserControl>
