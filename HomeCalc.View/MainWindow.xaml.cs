@@ -137,6 +137,23 @@ namespace HomeCalc.View
             }
         }
 
+        private int windowHeight;
+        public int WindowHeight
+        {
+            get
+            {
+                return windowHeight;
+            }
+            set
+            {
+                if (value != windowHeight)
+                {
+                    windowHeight = value;
+                    OnUpdateProperty("WindowHeight");
+                }
+            }
+        }
+
         private void OnUpdateProperty(string propName)
         {
             if (PropertyChanged != null)
@@ -145,9 +162,14 @@ namespace HomeCalc.View
             }
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void WindowSizeCheck(object sender, EventArgs e)
         {
-            //Top = System.Windows.SystemParameters.FullPrimaryScreenHeight / 2 - ActualHeight / 2;
+            var height = System.Windows.SystemParameters.PrimaryScreenHeight;
+
+            if (WindowHeight > height)
+            {
+                WindowHeight = (int)height;
+            }
         }
     }
 }

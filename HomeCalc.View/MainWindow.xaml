@@ -8,8 +8,10 @@
         BorderThickness="0"
         ResizeMode="NoResize"
         MaxHeight="800"
-        WindowStartupLocation="CenterScreen"
-        SizeChanged="Window_SizeChanged">
+        Activated="WindowSizeCheck"
+        SizeChanged="WindowSizeCheck"
+        Height="{Binding WindowHeight}"
+        WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <ResourceDictionary>
