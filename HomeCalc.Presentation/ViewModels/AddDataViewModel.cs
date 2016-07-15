@@ -190,7 +190,8 @@ namespace HomeCalc.Presentation.ViewModels
         {
             set
             {
-                PurchaseHistoryItems = new ObservableCollection<Purchase>(value.Distinct(new PurchaseForHistoryComparer()).OrderByDescending(p => p.Date).Take(10));
+                var distincted = value.OrderByDescending(p => p.Date).Distinct(new PurchaseForHistoryComparer()).Take(10);
+                PurchaseHistoryItems = new ObservableCollection<Purchase>(distincted);
             }
         }
         private ObservableCollection<Purchase> purchaseHistoryItems;
