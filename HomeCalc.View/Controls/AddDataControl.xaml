@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
-             MinHeight="310"
+             MinHeight="330"
              d:DesignWidth="900">
 
     <UserControl.Resources>
@@ -15,9 +15,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <StackPanel VerticalAlignment="Center">
         <Grid
-        Style="{StaticResource BasicGridStyle}">
+            Margin="10"
+            Style="{StaticResource BasicGridStyle}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
                 <RowDefinition Height="40" />
@@ -92,35 +93,39 @@
 
 
         </Grid>
-        <Expander HorizontalAlignment="Right"
-                  ExpandDirection="Left"
-                  BorderThickness="1"
-                  BorderBrush="AntiqueWhite"
-                  Background="{StaticResource SelectedBackground}">
-            <Grid>
+        <DockPanel HorizontalAlignment="Stretch"
+                  VerticalAlignment="Bottom"
+                   Visibility="{Binding ShowRatingPanel}"
+                   Height="{Binding ShowRatingPanel, Converter={StaticResource boolToValueConverter}, ConverterParameter=200}"
+                  >
+            <Border BorderBrush="{StaticResource GlobalBackground}">
+            <Grid
+                Style="{StaticResource SettingsGridStyle}"
+                >
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60"/>
-                    <RowDefinition Height="60"/>
-                    <RowDefinition Height="60"/>
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="500" />
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="300" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Оцінка покупки" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Коментар до покупки" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Назва магазину" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Оцінка магазину" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Коментар до магазину" VerticalAlignment="Center" />
-                <Slider Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" />
-                <TextBox Grid.Row="1" Grid.Column="1" TextWrapping="Wrap"/>
-                <TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap"/>
-                <Slider Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" />
-                <TextBox Grid.Row="4" Grid.Column="1" TextWrapping="Wrap"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Оцінка покупки" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Коментар до покупки" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Назва магазину" VerticalAlignment="Center" Visibility="{Binding ShowStoreName, Converter={StaticResource boolToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Оцінка магазину" VerticalAlignment="Center" Visibility="{Binding ShowStoreRate, Converter={StaticResource boolToVisibilityConverter}}"/>
+                    <Slider Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}"
+                            Value="{Binding PurchaseRate}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}"
+                             Text="{Binding PurchaseComment}"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" TextWrapping="Wrap" Visibility="{Binding ShowStoreName, Converter={StaticResource boolToVisibilityConverter}}"
+                             Text="{Binding StoreName}"/>
+                    <Slider Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" Visibility="{Binding ShowStoreRate, Converter={StaticResource boolToVisibilityConverter}}"
+                            Value="{Binding StoreRate}"/>
             </Grid>
-
-        </Expander>
-    </Grid>
+            </Border>
+        </DockPanel>
+    </StackPanel>
 </UserControl>

@@ -398,6 +398,71 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
+        private bool showRatingPanel;
+        public bool ShowRatingPanel
+        {
+            get
+            {
+                return ShowPurchaseSubType || ShowPurchaseRate || ShowPurchaseComment || ShowStoreRate || ShowStoreName;
+            }
+        }
+
+        string purchaseRate;
+        public string PurchaseRate
+        {
+            get { return purchaseRate; }
+            set
+            {
+                if (purchaseRate != value)
+                {
+                    purchaseRate = value;
+                    OnPropertyChanged(() => PurchaseRate);
+                }
+            }
+        }
+
+        string purchaseComment;
+        public string PurchaseComment
+        {
+            get { return purchaseComment; }
+            set
+            {
+                if (purchaseComment != value)
+                {
+                    purchaseComment = value;
+                    OnPropertyChanged(() => PurchaseComment);
+                }
+            }
+        }
+
+        string storeName;
+        public string StoreName
+        {
+            get { return storeName; }
+            set
+            {
+                if (storeName != value)
+                {
+                    storeName = value;
+                    OnPropertyChanged(() => StoreName);
+                }
+            }
+        }
+
+        string storeRate;
+        public string StoreRate
+        {
+            get { return storeRate; }
+            set
+            {
+                if (storeRate != value)
+                {
+                    storeRate = value;
+                    OnPropertyChanged(() => StoreRate);
+                }
+            }
+        }
+
         #endregion
     }
 }

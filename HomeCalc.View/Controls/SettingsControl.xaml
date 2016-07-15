@@ -32,19 +32,19 @@
         </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Показувати підтип покупки" />
-                    <CheckBox IsEnabled="False" Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Показувати коментар до покупки" />
-                    <CheckBox IsEnabled="False" Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment}"/>
+                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment}"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Показувати оцінку покупки" />
-                    <CheckBox IsEnabled="False" Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
+                    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Показувати назву магазину" />
-                    <CheckBox IsEnabled="False" Grid.Row="3" Grid.Column="1" IsChecked="{Binding ShowStoreName}"/>
+                    <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ShowStoreName}"/>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Показувати оцінку магазину" />
-                    <CheckBox IsEnabled="False" Grid.Row="4" Grid.Column="1" IsChecked="{Binding ShowStoreRating}"/>
+                    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ShowStoreRating}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Збереження даних">

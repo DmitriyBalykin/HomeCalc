@@ -86,6 +86,76 @@ namespace HomeCalc.Presentation.BasicModels
                 }
             }
         }
+
+        private bool showPurchaseSubType;
+        public bool ShowPurchaseSubType
+        {
+            get { return showPurchaseSubType; }
+            set
+            {
+                if (value != showPurchaseSubType)
+                {
+                    showPurchaseSubType = value;
+                    OnPropertyChanged(() => ShowPurchaseSubType, showPurchaseSubType);
+                }
+            }
+        }
+        private bool showPurchaseComment;
+        public bool ShowPurchaseComment
+        {
+            get { return showPurchaseComment; }
+            set
+            {
+                if (value != showPurchaseComment)
+                {
+                    showPurchaseComment = value;
+                    OnPropertyChanged(() => ShowPurchaseComment, showPurchaseComment);
+                }
+            }
+        }
+        private bool showPurchaseRate;
+        public bool ShowPurchaseRate
+        {
+            get { return showPurchaseRate; }
+            set
+            {
+                if (value != showPurchaseRate)
+                {
+                    showPurchaseRate = value;
+                    OnPropertyChanged(() => ShowPurchaseRate, showPurchaseRate);
+                }
+            }
+        }
+        private bool showStoreName;
+        public bool ShowStoreName
+        {
+            get { return showStoreName; }
+            set
+            {
+                if (value != showStoreName)
+                {
+                    showStoreName = value;
+                    OnPropertyChanged(() => ShowStoreName, showStoreName);
+                }
+            }
+        }
+        private bool showStoreRate;
+        public bool ShowStoreRate
+        {
+            get { return showStoreRate && showStoreName; }
+            set
+            {
+                if (value != showStoreRate)
+                {
+                    showStoreRate = value;
+                    OnPropertyChanged(() => ShowStoreRate, showStoreRate);
+                }
+                if (showStoreRate)
+                {
+                    showStoreName = true;
+                }
+            }
+        }
         #endregion
         
     }
