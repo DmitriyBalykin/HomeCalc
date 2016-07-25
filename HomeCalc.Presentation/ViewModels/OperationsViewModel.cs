@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -84,6 +85,10 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void DeleteTypeCommandExecute(object obj)
         {
+            if (MessageBox.Show("Всі товари даного типу будуть також видалені! Продовжити?", "Видалення даних", MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
             Task.Factory.StartNew(async () => 
             {
                 var typeToDeleteName = PurchaseType.Name;
