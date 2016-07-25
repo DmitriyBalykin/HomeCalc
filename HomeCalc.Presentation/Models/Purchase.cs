@@ -131,6 +131,23 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
+        private PurchaseSubType subType;
+        public PurchaseSubType SubType
+        {
+            get
+            {
+                return subType;
+            }
+            set
+            {
+                if (value != subType)
+                {
+                    subType = value;
+                    PublishChange("SubType");
+                }
+            }
+        }
+
         public override bool Equals(object obj)
         {
             return (obj is Purchase) && ((Purchase)obj).Id == this.Id;

@@ -269,6 +269,34 @@ namespace HomeCalc.Model.DbService
             }
             return result;
         }
+        public async Task<bool> SavePurchaseSubType(PurchaseSubTypeModel purchaseSubType, StorageConnection connection = null)
+        {
+
+            bool result = false;
+            try
+            {
+                using (var db = connection ?? dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    if (purchaseSubType.Id == 0)
+                    {
+                        command.CommandText = string.Format("INSERT INTO PURCHASESUBTYPE (Name) VALUES ('{0}')", purchaseSubType.Name);
+                    }
+                    else
+                    {
+                        command.CommandText = string.Format("UPDATE PURCHASESUBTYPE SET Name = '{0}' WHERE Id = {1}", purchaseSubType.Name, purchaseSubType.Id);
+                    }
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error("Exception during execution method \"SavePurchaseSubType\": {0}", ex.Message);
+            }
+            return result;
+        }
         public async Task<PurchaseModel> LoadPurchase(int id, StorageConnection connection = null)
         {
             PurchaseModel purchase = null;
@@ -393,6 +421,33 @@ namespace HomeCalc.Model.DbService
             return list;
         }
 
+        public async Task<IEnumerable<PurchaseSubTypeModel>> LoadPurchaseSubTypeList(StorageConnection connection = null)
+        {
+            var list = new List<PurchaseSubTypeModel>();
+            try
+            {
+                using (var db = connection ?? dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM PURCHASESUBTYPE";
+                    var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (dataReader.Read())
+                    {
+                        list.Add(new PurchaseSubTypeModel
+                        {
+                            Id = dataReader.GetInt64(0),
+                            Name = dataReader.GetString(1)
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadPurchaseSubTypeList\": {0}", ex.Message);
+            }
+            return list;
+        }
+
         public async Task<bool> RemovePurchase(long purchaseId, StorageConnection connection = null)
         {
             bool result = false;
@@ -432,6 +487,27 @@ namespace HomeCalc.Model.DbService
             {
                 result = false;
                 logger.Error("Exception during execution method \"DeletePurchaseType\": {0}", ex.Message);
+            }
+
+            return result;
+        }
+        public async Task<bool> DeletePurchaseSubType(PurchaseSubTypeModel subType, StorageConnection connection = null)
+        {
+            bool result = false;
+            try
+            {
+                using (var db = connection ?? dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    command.CommandText = string.Format("DELETE FROM PURCHASESUBTYOE WHERE Id = {0}", subType.Id);
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error("Exception during execution method \"DeletePurchaseSubType\": {0}", ex.Message);
             }
 
             return result;

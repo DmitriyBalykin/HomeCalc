@@ -25,6 +25,7 @@ namespace HomeCalc.Presentation.Models
         private StatusService Status;
 
         private Cache<PurchaseType> PurchaseTypesCache = new Cache<PurchaseType>();
+        private Cache<PurchaseSubType> PurchaseSubTypesCache = new Cache<PurchaseSubType>();
         private Cache<SettingsModel> SettingsCache = new Cache<SettingsModel>();
 
         private Logger logger;
@@ -201,6 +202,16 @@ namespace HomeCalc.Presentation.Models
             }
             return PurchaseTypesCache.GetCache();
         }
+        public async Task<List<PurchaseSubType>> LoadPurchaseSubTypeList()
+        {
+            if (!PurchaseSubTypesCache.IsActual())
+            {
+                PurchaseSubTypesCache.SetCache(
+                    (await DBService.LoadPurchaseSubTypeList().ConfigureAwait(false)).Select(p => ModelToSubType(p)).ToList()
+                    );
+            }
+            return PurchaseSubTypesCache.GetCache();
+        }
         public async Task<PurchaseType> ResolvePurchaseType(long id = -1, string name = null)
         {
             if (id > -1)
@@ -228,6 +239,15 @@ namespace HomeCalc.Presentation.Models
         private PurchaseTypeModel TypeToModel(PurchaseType type)
         {
             return new PurchaseTypeModel { TypeId = type.TypeId, Name = StringUtilities.EscapeStringForDatabase(type.Name) };
+        }
+        private PurchaseSubType ModelToSubType(PurchaseSubTypeModel model)
+        {
+            return new PurchaseSubType { Id = (int)model.Id, Name = model.Name };
+        }
+
+        private PurchaseSubTypeModel SubTypeToModel(PurchaseSubType subType)
+        {
+            return new PurchaseSubTypeModel { Id = subType.Id, Name = StringUtilities.EscapeStringForDatabase(subType.Name) };
         }
         private async Task<Purchase> ModelToPurchase(PurchaseModel model)
         {

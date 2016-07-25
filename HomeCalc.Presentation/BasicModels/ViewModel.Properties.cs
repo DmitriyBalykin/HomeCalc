@@ -30,6 +30,7 @@ namespace HomeCalc.Presentation.BasicModels
             return Task.Factory.StartNew(async () => 
             {
                 TypeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
+                PurchaseSubTypes = new ObservableCollection<PurchaseSubType>(await StoreService.LoadPurchaseSubTypeList().ConfigureAwait(false));
             });
         }
         void StoreService_TypesUpdated(object sender, EventArgs e)
@@ -83,6 +84,23 @@ namespace HomeCalc.Presentation.BasicModels
                 {
                     typeSelectorItems = value;
                     OnPropertyChanged(() => TypeSelectorItems);
+                }
+            }
+        }
+
+        private ObservableCollection<PurchaseSubType> purchaseSubTypes;
+        public ObservableCollection<PurchaseSubType> PurchaseSubTypes
+        {
+            get
+            {
+                return purchaseSubTypes;
+            }
+            set
+            {
+                if (purchaseSubTypes != value)
+                {
+                    purchaseSubTypes = value;
+                    OnPropertyChanged(() => PurchaseSubTypes);
                 }
             }
         }
@@ -151,6 +169,23 @@ namespace HomeCalc.Presentation.BasicModels
                     OnPropertyChanged(() => ShowStoreRate, showStoreRate);
                 }
                 if (showStoreRate)
+                {
+                    showStoreName = true;
+                }
+            }
+        }
+        private bool showStoreComment;
+        public bool ShowStoreComment
+        {
+            get { return showStoreComment && showStoreName; }
+            set
+            {
+                if (value != showStoreComment)
+                {
+                    showStoreComment = value;
+                    OnPropertyChanged(() => ShowStoreComment, showStoreComment);
+                }
+                if (showStoreComment)
                 {
                     showStoreName = true;
                 }

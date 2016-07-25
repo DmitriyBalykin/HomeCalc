@@ -311,6 +311,23 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
+
+        public PurchaseSubType PurchaseSubType
+        {
+            get
+            {
+                return purchase.SubType;
+            }
+            set
+            {
+                var type = PurchaseSubTypes.Where(e => e.Name == value.Name).FirstOrDefault();
+                if (type != purchase.SubType)
+                {
+                    purchase.SubType = type;
+                    OnPropertyChanged(() => PurchaseSubType);
+                }
+            }
+        }
         
         private bool calcItemCost = false;
         public bool IsCalcItemCost
