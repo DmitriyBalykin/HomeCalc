@@ -421,10 +421,16 @@ namespace HomeCalc.Model.DbService
             try
             {
                 using (var db = connection ?? dbManager.GetConnection())
+                using (var transaction = db.Connection.BeginTransaction())
                 using (var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = string.Format("DELETE FROM PURCHASETYPEMODELS WHERE TypeId = {0}", type.TypeId);
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+                    command.CommandText = string.Format("DELETE FROM PURCHASEMODELS WHERE TypeId = {0}", type.TypeId);
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+                    transaction.Commit();
                     result = true;
                 }
             }

@@ -128,10 +128,10 @@ namespace HomeCalc.Presentation.Models
         }
         public async Task<bool> SavePurchaseType(PurchaseType purchaseType)
         {
-            PurchaseTypesCache.SetNeedRefresh();
             var result = await DBService.SavePurchaseType(TypeToModel(purchaseType)).ConfigureAwait(false);
             if (result)
             {
+                PurchaseTypesCache.SetNeedRefresh();
                 TypeUpdated();
             }
             return result;
@@ -142,6 +142,7 @@ namespace HomeCalc.Presentation.Models
             var result = await DBService.DeletePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
             if (result)
             {
+                PurchaseTypesCache.SetNeedRefresh();
                 TypeUpdated();
             }
             return result;
@@ -153,6 +154,7 @@ namespace HomeCalc.Presentation.Models
             var result = await DBService.SavePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
             if (result)
             {
+                PurchaseTypesCache.SetNeedRefresh();
                 TypeUpdated();
             }
             return result;
