@@ -1,4 +1,5 @@
 ﻿using HomeCalc.Core;
+using HomeCalc.Core.Helpers;
 using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Model.DbService;
@@ -106,6 +107,7 @@ namespace HomeCalc.Presentation.BasicModels
         }
 
         private bool showPurchaseSubType;
+        [SettingProperty]
         public bool ShowPurchaseSubType
         {
             get { return showPurchaseSubType; }
@@ -119,6 +121,7 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
         private bool showPurchaseComment;
+        [SettingProperty]
         public bool ShowPurchaseComment
         {
             get { return showPurchaseComment; }
@@ -132,6 +135,7 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
         private bool showPurchaseRate;
+        [SettingProperty]
         public bool ShowPurchaseRate
         {
             get { return showPurchaseRate; }
@@ -145,6 +149,7 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
         private bool showStoreName;
+        [SettingProperty]
         public bool ShowStoreName
         {
             get { return showStoreName; }
@@ -158,6 +163,7 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
         private bool showStoreRate;
+        [SettingProperty]
         public bool ShowStoreRate
         {
             get { return showStoreRate && showStoreName; }
@@ -175,6 +181,7 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
         private bool showStoreComment;
+        [SettingProperty]
         public bool ShowStoreComment
         {
             get { return showStoreComment && showStoreName; }

@@ -20,6 +20,7 @@ namespace HomeCalc.Presentation.Services
         public const string SHOW_PURCHASE_RATE_KEY = "ShowPurchaseRate";
         public const string SHOW_STORE_NAME_KEY = "ShowStoreName";
         public const string SHOW_STORE_RATE_KEY = "ShowStoreRate";
+        public const string SHOW_STORE_COMMENT = "ShowStoreComment";
 
         Logger logger;
         static SettingsService instance;

@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core.Helpers;
+using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Presentation.BasicModels;
@@ -30,7 +31,7 @@ namespace HomeCalc.Presentation.ViewModels
             Task.Factory.StartNew(async () =>
             {
                 var settings = await StoreService.LoadSettings();
-                var properties = this.GetType().GetProperties();
+                var properties = this.GetType().GetProperties().Where(property => property.GetCustomAttributes(typeof(SettingProperty)).Count() > 0);
                 foreach (var property in properties)
                 {
                     if (property.PropertyType == typeof(bool))
@@ -60,6 +61,7 @@ namespace HomeCalc.Presentation.ViewModels
 
         #region Properties
         private bool autoUpdateCheck;
+        [SettingProperty]
         public bool AutoUpdateCheck
         {
             get { return autoUpdateCheck; }
@@ -73,6 +75,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
         private bool autoUpdate;
+        [SettingProperty]
         public bool AutoUpdate
         {
             get { return autoUpdate; }
@@ -86,6 +89,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
         private string backupPath;
+        [SettingProperty]
         public string BackupPath
         {
             get { return backupPath; }
@@ -100,6 +104,7 @@ namespace HomeCalc.Presentation.ViewModels
         }
         
         private bool doDatabaseBackup;
+        [SettingProperty]
         public bool DoDatabaseBackup
         {
             get { return doDatabaseBackup; }

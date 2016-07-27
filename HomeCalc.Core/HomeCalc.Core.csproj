@@ -52,6 +52,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\DateTimeHelpers.cs" />
+    <Compile Include="Helpers\SettingProperty.cs" />
     <Compile Include="Helpers\String2NumberHelper.cs" />
     <Compile Include="Helpers\StringUtilities.cs" />
     <Compile Include="Helpers\UIDispatcherHelper.cs" />
