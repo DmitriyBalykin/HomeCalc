@@ -52,7 +52,7 @@ namespace HomeCalc.Model.DbService
             {
                 switch (value.Table)
                 {
-                    case "PURCHASETYPEMODELS":
+                    case "PURCHASETYPE":
                         var valueExist = LoadPurchaseTypeList(dbManager.GetConnection(true)).Result.Any(p => p.Name == value.Value.Name);
                         if (!valueExist)
                         {
@@ -77,6 +77,7 @@ namespace HomeCalc.Model.DbService
                     var reader = command.ExecuteReader();
                     reader.Read();
                     var db_version = reader.GetInt32(0);
+                    reader.Close();
                     switch (db_version)
                     {
                         case 0:
@@ -135,7 +136,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT * FROM SETTINGMODELS WHERE SettingName='{0}'", settings.SettingName);
+                    command.CommandText = string.Format("SELECT * FROM SETTING WHERE SettingName='{0}'", settings.SettingName);
                     SettingsStorageModel settingToUpdate = null;
                     using (var dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                     {
@@ -154,12 +155,12 @@ namespace HomeCalc.Model.DbService
                     if (settingToUpdate != null)
 	                {
                         command.CommandText = string.Format(
-                            "UPDATE SETTINGMODELS SET ProfileId = {0}, SettingName = '{1}', SettingValue = '{2}' WHERE SettingId = {3}",
+                            "UPDATE SETTING SET ProfileId = {0}, SettingName = '{1}', SettingValue = '{2}' WHERE SettingId = {3}",
                             settingToUpdate.ProfileId, settingToUpdate.SettingName, settingToUpdate.SettingValue, settingToUpdate.SettingId);
                     }
                     else
                     {
-                        command.CommandText = string.Format("INSERT INTO SETTINGMODELS(ProfileId, SettingName, SettingValue) VALUES ({0}, '{1}', '{2}')",
+                        command.CommandText = string.Format("INSERT INTO SETTING(ProfileId, SettingName, SettingValue) VALUES ({0}, '{1}', '{2}')",
                             settings.ProfileId, settings.SettingName, settings.SettingValue);
                     }
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -181,7 +182,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT * FROM SETTINGMODELS");
+                    command.CommandText = string.Format("SELECT * FROM SETTING");
                     DbDataReader dbDataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
 
                     while (dbDataReader.HasRows && dbDataReader.Read())
@@ -214,13 +215,13 @@ namespace HomeCalc.Model.DbService
                     if (purchase.PurchaseId == 0)
                     {
                         command.CommandText = string.Format(
-                        "INSERT INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemsNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
+                        "INSERT INTO PURCHASE(Name, Timestamp, TotalCost, ItemCost, ItemsNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
                         purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId);
                     }
                     else
                     {
                         command.CommandText = string.Format(
-                        "UPDATE PURCHASEMODELS SET Name = '{0}', Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
+                        "UPDATE PURCHASE SET Name = '{0}', Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
                         purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId, purchase.PurchaseId);
                     }
 
@@ -247,7 +248,7 @@ namespace HomeCalc.Model.DbService
                     foreach (var purchase in purchases)
                     {
                         command.CommandText = string.Format(
-                        "INSERT INTO PURCHASEMODELS(Name, Timestamp, TotalCost, ItemCost, ItemNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
+                        "INSERT INTO PURCHASE(Name, Timestamp, TotalCost, ItemCost, ItemNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
                         purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId);
 
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -273,11 +274,11 @@ namespace HomeCalc.Model.DbService
                 {
                     if (purchaseType.TypeId == 0)
                     {
-                        command.CommandText = string.Format("INSERT INTO PURCHASETYPEMODELS (Name) VALUES ('{0}')", purchaseType.Name);
+                        command.CommandText = string.Format("INSERT INTO PURCHASETYPE (Name) VALUES ('{0}')", purchaseType.Name);
                     }
                     else
                     {
-                        command.CommandText = string.Format("UPDATE PURCHASETYPEMODELS SET Name = '{0}' WHERE TypeId = {1}", purchaseType.Name, purchaseType.TypeId);
+                        command.CommandText = string.Format("UPDATE PURCHASETYPE SET Name = '{0}' WHERE TypeId = {1}", purchaseType.Name, purchaseType.TypeId);
                     }
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
@@ -326,7 +327,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT * FROM PURCHASEMODELS WHERE PurchaseId = {0}", id);
+                    command.CommandText = string.Format("SELECT * FROM PURCHASE WHERE PurchaseId = {0}", id);
                     var dbReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     if (dbReader.HasRows && dbReader.Read())
                     {
@@ -360,7 +361,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    string queue = "SELECT * FROM PURCHASEMODELS WHERE";
+                    string queue = "SELECT * FROM PURCHASE WHERE";
                     if (filter.SearchByName)
                     {
                         queue = string.Format("{0} Name LIKE '%{1}%' ", queue, filter.Name.Trim(' '));
@@ -423,7 +424,7 @@ namespace HomeCalc.Model.DbService
                 using(var db = connection ?? dbManager.GetConnection())
                 using(var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT * FROM PURCHASETYPEMODELS";
+                    command.CommandText = "SELECT * FROM PURCHASETYPE";
                     var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     while (dataReader.Read())
                     {
@@ -477,7 +478,7 @@ namespace HomeCalc.Model.DbService
                 using(var db = connection ?? dbManager.GetConnection())
                 using(var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("DELETE FROM PURCHASEMODELS WHERE PurchaseId = {0}", purchaseId);
+                    command.CommandText = string.Format("DELETE FROM PURCHASE WHERE PurchaseId = {0}", purchaseId);
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
                 }
@@ -499,7 +500,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("DELETE FROM PURCHASETYPEMODELS WHERE TypeId = {0}", type.TypeId);
+                    command.CommandText = string.Format("DELETE FROM PURCHASETYPE WHERE TypeId = {0}", type.TypeId);
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
                 }
@@ -520,7 +521,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("DELETE FROM PURCHASESUBTYOE WHERE Id = {0}", subType.Id);
+                    command.CommandText = string.Format("DELETE FROM PURCHASESUBTYPE WHERE Id = {0}", subType.Id);
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
                 }

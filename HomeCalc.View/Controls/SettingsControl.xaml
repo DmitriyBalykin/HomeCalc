@@ -22,29 +22,32 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="300" />
                         <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="300" />
+                        <ColumnDefinition Width="50" />
                     </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Показувати підтип покупки" />
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubType, Mode=TwoWay}"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Показувати коментар до покупки" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Показувати оцінку покупки" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubType, Mode=TwoWay}"/>
+                    
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Показувати коментар до покупки" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment, Mode=TwoWay}"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Показувати оцінку покупки" />
-                    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubtype}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Показувати назву магазину" />
+                    <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding ShowStoreName, Mode=TwoWay}"/>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Показувати назву магазину" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ShowStoreName}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Показувати оцінку магазину" />
+                    <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding ShowStoreRate, Mode=TwoWay}"/>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Показувати оцінку магазину" />
-                    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ShowStoreRating}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Показувати коментар до магазину" />
+                    <CheckBox Grid.Row="2" Grid.Column="3" IsChecked="{Binding ShowStoreComment, Mode=TwoWay}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Збереження даних">

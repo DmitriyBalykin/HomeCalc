@@ -77,43 +77,43 @@ namespace HomeCalc.Model.DbService
                 {
                     ProfileId = 0,
                     SettingId = 3,
-                    SettingName = "PurchaseSubType",
-                    SettingValue = ""
+                    SettingName = "ShowPurchaseSubType",
+                    SettingValue = "false"
                 });
                 list.Add(new SettingsStorageModel
                 {
                     ProfileId = 0,
                     SettingId = 4,
-                    SettingName = "PurchaseComment",
-                    SettingValue = ""
+                    SettingName = "ShowPurchaseComment",
+                    SettingValue = "false"
                 });
                 list.Add(new SettingsStorageModel
                 {
                     ProfileId = 0,
                     SettingId = 5,
-                    SettingName = "PurchaseRate",
-                    SettingValue = ""
+                    SettingName = "ShowPurchaseRate",
+                    SettingValue = "false"
                 });
                 list.Add(new SettingsStorageModel
                 {
                     ProfileId = 0,
                     SettingId = 6,
-                    SettingName = "StoreName",
-                    SettingValue = ""
+                    SettingName = "ShowStoreName",
+                    SettingValue = "false"
                 });
                 list.Add(new SettingsStorageModel
                 {
                     ProfileId = 0,
                     SettingId = 6,
-                    SettingName = "StoreComment",
-                    SettingValue = ""
+                    SettingName = "ShowStoreComment",
+                    SettingValue = "false"
                 });
                 list.Add(new SettingsStorageModel
                 {
                     ProfileId = 0,
                     SettingId = 7,
-                    SettingName = "StoreRate",
-                    SettingValue = ""
+                    SettingName = "ShowStoreRate",
+                    SettingValue = "false"
                 });
 
 
