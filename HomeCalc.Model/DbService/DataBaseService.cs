@@ -70,16 +70,37 @@ namespace HomeCalc.Model.DbService
             try
             {
                 using (var connection = dbManager.GetConnection(true))
+                using (var transaction = connection.Connection.BeginTransaction())
                 using (var command = connection.Connection.CreateCommand())
                 {
-                    foreach (var table in DefaultDbContent.Tables.Keys)
+                    command.CommandText = "PRAGMA user_version";
+                    var reader = command.ExecuteReader();
+                    reader.Read();
+                    var db_version = reader.GetInt32(0);
+                    switch (db_version)
                     {
-                        if (!IsTableExists(table))
-                        {
-                            command.CommandText = string.Format("create table {0} {1}", table, DefaultDbContent.Tables[table]);
+                        case 0:
+                            foreach (var table in DefaultDbContent.Tables[db_version].Keys)
+                            {
+                                if (!IsTableExists(table))
+                                {
+                                    command.CommandText = string.Format("create table {0} {1}", table, DefaultDbContent.Tables[db_version+1][table]);
+                                    command.ExecuteNonQuery();
+                                }
+                            }
+                            command.CommandText = "ALTER TABLE PURCHASEMODELS RENAME TO PURCHASE";
                             command.ExecuteNonQuery();
-                        }
+                            command.CommandText = "ALTER TABLE PURCHASETYPEMODELS RENAME TO PURCHASETYPE";
+                            command.ExecuteNonQuery();
+                            command.CommandText = "ALTER TABLE SETTINGMODELS RENAME TO SETTING";
+                            command.ExecuteNonQuery();
+                            command.CommandText = "PRAGMA user_version=1";
+                            command.ExecuteNonQuery();
+                            break;
+                        default:
+                            return;
                     }
+                    transaction.Commit();
                 }
             }
             catch (SQLiteException)

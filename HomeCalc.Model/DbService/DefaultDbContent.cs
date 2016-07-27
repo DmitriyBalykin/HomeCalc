@@ -9,37 +9,25 @@ namespace HomeCalc.Model.DbService
 {
     public static class DefaultDbContent
     {
-        public static Dictionary<string, string> OldTables { get
-        {
-            return new Dictionary<string,string>{
-                {"PURCHASETYPEMODELS" , "(Name TEXT, TypeId INTEGER PRIMARY KEY)"},
-                {"PURCHASEMODELS" , "(Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, PurchaseId INTEGER PRIMARY KEY, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"}
-            };
-        } }
-        public static Dictionary<string, string> AlterTables
-        {
-            get
-            {
-                return new Dictionary<string, string>{
-                {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
-                {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}
-            };
-            }
-        }
 
-        public static Dictionary<string, string> Tables
+        public static Dictionary<int, Dictionary<string, string>> Tables
         {
             get
             {
-                return new Dictionary<string, string>{
-                {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
-                //{"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE), FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE), FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
-                {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}
+                return new Dictionary<int, Dictionary<string, string>>{
+                    {0, new Dictionary<string, string>{
+                        {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                        {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
+                    }},
+                    {1, new Dictionary<string, string>{
+                        {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE), FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE), FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                        {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
+                    }}
+                
             };
             }
         }
@@ -49,11 +37,11 @@ namespace HomeCalc.Model.DbService
             get
             {
             return new List<DbItem<PurchaseTypeModel>>(){
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPEMODELS" , Value = new PurchaseTypeModel{ Name = "Еда" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPEMODELS" , Value = new PurchaseTypeModel{ Name = "Хозяйственные товары" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPEMODELS" , Value = new PurchaseTypeModel{ Name = "Автомобиль" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPEMODELS" , Value = new PurchaseTypeModel{ Name = "Квартира" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPEMODELS" , Value = new PurchaseTypeModel{ Name = "Снаряжение" }},
+                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Еда" }},
+                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Хозяйственные товары" }},
+                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Автомобиль" }},
+                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Квартира" }},
+                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Снаряжение" }},
             };
             }
         }
