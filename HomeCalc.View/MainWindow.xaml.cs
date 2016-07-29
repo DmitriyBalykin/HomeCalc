@@ -51,7 +51,7 @@ namespace HomeCalc.View
 
         void statusService_ProgressUpdated(object sender, ProgressUpdatedEventArgs e)
         {
-            ProgressValue = e.Progress.ToString();
+            ProgressValue = e.Progress;
         }
 
         void statusService_StatusChanged(object sender, StatusChangedEventArgs e)
@@ -86,8 +86,8 @@ namespace HomeCalc.View
             }
         }
 
-        private string progressValue;
-        public string ProgressValue
+        private double progressValue;
+        public double ProgressValue
         {
             get
             {

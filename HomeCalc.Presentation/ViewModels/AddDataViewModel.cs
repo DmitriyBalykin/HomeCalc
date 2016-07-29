@@ -415,7 +415,6 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        private bool showRatingPanel;
         public bool ShowRatingPanel
         {
             get
@@ -424,8 +423,8 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        string purchaseRate;
-        public string PurchaseRate
+        double purchaseRate;
+        public double PurchaseRate
         {
             get { return purchaseRate; }
             set
@@ -438,7 +437,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        string purchaseComment;
+        string purchaseComment = string.Empty;
         public string PurchaseComment
         {
             get { return purchaseComment; }
@@ -466,8 +465,8 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        string storeRate;
-        public string StoreRate
+        double storeRate;
+        public double StoreRate
         {
             get { return storeRate; }
             set
@@ -476,6 +475,20 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     storeRate = value;
                     OnPropertyChanged(() => StoreRate);
+                }
+            }
+        }
+
+        string storeComment = string.Empty;
+        public string StoreComment
+        {
+            get { return storeComment; }
+            set
+            {
+                if (storeComment != value)
+                {
+                    storeComment = value;
+                    OnPropertyChanged(() => StoreComment);
                 }
             }
         }

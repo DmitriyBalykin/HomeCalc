@@ -95,7 +95,7 @@
         </Grid>
         <DockPanel HorizontalAlignment="Stretch"
                   VerticalAlignment="Bottom"
-                   Visibility="{Binding ShowRatingPanel}"
+                   Visibility="{Binding ShowRatingPanel, Converter={StaticResource boolToVisibilityConverter}}"
                    Height="{Binding ShowRatingPanel, Converter={StaticResource boolToValueConverter}, ConverterParameter=200}"
                   >
             <Border BorderBrush="{StaticResource SelectedBackground}">
@@ -115,7 +115,7 @@
                 </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Підтип товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseSubType, Converter={StaticResource boolToVisibilityConverter}}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Оцінка товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Коментар до товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Коментар до товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseComment, Converter={StaticResource boolToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="0" Grid.Column="2" Text="Назва магазину" VerticalAlignment="Center" Visibility="{Binding ShowStoreName, Converter={StaticResource boolToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="Оцінка магазину" VerticalAlignment="Center" Visibility="{Binding ShowStoreRate, Converter={StaticResource boolToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="2" Grid.Column="2" Text="Коментар до магазину" VerticalAlignment="Center" Visibility="{Binding ShowStoreComment, Converter={StaticResource boolToVisibilityConverter}}"/>
@@ -129,7 +129,7 @@
                         />
                     <Slider Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}"
                             Value="{Binding PurchaseRate}"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}"
+                    <TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Visibility="{Binding ShowPurchaseComment, Converter={StaticResource boolToVisibilityConverter}}"
                              Text="{Binding PurchaseComment}"/>
                     <TextBox Grid.Row="0" Grid.Column="3" TextWrapping="Wrap" Visibility="{Binding ShowStoreName, Converter={StaticResource boolToVisibilityConverter}}"
                              Text="{Binding StoreName}"/>
