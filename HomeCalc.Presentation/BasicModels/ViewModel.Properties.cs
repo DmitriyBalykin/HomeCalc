@@ -165,6 +165,18 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
         [SettingProperty]
+        public bool ShowMonthlyPurchase
+        {
+            get { return Settings.GetSetting("ShowMonthlyPurchase").SettingBoolValue; }
+            set
+            {
+                if (value != Settings.GetSetting("ShowMonthlyPurchase").SettingBoolValue)
+                {
+                    OnPropertyChanged(() => ShowMonthlyPurchase, value);
+                }
+            }
+        }
+        [SettingProperty]
         public bool ShowStoreName
         {
             get { return Settings.GetSetting("ShowStoreName").SettingBoolValue; }

@@ -231,6 +231,19 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
+        public bool MonthlyPurchase
+        {
+            get { return purchase.MonthlyPurchase; }
+            set
+            {
+                if (purchase.MonthlyPurchase != value)
+                {
+                    purchase.MonthlyPurchase = value;
+                    OnPropertyChanged(() => MonthlyPurchase);
+                }
+            }
+        }
+
         private bool fieldCalculationInProgress = false;
         private bool fieldCalculationBlocked = false;
         private string count;

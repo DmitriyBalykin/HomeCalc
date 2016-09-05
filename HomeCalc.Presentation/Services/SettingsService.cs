@@ -19,6 +19,7 @@ namespace HomeCalc.Presentation.Services
         public const string SHOW_PURCHASE_SUBTYPE_KEY = "ShowPurchaseSubType";
         public const string SHOW_PURCHASE_COMMENT_KEY = "ShowPurchaseComment";
         public const string SHOW_PURCHASE_RATE_KEY = "ShowPurchaseRate";
+        public const string SHOW_MONTHLY_PURCHASE = "ShowMonthlyPurchase";
         public const string SHOW_STORE_NAME_KEY = "ShowStoreName";
         public const string SHOW_STORE_RATE_KEY = "ShowStoreRate";
         public const string SHOW_STORE_COMMENT = "ShowStoreComment";
@@ -50,11 +51,6 @@ namespace HomeCalc.Presentation.Services
 
         public SettingsModel GetSetting(string settingKey)
         {
-            //var filtered = storageService.LoadSettings().Result
-            //    .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-            //    .FirstOrDefault();
-
-            //return filtered == null ? false : filtered.SettingBoolValue;
             SettingsModel settingModel;
             if (HighLevelCache.TryGetValue(settingKey, out settingModel))
             {
@@ -65,15 +61,6 @@ namespace HomeCalc.Presentation.Services
                 return new SettingsModel();
             }
         }
-
-        //public string GetStringValue(string settingKey)
-        //{
-        //    //var filtered = storageService.LoadSettings().Result
-        //    //    .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-        //    //    .FirstOrDefault();
-
-        //    //return filtered == null ? string.Empty : filtered.SettingStringValue;
-        //}
 
         public void SaveSetting<T>(Expression<Func<T>> setting, object value)
         {

@@ -29,6 +29,7 @@
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Показувати підтип покупки" />
@@ -39,6 +40,9 @@
                     
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Показувати коментар до покупки" />
                     <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment, Mode=TwoWay}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Показувати відмітку щомісячних покупок" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ShowMonthlyPurchase, Mode=TwoWay}"/>
 
                     <TextBlock Grid.Row="0" Grid.Column="2" Text="Показувати назву магазину" />
                     <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding ShowStoreName, Mode=TwoWay}"/>

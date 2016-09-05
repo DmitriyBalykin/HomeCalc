@@ -148,6 +148,23 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
+        private bool monthlyPurchase;
+        public bool MonthlyPurchase
+        {
+            get
+            {
+                return monthlyPurchase;
+            }
+            set
+            {
+                if (value != monthlyPurchase)
+                {
+                    monthlyPurchase = value;
+                    PublishChange("MonthlyPurchase");
+                }
+            }
+        }
+
         public override bool Equals(object obj)
         {
             return (obj is Purchase) && ((Purchase)obj).Id == this.Id;

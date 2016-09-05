@@ -45,7 +45,7 @@
                      SelectedItem="{Binding PurchaseType}"/>
 
         <ComboBox Grid.Row="3" Grid.Column="1"
-                     ItemsSource="{Binding SubTypeSelectorItems}"
+                     ItemsSource="{Binding PurchaseSubTypes}"
                      SelectedItem="{Binding PurchaseSubType}"/>
 
         <Button Grid.Row="1" Grid.Column="2" Content="Перейменувати" Command="{Binding RenameType}"/>

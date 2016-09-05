@@ -26,6 +26,13 @@ namespace HomeCalc.Model.DbService
                         {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
                         {"PURCHASE" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
                         {"SETTING" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
+                    }},
+                    {2, new Dictionary<string, string>{
+                        {"PURCHASETYPE" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"PURCHASE" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, IsMonthly BOOLEAN, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                        {"SETTING" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
                     }}
                 
             };
@@ -92,6 +99,13 @@ namespace HomeCalc.Model.DbService
                     ProfileId = 0,
                     SettingId = 5,
                     SettingName = "ShowPurchaseRate",
+                    SettingValue = "false"
+                });
+                list.Add(new SettingsStorageModel
+                {
+                    ProfileId = 0,
+                    SettingId = 6,
+                    SettingName = "ShowMonthlyPurchaseRate",
                     SettingValue = "false"
                 });
                 list.Add(new SettingsStorageModel
