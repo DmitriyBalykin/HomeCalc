@@ -96,7 +96,7 @@ namespace HomeCalc.Presentation.Models
             {
                 SettingsCache.SetCache(settings);
             }
-            return settings;
+            return SettingsCache.GetCache();
         }
         public async Task<bool> AddPurchase(Purchase purchase)
         {

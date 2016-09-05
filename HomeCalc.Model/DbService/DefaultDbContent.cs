@@ -21,11 +21,11 @@ namespace HomeCalc.Model.DbService
                         {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
                     }},
                     {1, new Dictionary<string, string>{
-                        {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
+                        {"PURCHASETYPE" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
                         {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
                         {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE), FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE), FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
-                        {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
+                        {"PURCHASE" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                        {"SETTING" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
                     }}
                 
             };

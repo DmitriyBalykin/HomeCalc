@@ -21,9 +21,9 @@ namespace HomeCalc.Presentation.Services
             var logger = LogService.GetLogger();
             var statusService = StatusService.GetInstance();
             var settingsService = SettingsService.GetInstance();
-            var backupDirectory = settingsService.GetStringValue(SettingsService.BACKUP_PATH_KEY);
+            var backupDirectory = settingsService.GetSetting(SettingsService.BACKUP_PATH_KEY).SettingStringValue;
 
-            if (settingsService.GetBooleanValue(SettingsService.DO_DATABASE_BACKUP) &&
+            if (settingsService.GetSetting(SettingsService.DO_DATABASE_BACKUP).SettingBoolValue &&
                 !string.IsNullOrWhiteSpace(backupDirectory))
             {
                 var backupPath = Path.Combine(backupDirectory, FilenameService.DB_FILE_NAME);

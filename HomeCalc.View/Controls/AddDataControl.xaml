@@ -17,7 +17,7 @@
     </UserControl.Resources>
     <StackPanel VerticalAlignment="Center">
         <Grid
-            Margin="10"
+            Margin="0,10"
             Style="{StaticResource BasicGridStyle}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
@@ -35,40 +35,40 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock
-            Grid.Row="0" Grid.Column="0"
-            Text="Дата"
+        		Grid.Row="0" Grid.Column="0"
+        		Text="Дата"
             />
             <TextBlock
-            Grid.Row="0" Grid.Column="1"
-            Text="Тип товару"
+        		Grid.Row="0" Grid.Column="1"
+        		Text="Тип товару"
             />
             <TextBlock
-            Grid.Row="0" Grid.Column="2"
-            Text="Назва товару"
+        		Grid.Row="0" Grid.Column="2"
+        		Text="Назва товару"
             />
             <TextBlock
-            Grid.Row="0" Grid.Column="3"
-            Text="Кількість"
+        		Grid.Row="0" Grid.Column="3"
+        		Text="Кількість"
             />
             <TextBlock
-            Grid.Row="0" Grid.Column="4"
-            Text="Вартість одиниці"
+        		Grid.Row="0" Grid.Column="4"
+        		Text="Вартість одиниці"
             />
             <TextBlock
-            Grid.Row="0" Grid.Column="5"
-            Text="Загальна вартість"
+        		Grid.Row="0" Grid.Column="5"
+        		Text="Загальна вартість"
             />
 
             <DatePicker
-            Grid.Row="1" Grid.Column="0"
-            SelectedDate="{Binding DateToStore}"
+        		Grid.Row="1" Grid.Column="0"
+        		SelectedDate="{Binding DateToStore}"
             />
             <ComboBox
-            Grid.Row="1" Grid.Column="1"
-            ItemsSource="{Binding TypeSelectorItems}"
-            SelectedItem="{Binding PurchaseType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            IsSynchronizedWithCurrentItem="True"
-            DisplayMemberPath="Name"
+        		Grid.Row="1" Grid.Column="1"
+        		ItemsSource="{Binding TypeSelectorItems}"
+        		SelectedItem="{Binding PurchaseType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+        		IsSynchronizedWithCurrentItem="True"
+        		DisplayMemberPath="Name"
             />
             <ToggleButton x:Name="CalcNumberToggle" Grid.Row="1" Grid.Column="3" Grid.RowSpan="2" IsChecked="{Binding IsCalcItemsCount}">
                 <TextBlock Text="Рахувати"  Margin="0,8" />
@@ -79,15 +79,15 @@
             </ToggleButton>
 
             <controls:SearchComboBox Grid.Row="1" Grid.Column="2"
-                  Text="{Binding PurchaseName}"
-                  TextSearch.TextPath="Name"
-                  IsTextSearchEnabled="False"
-                  ItemsSource="{Binding PurchaseHistoryItems}"
-                  IsDropDownOpen="{Binding ShowPurchaseHistory}"
-                  IsEditable="True"/>
+        		Text="{Binding PurchaseName}"
+        		TextSearch.TextPath="Name"
+        		IsTextSearchEnabled="False"
+        		ItemsSource="{Binding PurchaseHistoryItems}"
+        		IsDropDownOpen="{Binding ShowPurchaseHistory}"
+        		IsEditable="True"/>
 
-            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcNumberToggle, Path=IsChecked }" />
-            <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding ElementName=CalcItemToggle, Path=IsChecked }"  />
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Count, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsChecked, ElementName=CalcNumberToggle}" />
+            <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding ItemCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsChecked, ElementName=CalcItemToggle}"  />
             <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding TotalCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsCalcByTotal, Converter={StaticResource inverseBooleanConverter}}"/>
             <Button Grid.Row="1" Grid.Column="6" Content="Зберегти" Command="{Binding Save}" />
 
@@ -96,24 +96,24 @@
         <DockPanel HorizontalAlignment="Stretch"
                   VerticalAlignment="Bottom"
                    Visibility="{Binding ShowRatingPanel, Converter={StaticResource boolToVisibilityConverter}}"
-                   Height="{Binding ShowRatingPanel, Converter={StaticResource boolToValueConverter}, ConverterParameter=200}"
+                   Height="{Binding ShowRatingPanel, ConverterParameter=200, Converter={StaticResource boolToValueConverter}}"
                   >
             <Border BorderBrush="{StaticResource SelectedBackground}">
-            <Grid
+                <Grid
                 Style="{StaticResource SettingsGridStyle}"
                 >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="300" />
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="300" />
-                </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Підтип товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseSubType, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="300" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="300" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Підтип товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseSubType, Converter={StaticResource boolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Оцінка товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}" />
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Коментар до товару" VerticalAlignment="Center" Visibility="{Binding ShowPurchaseComment, Converter={StaticResource boolToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="0" Grid.Column="2" Text="Назва магазину" VerticalAlignment="Center" Visibility="{Binding ShowStoreName, Converter={StaticResource boolToVisibilityConverter}}"/>
@@ -127,14 +127,46 @@
                         DisplayMemberPath="Name"
                         Visibility="{Binding ShowPurchaseSubType, Converter={StaticResource boolToVisibilityConverter}}"
                         />
-                    <Slider Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}"
-                            Value="{Binding PurchaseRate}"/>
+                    <Grid Grid.Row="1" Grid.Column="1" Visibility="{Binding ShowPurchaseRate, Converter={StaticResource boolToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <DockPanel>
+                            <TextBlock Text="Погано"/>
+                            <TextBlock HorizontalAlignment="Right" Text="Відмінно"/>
+                        </DockPanel>
+                        <Slider Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10"
+                            Value="{Binding PurchaseRate}"
+                            TickFrequency="1"
+                            TickPlacement="Both"
+                            AutoToolTipPrecision="1"
+                            AutoToolTipPlacement="TopLeft"
+                            IsMoveToPointEnabled="True"/>
+                    </Grid>
+
                     <TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Visibility="{Binding ShowPurchaseComment, Converter={StaticResource boolToVisibilityConverter}}"
                              Text="{Binding PurchaseComment}"/>
                     <TextBox Grid.Row="0" Grid.Column="3" TextWrapping="Wrap" Visibility="{Binding ShowStoreName, Converter={StaticResource boolToVisibilityConverter}}"
                              Text="{Binding StoreName}"/>
-                    <Slider Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10" Visibility="{Binding ShowStoreRate, Converter={StaticResource boolToVisibilityConverter}}"
-                            Value="{Binding StoreRate}"/>
+                    <Grid Grid.Row="1" Grid.Column="3" Visibility="{Binding ShowStoreRate, Converter={StaticResource boolToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <DockPanel>
+                            <TextBlock Text="Погано"/>
+                            <TextBlock HorizontalAlignment="Right" Text="Відмінно"/>
+                        </DockPanel>
+                        <Slider Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="10"
+                            Value="{Binding StoreRate}"
+                            TickFrequency="1"
+                            TickPlacement="Both"
+                            AutoToolTipPrecision="1"
+                            AutoToolTipPlacement="TopLeft"
+                            IsMoveToPointEnabled="True"
+                            />
+                    </Grid>
                     <TextBox Grid.Row="2" Grid.Column="3" TextWrapping="Wrap" Visibility="{Binding ShowStoreComment, Converter={StaticResource boolToVisibilityConverter}}"
                              Text="{Binding StoreComment}"/>
                 </Grid>
@@ -142,3 +174,5 @@
         </DockPanel>
     </StackPanel>
 </UserControl>
+
+    

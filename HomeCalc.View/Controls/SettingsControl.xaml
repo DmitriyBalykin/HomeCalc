@@ -35,7 +35,7 @@
                     <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubType, Mode=TwoWay}"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Показувати оцінку покупки" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubType, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseRate, Mode=TwoWay}"/>
                     
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Показувати коментар до покупки" />
                     <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ShowPurchaseComment, Mode=TwoWay}"/>

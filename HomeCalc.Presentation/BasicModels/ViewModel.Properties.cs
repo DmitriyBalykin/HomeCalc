@@ -1,4 +1,5 @@
 ﻿using HomeCalc.Core;
+using HomeCalc.Core.Events;
 using HomeCalc.Core.Helpers;
 using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
@@ -13,6 +14,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -39,6 +41,10 @@ namespace HomeCalc.Presentation.BasicModels
             LoadData();
         }
         #region Properties Core
+        protected void Settings_SettingsChanged(object sender, SettingChangedEventArgs e)
+        {
+            OnPropertyChanged(e.SettingName);
+        }
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -59,12 +65,11 @@ namespace HomeCalc.Presentation.BasicModels
             }
             if (PropertyChanged != null)
             {
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(memberExpression.Member.Name));
-
                 if (value != null)
                 {
-                    SettingsService.SaveSetting(property, value);
+                    Settings.SaveSetting(property, value);
                 }
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(memberExpression.Member.Name));
             }
         }
         #endregion
@@ -106,96 +111,112 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
 
-        private bool showPurchaseSubType;
         [SettingProperty]
         public bool ShowPurchaseSubType
         {
-            get { return showPurchaseSubType; }
+            get { return Settings.GetSetting("ShowPurchaseSubType").SettingBoolValue; }
             set
             {
-                if (value != showPurchaseSubType)
+                if (value != Settings.GetSetting("ShowPurchaseSubType").SettingBoolValue)
                 {
-                    showPurchaseSubType = value;
-                    OnPropertyChanged(() => ShowPurchaseSubType, showPurchaseSubType);
+                    OnPropertyChanged(() => ShowPurchaseSubType, value);
+                    OnPropertyChanged(() => ShowRatingPanel);
                 }
             }
         }
-        private bool showPurchaseComment;
         [SettingProperty]
         public bool ShowPurchaseComment
         {
-            get { return showPurchaseComment; }
+            get { return Settings.GetSetting("ShowPurchaseComment").SettingBoolValue; }
             set
             {
-                if (value != showPurchaseComment)
+                if (value != Settings.GetSetting("ShowPurchaseComment").SettingBoolValue)
                 {
-                    showPurchaseComment = value;
-                    OnPropertyChanged(() => ShowPurchaseComment, showPurchaseComment);
+                    OnPropertyChanged(() => ShowPurchaseComment, value);
+                    OnPropertyChanged(() => ShowRatingPanel);
                 }
             }
         }
-        private bool showPurchaseRate;
         [SettingProperty]
         public bool ShowPurchaseRate
         {
-            get { return showPurchaseRate; }
+            get { return Settings.GetSetting("ShowPurchaseRate").SettingBoolValue; }
             set
             {
-                if (value != showPurchaseRate)
+                if (value != Settings.GetSetting("ShowPurchaseRate").SettingBoolValue)
                 {
-                    showPurchaseRate = value;
-                    OnPropertyChanged(() => ShowPurchaseRate, showPurchaseRate);
+                    OnPropertyChanged(() => ShowPurchaseRate, value);
+                    OnPropertyChanged(() => ShowRatingPanel);
                 }
             }
         }
-        private bool showStoreName;
         [SettingProperty]
         public bool ShowStoreName
         {
-            get { return showStoreName; }
+            get { return Settings.GetSetting("ShowStoreName").SettingBoolValue; }
             set
             {
-                if (value != showStoreName)
+                if (value != Settings.GetSetting("ShowStoreName").SettingBoolValue)
                 {
-                    showStoreName = value;
-                    OnPropertyChanged(() => ShowStoreName, showStoreName);
+                    OnPropertyChanged(() => ShowStoreName, value);
+                    OnPropertyChanged(() => ShowRatingPanel);
+                }
+                if (!value)
+                {
+                    OnPropertyChanged(() => ShowStoreComment, false);
+                    OnPropertyChanged(() => ShowStoreRate, false);
                 }
             }
         }
-        private bool showStoreRate;
         [SettingProperty]
         public bool ShowStoreRate
         {
-            get { return showStoreRate && showStoreName; }
+            get { return Settings.GetSetting("ShowStoreRate").SettingBoolValue; }
             set
             {
-                if (value != showStoreRate)
+                if (value != Settings.GetSetting("ShowStoreRate").SettingBoolValue)
                 {
-                    showStoreRate = value;
-                    OnPropertyChanged(() => ShowStoreRate, showStoreRate);
+                    OnPropertyChanged(() => ShowStoreRate, value);
+                    OnPropertyChanged(() => ShowRatingPanel);
                 }
-                if (showStoreRate)
+                if (value)
                 {
-                    showStoreName = true;
+                    //Show storage name if storage rate selected
+                    OnPropertyChanged(() => ShowStoreName, value);
                 }
             }
         }
-        private bool showStoreComment;
         [SettingProperty]
         public bool ShowStoreComment
         {
-            get { return showStoreComment && showStoreName; }
+            get { return Settings.GetSetting("ShowStoreComment").SettingBoolValue; }
             set
             {
-                if (value != showStoreComment)
+                if (value != Settings.GetSetting("ShowStoreComment").SettingBoolValue)
                 {
-                    showStoreComment = value;
-                    OnPropertyChanged(() => ShowStoreComment, showStoreComment);
+                    OnPropertyChanged(() => ShowStoreComment, value);
+                    OnPropertyChanged(() => ShowRatingPanel);
+                    
                 }
-                if (showStoreComment)
+                if (value)
                 {
-                    showStoreName = true;
+                    //Show storage name if storage comment selected
+                    OnPropertyChanged(() => ShowStoreName, value);
                 }
+            }
+        }
+
+        public bool ShowRatingPanel
+        {
+            get
+            {
+                var result = Settings.GetSetting("ShowPurchaseSubType").SettingBoolValue ||
+                        Settings.GetSetting("ShowPurchaseRate").SettingBoolValue ||
+                        Settings.GetSetting("ShowPurchaseComment").SettingBoolValue ||
+                        Settings.GetSetting("ShowStoreRate").SettingBoolValue ||
+                        Settings.GetSetting("ShowStoreName").SettingBoolValue;
+
+                return result;
             }
         }
         #endregion

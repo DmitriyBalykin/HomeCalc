@@ -23,28 +23,28 @@ namespace HomeCalc.Presentation.ViewModels
         {
             AddCommand("SelectBackupPath", new DelegateCommand(SelectBackupPathCommandExecute));
 
-            InitiateSettings();
+            //InitiateSettings();
         }
 
-        private void InitiateSettings()
-        {
-            Task.Factory.StartNew(async () =>
-            {
-                var settings = await StoreService.LoadSettings();
-                var properties = this.GetType().GetProperties().Where(property => property.GetCustomAttributes(typeof(SettingProperty)).Count() > 0);
-                foreach (var property in properties)
-                {
-                    if (property.PropertyType == typeof(bool))
-                    {
-                        property.SetValue(this, SettingsService.GetBooleanValue(property.Name));
-                    }
-                    else
-                    {
-                        property.SetValue(this, SettingsService.GetStringValue(property.Name));
-                    }
-                }
-            });
-        }
+        //private void InitiateSettings()
+        //{
+        //    Task.Factory.StartNew(async () =>
+        //    {
+        //        var settings = await StoreService.LoadSettings();
+        //        var properties = this.GetType().GetProperties().Where(property => property.GetCustomAttributes(typeof(SettingProperty)).Count() > 0);
+        //        foreach (var property in properties)
+        //        {
+        //            if (property.PropertyType == typeof(bool))
+        //            {
+        //                property.SetValue(this, SettingsService.GetBooleanValue(property.Name));
+        //            }
+        //            else
+        //            {
+        //                property.SetValue(this, SettingsService.GetStringValue(property.Name));
+        //            }
+        //        }
+        //    });
+        //}
 
         private void SelectBackupPathCommandExecute(object obj)
         {
@@ -64,56 +64,49 @@ namespace HomeCalc.Presentation.ViewModels
         [SettingProperty]
         public bool AutoUpdateCheck
         {
-            get { return autoUpdateCheck; }
+            get { return Settings.GetSetting("AutoUpdateCheck").SettingBoolValue; }
             set
             {
-                if (value != autoUpdateCheck)
+                if (value != Settings.GetSetting("AutoUpdateCheck").SettingBoolValue)
                 {
-                    autoUpdateCheck = value;
-                    OnPropertyChanged(() => AutoUpdateCheck, autoUpdateCheck);
+                    OnPropertyChanged(() => AutoUpdateCheck, value);
                 }
             }
         }
-        private bool autoUpdate;
         [SettingProperty]
         public bool AutoUpdate
         {
-            get { return autoUpdate; }
+            get { return Settings.GetSetting("AutoUpdate").SettingBoolValue; }
             set
             {
-                if (value != autoUpdate)
+                if (value != Settings.GetSetting("AutoUpdate").SettingBoolValue)
                 {
-                    autoUpdate = value;
-                    OnPropertyChanged(() => AutoUpdate, autoUpdate);
+                    OnPropertyChanged(() => AutoUpdate, value);
                 }
             }
         }
-        private string backupPath;
         [SettingProperty]
         public string BackupPath
         {
-            get { return backupPath; }
+            get { return Settings.GetSetting("BackupPath").SettingStringValue; }
             set
             {
-                if (value != backupPath)
+                if (value != Settings.GetSetting("BackupPath").SettingStringValue)
                 {
-                    backupPath = value;
-                    OnPropertyChanged(() => BackupPath, backupPath);
+                    OnPropertyChanged(() => BackupPath, value);
                 }
             }
         }
         
-        private bool doDatabaseBackup;
         [SettingProperty]
         public bool DoDatabaseBackup
         {
-            get { return doDatabaseBackup; }
+            get { return Settings.GetSetting("DoDatabaseBackup").SettingBoolValue; }
             set
             {
-                if (value != doDatabaseBackup)
+                if (value != Settings.GetSetting("DoDatabaseBackup").SettingBoolValue)
                 {
-                    doDatabaseBackup = value;
-                    OnPropertyChanged(() => DoDatabaseBackup, doDatabaseBackup);
+                    OnPropertyChanged(() => DoDatabaseBackup, value);
                 }
             }
         }

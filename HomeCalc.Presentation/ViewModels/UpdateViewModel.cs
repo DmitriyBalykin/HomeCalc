@@ -23,7 +23,7 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("CheckUpdates", new DelegateCommand(CheckUpdatesCommandExecute));
             AddCommand("Update", new DelegateCommand(UpdateCommandExecute));
 
-            if (SettingsService.GetBooleanValue(SettingsService.AUTO_UPDATE_CHECK_KEY))
+            if (Settings.GetSetting(SettingsService.AUTO_UPDATE_CHECK_KEY).SettingBoolValue)
             {
                 RefreshUpdatesInformation();
             }

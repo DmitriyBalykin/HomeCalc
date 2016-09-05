@@ -81,20 +81,20 @@ namespace HomeCalc.Model.DbService
                     switch (db_version)
                     {
                         case 0:
-                            foreach (var table in DefaultDbContent.Tables[db_version].Keys)
+                            foreach (var table in DefaultDbContent.Tables[db_version + 1].Keys)
                             {
                                 if (!IsTableExists(table))
                                 {
-                                    command.CommandText = string.Format("create table {0} {1}", table, DefaultDbContent.Tables[db_version+1][table]);
+                                    command.CommandText = string.Format("create table if not exists {0} {1}", table, DefaultDbContent.Tables[db_version+1][table]);
                                     command.ExecuteNonQuery();
                                 }
                             }
-                            command.CommandText = "ALTER TABLE PURCHASEMODELS RENAME TO PURCHASE";
-                            command.ExecuteNonQuery();
-                            command.CommandText = "ALTER TABLE PURCHASETYPEMODELS RENAME TO PURCHASETYPE";
-                            command.ExecuteNonQuery();
-                            command.CommandText = "ALTER TABLE SETTINGMODELS RENAME TO SETTING";
-                            command.ExecuteNonQuery();
+                            //command.CommandText = "ALTER TABLE PURCHASEMODELS RENAME TO PURCHASE";
+                            //command.ExecuteNonQuery();
+                            //command.CommandText = "ALTER TABLE PURCHASETYPEMODELS RENAME TO PURCHASETYPE";
+                            //command.ExecuteNonQuery();
+                            //command.CommandText = "ALTER TABLE SETTINGMODELS RENAME TO SETTING";
+                            //command.ExecuteNonQuery();
                             command.CommandText = "PRAGMA user_version=1";
                             command.ExecuteNonQuery();
                             break;

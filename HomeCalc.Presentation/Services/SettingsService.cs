@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.LogService;
+﻿using HomeCalc.Core.Events;
+using HomeCalc.Core.LogService;
 using HomeCalc.Presentation.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Presentation.Services
 {
-    public class SettingsService
+    public class SettingsService : IDisposable
     {
         public const string AUTO_UPDATE_KEY = "AutoUpdate";
         public const string AUTO_UPDATE_CHECK_KEY = "AutoUpdateCheck";
@@ -22,6 +23,10 @@ namespace HomeCalc.Presentation.Services
         public const string SHOW_STORE_RATE_KEY = "ShowStoreRate";
         public const string SHOW_STORE_COMMENT = "ShowStoreComment";
 
+        private Dictionary<string, SettingsModel> HighLevelCache;
+
+        public event EventHandler<SettingChangedEventArgs> SettingsChanged;
+
         Logger logger;
         static SettingsService instance;
 
@@ -30,6 +35,8 @@ namespace HomeCalc.Presentation.Services
         {
             logger = LogService.GetLogger();
             storageService = StorageService.GetInstance();
+
+            HighLevelCache = storageService.LoadSettings().Result.ToDictionary(item => item.SettingName);
         }
 
         public static SettingsService GetInstance()
@@ -41,52 +48,73 @@ namespace HomeCalc.Presentation.Services
             return instance;
         }
 
-        public bool GetBooleanValue(string settingKey)
+        public SettingsModel GetSetting(string settingKey)
         {
-            var filtered = storageService.LoadSettings().Result
-                .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault();
+            //var filtered = storageService.LoadSettings().Result
+            //    .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
+            //    .FirstOrDefault();
 
-            return filtered == null ? false : filtered.SettingBoolValue;
+            //return filtered == null ? false : filtered.SettingBoolValue;
+            SettingsModel settingModel;
+            if (HighLevelCache.TryGetValue(settingKey, out settingModel))
+            {
+                return settingModel;
+            }
+            else
+            {
+                return new SettingsModel();
+            }
         }
 
-        public string GetStringValue(string settingKey)
-        {
-            var filtered = storageService.LoadSettings().Result
-                .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault();
+        //public string GetStringValue(string settingKey)
+        //{
+        //    //var filtered = storageService.LoadSettings().Result
+        //    //    .Where(setting => setting.SettingName.Equals(settingKey, StringComparison.InvariantCultureIgnoreCase))
+        //    //    .FirstOrDefault();
 
-            return filtered == null ? string.Empty : filtered.SettingStringValue;
-        }
+        //    //return filtered == null ? string.Empty : filtered.SettingStringValue;
+        //}
 
         public void SaveSetting<T>(Expression<Func<T>> setting, object value)
         {
             var expression = setting.Body as MemberExpression;
-            Task.Factory.StartNew(async () =>
+            if (expression != null)
             {
-                if (expression != null)
+                var settingModel = new SettingsModel();
+                settingModel.SettingName = expression.Member.Name;
+                if (typeof(T) == typeof(bool))
                 {
-                    string settingName = expression.Member.Name;
-                    var boolValue = value as bool?;
-                    if (boolValue.HasValue)
-                    {
-                        await storageService.SaveSettings(new SettingsModel
-                        {
-                            SettingName = settingName,
-                            SettingBoolValue = boolValue.Value
-                        }).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await storageService.SaveSettings(new SettingsModel
-                        {
-                            SettingName = settingName,
-                            SettingStringValue = value.ToString()
-                        }).ConfigureAwait(false);
-                    }
+                    settingModel.SettingBoolValue = (value as bool?) ?? false;
                 }
-            });
+                else if (typeof(T) == typeof(string))
+                {
+                    settingModel.SettingStringValue = value.ToString();
+                }
+                else
+                {
+                    logger.Error("Unsupported type of property");
+                    throw new Exception("Unsupported type of property");
+                }
 
+                HighLevelCache[settingModel.SettingName] = settingModel;
+
+                if (SettingsChanged != null)
+                {
+                    SettingsChanged(null, new SettingChangedEventArgs { SettingName = settingModel.SettingName });
+                }
+                Task.Factory.StartNew(async () =>
+                {
+                    await storageService.SaveSettings(settingModel).ConfigureAwait(false);
+                });
+            }
+        }
+
+        public void Dispose()
+        {
+            if (SettingsChanged != null)
+            {
+                SettingsChanged = null;
+            }
         }
     }
 }

@@ -22,6 +22,8 @@
                 <RowDefinition Height="40" />
                 <RowDefinition Height="40" />
                 <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
         </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
@@ -29,36 +31,38 @@
                 <ColumnDefinition Width="170" />
                 <ColumnDefinition Width="170" />
         </Grid.ColumnDefinitions>
-        <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="Шлях до встановленої версії" HorizontalAlignment="Left" Margin="10" />
-        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
-            Text="{Binding ExistingPath}"/>
-        <Button Grid.Row="1" Grid.Column="1"
-            Content="Обрати шлях"
-            Command="{Binding SelectPath}"/>
-        <Button Grid.Row="1" Grid.Column="2"
-            Content="Імпортувати дані"
-            Command="{Binding ImportData}"/>
-        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="3" />-->
-        <!--<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" />-->
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Керування типами товарів" HorizontalAlignment="Left" Margin="10"/>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Існуючий товар" HorizontalAlignment="Left" Margin="10"/>
+            
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Існуючий тип товару" HorizontalAlignment="Left" Margin="10"/>
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Новий тип товару" HorizontalAlignment="Left" Margin="10"/>
             
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Існуючий підтип товару" HorizontalAlignment="Left" Margin="10"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Новий підтип товару" HorizontalAlignment="Left" Margin="10"/>
+
         <ComboBox Grid.Row="1" Grid.Column="1"
                      ItemsSource="{Binding TypeSelectorItems}"
                      SelectedItem="{Binding PurchaseType}"/>
-            
+
+        <ComboBox Grid.Row="3" Grid.Column="1"
+                     ItemsSource="{Binding SubTypeSelectorItems}"
+                     SelectedItem="{Binding PurchaseSubType}"/>
+
         <Button Grid.Row="1" Grid.Column="2" Content="Перейменувати" Command="{Binding RenameType}"/>
         <Button Grid.Row="1" Grid.Column="3" Content="Видалити" Command="{Binding DeleteType}"/>
         <Button Grid.Row="2" Grid.Column="2" Content="Додати" Command="{Binding AddType}"/>
-        <!--<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" />-->
 
-        
+        <Button Grid.Row="3" Grid.Column="2" Content="Перейменувати" Command="{Binding RenameSubType}"/>
+        <Button Grid.Row="3" Grid.Column="3" Content="Видалити" Command="{Binding DeleteSubType}"/>
+        <Button Grid.Row="4" Grid.Column="2" Content="Додати" Command="{Binding AddSubType}"/>
+
         <TextBox Grid.Row="2" Grid.Column="1"
                  Text="{Binding NewPurchaseType, UpdateSourceTrigger=PropertyChanged}"
                  IsEnabled="{Binding NewPurchaseTypeEditable, UpdateSourceTrigger=PropertyChanged}"/>
-        <!--<Button Grid.Row="2" Grid.Column="2" Content="Додати" Command="{Binding AddType}"/>-->
+
+        <TextBox Grid.Row="4" Grid.Column="1"
+                 Text="{Binding NewPurchaseSubType, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding NewPurchaseSubTypeEditable, UpdateSourceTrigger=PropertyChanged}"/>
 
     </Grid>
         

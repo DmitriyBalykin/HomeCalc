@@ -415,13 +415,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        public bool ShowRatingPanel
-        {
-            get
-            {
-                return ShowPurchaseSubType || ShowPurchaseRate || ShowPurchaseComment || ShowStoreRate || ShowStoreName;
-            }
-        }
+        
 
         double purchaseRate;
         public double PurchaseRate

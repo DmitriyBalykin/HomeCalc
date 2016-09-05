@@ -72,7 +72,7 @@
                     <controls:SettingsControl/>
                 </TabItem>
                 <TabItem
-                    Header="Операції">
+                    Header="Керування товарами">
                     <controls:OperationsControl/>
                 </TabItem>
                 <TabItem

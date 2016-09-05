@@ -13,13 +13,15 @@ namespace HomeCalc.Presentation.BasicModels
     {
         protected Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
-
+        private static volatile int count = 0;
+        private readonly int id;
         protected StorageService StoreService;
         protected StatusService Status;
         protected UpdateService UpdateService;
-        protected SettingsService SettingsService;
+        protected SettingsService Settings;
         public ViewModel()
         {
+            id = ++count;
             InitializeServices();
             InitializeProperties();
         }
@@ -34,9 +36,9 @@ namespace HomeCalc.Presentation.BasicModels
             StoreService = StorageService.GetInstance();
             Status = StatusService.GetInstance();
             UpdateService = UpdateService.GetInstance();
-            SettingsService = SettingsService.GetInstance();
+            Settings = SettingsService.GetInstance();
+            Settings.SettingsChanged += Settings_SettingsChanged;
         }
-
         
         private IDictionary<string, ICommand> commandCache = new Dictionary<string, ICommand>();
         public void AddCommand(string name, ICommand command)
