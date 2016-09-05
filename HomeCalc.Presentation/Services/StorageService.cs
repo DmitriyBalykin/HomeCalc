@@ -20,6 +20,7 @@ namespace HomeCalc.Presentation.Models
         private List<Purchase> purchaseHistory;
 
         public event EventHandler TypesUpdated;
+        public event EventHandler SubTypesUpdated;
         public event EventHandler HistoryUpdated;
 
         private StatusService Status;
@@ -155,6 +156,38 @@ namespace HomeCalc.Presentation.Models
             if (result)
             {
                 TypeUpdated();
+            }
+            return result;
+        }
+
+        public async Task<bool> SavePurchaseSubType(PurchaseSubType purchaseSubType)
+        {
+            PurchaseSubTypesCache.SetNeedRefresh();
+            var result = await DBService.SavePurchaseSubType(SubTypeToModel(purchaseSubType)).ConfigureAwait(false);
+            if (result)
+            {
+                SubTypeUpdated();
+            }
+            return result;
+        }
+
+        public async Task<bool> RemovePurchaseSubType(PurchaseSubType pSubType)
+        {
+            var result = await DBService.DeletePurchaseSubType(SubTypeToModel(pSubType)).ConfigureAwait(false);
+            if (result)
+            {
+                SubTypeUpdated();
+            }
+            return result;
+        }
+
+        public async Task<bool> RenamePurchaseSubType(PurchaseSubType pSubType, string newPurchaseSubTypeName)
+        {
+            pSubType.Name = newPurchaseSubTypeName;
+            var result = await DBService.SavePurchaseSubType(SubTypeToModel(pSubType)).ConfigureAwait(false);
+            if (result)
+            {
+                SubTypeUpdated();
             }
             return result;
         }
@@ -302,6 +335,14 @@ namespace HomeCalc.Presentation.Models
             if (TypesUpdated != null)
             {
                 TypesUpdated.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private void SubTypeUpdated()
+        {
+            if (SubTypesUpdated != null)
+            {
+                SubTypesUpdated.Invoke(null, EventArgs.Empty);
             }
         }
 

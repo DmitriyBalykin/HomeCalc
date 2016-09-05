@@ -25,20 +25,34 @@ namespace HomeCalc.Presentation.BasicModels
         private void InitializeProperties()
         {
             StoreService.TypesUpdated += StoreService_TypesUpdated;
+            StoreService.SubTypesUpdated += StoreService_SubTypesUpdated;
 
-            LoadData().ContinueWith(task => Initialize());
+            LoadTypes()
+                .ContinueWith(task => LoadSubTypes())
+                .ContinueWith(task => Initialize());
         }
-        private Task LoadData()
+        
+        private Task LoadTypes()
         {
             return Task.Factory.StartNew(async () => 
             {
                 TypeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
+            });
+        }
+        private Task LoadSubTypes()
+        {
+            return Task.Factory.StartNew(async () =>
+            {
                 PurchaseSubTypes = new ObservableCollection<PurchaseSubType>(await StoreService.LoadPurchaseSubTypeList().ConfigureAwait(false));
             });
         }
         void StoreService_TypesUpdated(object sender, EventArgs e)
         {
-            LoadData();
+            LoadTypes();
+        }
+        void StoreService_SubTypesUpdated(object sender, EventArgs e)
+        {
+            LoadSubTypes();
         }
         #region Properties Core
         protected void Settings_SettingsChanged(object sender, SettingChangedEventArgs e)

@@ -24,6 +24,9 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("AddType", new DelegateCommand(AddTypeCommandExecute, CanAddType));
             AddCommand("RenameType", new DelegateCommand(RenameTypeCommandExecute, CanRenameType));
             AddCommand("DeleteType", new DelegateCommand(DeleteTypeCommandExecute, CanDeleteType));
+            AddCommand("AddSubType", new DelegateCommand(AddSubTypeCommandExecute, CanAddSubType));
+            AddCommand("RenameSubType", new DelegateCommand(RenameSubTypeCommandExecute, CanRenameSubType));
+            AddCommand("DeleteSubType", new DelegateCommand(DeleteSubTypeCommandExecute, CanDeleteSubType));
 
             NewPurchaseTypeEditable = true;
 
@@ -99,6 +102,79 @@ namespace HomeCalc.Presentation.ViewModels
                 }
                 NewPurchaseType = string.Empty;
                 NewPurchaseTypeEditable = true;
+            });
+        }
+
+        private bool CanAddSubType(object obj)
+        {
+            return !string.IsNullOrWhiteSpace(NewPurchaseSubType);
+        }
+
+        private void AddSubTypeCommandExecute(object obj)
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                if (await StoreService.SavePurchaseSubType(new PurchaseSubType { Name = NewPurchaseSubType }))
+                {
+                    logger.Info("Purchase sub type {0} saved", NewPurchaseSubType);
+                    Status.Post("Підтип покупки \"{0}\" збережено", NewPurchaseSubType);
+                }
+                else
+                {
+                    logger.Warn("Purchase Sub type {0} not saved", NewPurchaseSubType);
+                    Status.Post("Помилка: підтип покупки \"{0}\" не збережено", NewPurchaseSubType);
+                }
+            });
+
+        }
+
+        private bool CanRenameSubType(object obj)
+        {
+            return PurchaseSubType != null && !string.IsNullOrWhiteSpace(NewPurchaseSubType);
+        }
+
+        private void RenameSubTypeCommandExecute(object obj)
+        {
+            NewPurchaseSubTypeEditable = false;
+            Task.Factory.StartNew(async () =>
+            {
+                if (await StoreService.RenamePurchaseSubType(PurchaseSubType, NewPurchaseSubType))
+                {
+                    logger.Info("Purchase Sub type {0} renamed", NewPurchaseSubType);
+                    Status.Post("Підтип покупки \"{0}\" перейменовано", NewPurchaseSubType);
+                }
+                else
+                {
+                    logger.Warn("Purchase Sub type {0} not renamed", NewPurchaseSubType);
+                    Status.Post("Помилка: підтип покупки \"{0}\" не перейменовано", NewPurchaseSubType);
+                }
+                NewPurchaseSubType = string.Empty;
+                NewPurchaseSubTypeEditable = true;
+            });
+        }
+
+        private bool CanDeleteSubType(object obj)
+        {
+            return PurchaseSubType != null;
+        }
+
+        private void DeleteSubTypeCommandExecute(object obj)
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                var typeToDeleteName = PurchaseSubType.Name;
+                if (await StoreService.RemovePurchaseSubType(PurchaseSubType))
+                {
+                    logger.Info("Purchase Sub type {0} removed", typeToDeleteName);
+                    Status.Post("Підтип покупки \"{0}\" видалено", typeToDeleteName);
+                }
+                else
+                {
+                    logger.Warn("Purchase Sub type {0} not removed", typeToDeleteName);
+                    Status.Post("Помилка: підтип покупки \"{0}\" не видалено", typeToDeleteName);
+                }
+                NewPurchaseSubType = string.Empty;
+                NewPurchaseSubTypeEditable = true;
             });
         }
 
@@ -214,6 +290,66 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     purchaseType = type;
                     OnPropertyChanged(() => PurchaseType);
+                }
+            }
+        }
+
+        private string newPurchaseSubType;
+        public string NewPurchaseSubType
+        {
+            get
+            {
+                return newPurchaseSubType;
+            }
+            set
+            {
+                if (newPurchaseSubType != value)
+                {
+                    newPurchaseSubType = value;
+                    OnPropertyChanged(() => NewPurchaseSubType);
+                }
+            }
+        }
+
+        private bool newPurchaseSubTypeEditable;
+        public bool NewPurchaseSubTypeEditable
+        {
+            get
+            {
+                return newPurchaseSubTypeEditable;
+            }
+            set
+            {
+                if (newPurchaseSubTypeEditable != value)
+                {
+                    newPurchaseSubTypeEditable = value;
+                    OnPropertyChanged(() => NewPurchaseSubTypeEditable);
+                }
+            }
+        }
+
+        private PurchaseSubType purchaseSubType;
+        public PurchaseSubType PurchaseSubType
+        {
+            get
+            {
+                return purchaseSubType;
+            }
+            set
+            {
+                PurchaseSubType subType;
+                if (value != null)
+                {
+                    subType = PurchaseSubTypes.Where(e => e.Name == value.Name).FirstOrDefault();
+                }
+                else
+                {
+                    subType = PurchaseSubTypes.FirstOrDefault();
+                }
+                if (subType != purchaseSubType)
+                {
+                    purchaseSubType = subType;
+                    OnPropertyChanged(() => PurchaseSubType);
                 }
             }
         }
