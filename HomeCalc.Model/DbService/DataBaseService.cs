@@ -89,13 +89,14 @@ namespace HomeCalc.Model.DbService
                                     command.ExecuteNonQuery();
                                 }
                             }
-                            //command.CommandText = "ALTER TABLE PURCHASEMODELS RENAME TO PURCHASE";
-                            //command.ExecuteNonQuery();
-                            //command.CommandText = "ALTER TABLE PURCHASETYPEMODELS RENAME TO PURCHASETYPE";
-                            //command.ExecuteNonQuery();
-                            //command.CommandText = "ALTER TABLE SETTINGMODELS RENAME TO SETTING";
-                            //command.ExecuteNonQuery();
-                            command.CommandText = "PRAGMA user_version=1";
+
+                            command.CommandText = 
+                                "ALTER TABLE PURCHASETYPEMODELS RENAME TO PURCHASETYPE;"+
+                                "ALTER TABLE SETTINGMODELS RENAME TO SETTING;"+
+                                "INSERT INTO PURCHASE (PurchaseId, Name, TypeId) SELECT DISTINCT PurchaseId,Name, TypeId FROM PURCHASEMODELS;"+
+                                "INSERT INTO PURCHASEITEM (PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber) SELECT p.PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber FROM PURCHASEMODELS pm JOIN PURCHASE p on pm.Name=p.name" +
+                                "PRAGMA user_version=1;";
+                            //add tables drop
                             command.ExecuteNonQuery();
                             break;
                         default:

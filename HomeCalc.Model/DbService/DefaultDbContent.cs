@@ -17,21 +17,15 @@ namespace HomeCalc.Model.DbService
                 return new Dictionary<int, Dictionary<string, string>>{
                     {0, new Dictionary<string, string>{
                         {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                        {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER)"},
                         {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
                     }},
                     {1, new Dictionary<string, string>{
                         {"PURCHASETYPE" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
                         {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
                         {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASE" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
-                        {"SETTING" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
-                    }},
-                    {2, new Dictionary<string, string>{
-                        {"PURCHASETYPE" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASE" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER, SubTypeId INTEGER, StoreId INTEGER, IsMonthly BOOLEAN, FOREIGN KEY(TypeId) REFERENCES PURCHASETYPEMODELS(TypeId) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(SubTypeId) REFERENCES PURCHASESUBTYPE(Id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(StoreId) REFERENCES STORE(Id) ON DELETE CASCADE ON UPDATE CASCADE)"},
+                        {"PURCHASE" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, TypeId INTEGER, SubTypeId INTEGER, IsMonthly BOOLEAN)"},
+                        {"PURCHASEITEM" , "(PurchaseItemId INTEGER PRIMARY KEY AUTOINCREMENT, PurchaseId INTEGER, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, StoreId INTEGER)"},
                         {"SETTING" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
                     }}
                 
