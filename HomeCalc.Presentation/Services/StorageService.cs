@@ -120,7 +120,7 @@ namespace HomeCalc.Presentation.Models
         }
         public async Task<bool> SavePurchaseBulk(List<Purchase> purchases)
         {
-            var result = await DBService.SavePurchaseBulk(purchases.Select(p => PurchaseToModel(p))).ConfigureAwait(false);
+            var result = await DBService.SavePurchaseItemBulk(purchases.Select(p => PurchaseToModel(p))).ConfigureAwait(false);
             if (result)
             {
                 purchaseHistory.AddRange(purchases);
@@ -300,12 +300,25 @@ namespace HomeCalc.Presentation.Models
             return new PurchaseModel
             {
                 PurchaseId = purchase.Id,
+                Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
+                TypeId = purchase.Type.TypeId,
+                SubTypeId = purchase.SubType.Id
+            };
+        }
+        private PurchaseItemModel PurchaseToItemModel(Purchase purchase)
+        {
+            return new PurchaseItemModel
+            {
+                PurchaseId = purchase.Id,
                 Timestamp = purchase.Date.Ticks,
                 Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
                 ItemsNumber = purchase.ItemsNumber,
                 ItemCost = purchase.ItemCost,
                 TotalCost = purchase.TotalCost,
-                TypeId = purchase.Type.TypeId
+                TypeId = purchase.Type.TypeId,
+                SubTypeId = purchase.SubType.Id,
+                IsMonthly = purchase.MonthlyPurchase,
+
             };
         }
         private SettingsStorageModel SettingToStorage(SettingsModel settings)

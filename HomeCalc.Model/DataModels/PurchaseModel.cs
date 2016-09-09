@@ -14,10 +14,8 @@ namespace HomeCalc.Model.DataModels
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public Int64 PurchaseId { get; set; }
         public string Name { get; set; }
-        public Int64 Timestamp { get; set; }
-        public double TotalCost { get; set; }
-        public double ItemCost { get; set; }
-        public double ItemsNumber { get; set; }
-        public Int64 TypeId { get; set; }
+        public int TypeId { get; set; }
+        public int SubTypeId { get; set; }
+        public bool IsMonthly { get; set; }
     }
 }

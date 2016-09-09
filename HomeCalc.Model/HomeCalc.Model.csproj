@@ -66,6 +66,7 @@
     <Compile Include="..\HomeCalc.View\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataModels\PurchaseItemModel.cs" />
     <Compile Include="DataModels\PurchaseSubTypeModel.cs" />
     <Compile Include="DataModels\SearchRequest.cs" />
     <Compile Include="DataModels\SettingsModel.cs" />

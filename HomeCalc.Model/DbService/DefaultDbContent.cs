@@ -10,29 +10,6 @@ namespace HomeCalc.Model.DbService
     public static class DefaultDbContent
     {
 
-        public static Dictionary<int, Dictionary<string, string>> Tables
-        {
-            get
-            {
-                return new Dictionary<int, Dictionary<string, string>>{
-                    {0, new Dictionary<string, string>{
-                        {"PURCHASETYPEMODELS" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASEMODELS" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, TypeId INTEGER)"},
-                        {"SETTINGMODELS" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
-                    }},
-                    {1, new Dictionary<string, string>{
-                        {"PURCHASETYPE" , "(TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASESUBTYPE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"STORE" , "(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT)"},
-                        {"PURCHASE" , "(PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, TypeId INTEGER, SubTypeId INTEGER, IsMonthly BOOLEAN)"},
-                        {"PURCHASEITEM" , "(PurchaseItemId INTEGER PRIMARY KEY AUTOINCREMENT, PurchaseId INTEGER, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, StoreId INTEGER)"},
-                        {"SETTING" , "(SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT)"}    
-                    }}
-                
-            };
-            }
-        }
-
         public static List<DbItem<PurchaseTypeModel>> Values
         {
             get

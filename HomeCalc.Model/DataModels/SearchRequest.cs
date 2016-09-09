@@ -12,6 +12,8 @@ namespace HomeCalc.Presentation.Models
 
         public int TypeId { get; set; }
 
+        public int SubTypeId { get; set; }
+
         public double CostStart { get; set; }
 
         public double CostEnd { get; set; }
@@ -20,6 +22,8 @@ namespace HomeCalc.Presentation.Models
 
         public DateTime DateEnd { get; set; }
 
+        public bool IsMonthly { get; set; }
+
         public bool SearchByName { get; set; }
 
         public bool SearchByType { get; set; }
@@ -27,6 +31,10 @@ namespace HomeCalc.Presentation.Models
         public bool SearchByDate { get; set; }
 
         public bool SearchByCost { get; set; }
+
+        public bool SearchByMonthly { get; set; }
+
+        public bool SearchBySubType { get; set; }
 
         public enum Requests
         {

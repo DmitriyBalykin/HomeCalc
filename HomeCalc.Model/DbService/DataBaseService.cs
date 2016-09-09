@@ -81,22 +81,34 @@ namespace HomeCalc.Model.DbService
                     switch (db_version)
                     {
                         case 0:
-                            foreach (var table in DefaultDbContent.Tables[db_version + 1].Keys)
+                            //create common tables
+                            command.CommandText =
+                                    "create table if not exists PURCHASESUBTYPE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);" +
+                                    "create table if not exists STORE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);" +
+                                    "create table if not exists PURCHASE (PurchaseId INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, TypeId INTEGER, SubTypeId INTEGER, IsMonthly BOOLEAN);" +
+                                    "create table if not exists PURCHASEITEM (PurchaseItemId INTEGER PRIMARY KEY AUTOINCREMENT, PurchaseId INTEGER, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, StoreId INTEGER);";
+                                command.ExecuteNonQuery();
+                            if (IsTableExists("PURCHASETYPEMODELS") && IsTableExists("SETTINGMODELS") && IsTableExists("PURCHASEMODELS"))
                             {
-                                if (!IsTableExists(table))
-                                {
-                                    command.CommandText = string.Format("create table if not exists {0} {1}", table, DefaultDbContent.Tables[db_version+1][table]);
+                                //alter existed tables
+                                command.CommandText =
+                                    "ALTER TABLE PURCHASETYPEMODELS RENAME TO PURCHASETYPE;" +
+                                    "ALTER TABLE SETTINGMODELS RENAME TO SETTING;"+
+                                    "INSERT INTO PURCHASE (PurchaseId, Name, TypeId) SELECT DISTINCT PurchaseId,Name, TypeId FROM PURCHASEMODELS;"+
+                                    "INSERT INTO PURCHASEITEM (PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber) SELECT p.PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber FROM PURCHASEMODELS pm JOIN PURCHASE p on pm.Name=p.name;"+
+                                    "DROP TABLE PURCHASEMODELS";
                                     command.ExecuteNonQuery();
-                                }
+                            }
+                            else
+                            {
+                                //else create new tables
+                                command.CommandText =
+                                    "create table if not exists PURCHASETYPE (TypeId INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);"+
+                                    "create table if not exists SETTING (SettingId INTEGER PRIMARY KEY AUTOINCREMENT, ProfileId INTEGER, SettingName TEXT, SettingValue TEXT);";
+                                command.ExecuteNonQuery();
                             }
 
-                            command.CommandText = 
-                                "ALTER TABLE PURCHASETYPEMODELS RENAME TO PURCHASETYPE;"+
-                                "ALTER TABLE SETTINGMODELS RENAME TO SETTING;"+
-                                "INSERT INTO PURCHASE (PurchaseId, Name, TypeId) SELECT DISTINCT PurchaseId,Name, TypeId FROM PURCHASEMODELS;"+
-                                "INSERT INTO PURCHASEITEM (PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber) SELECT p.PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber FROM PURCHASEMODELS pm JOIN PURCHASE p on pm.Name=p.name" +
-                                "PRAGMA user_version=1;";
-                            //add tables drop
+                            command.CommandText = "PRAGMA user_version=1;";
                             command.ExecuteNonQuery();
                             break;
                         default:
@@ -205,25 +217,26 @@ namespace HomeCalc.Model.DbService
 
             return settings;
         }
-        public async Task<bool> SavePurchase(PurchaseModel purchase, StorageConnection connection = null)
+        public async Task<bool> SavePurchaseItem(PurchaseItemModel purchaseItem)
         {
             bool result = false;
             try
             {
-                using (var db = connection ?? dbManager.GetConnection())
+                using (var db = dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    if (purchase.PurchaseId == 0)
+                    if (purchaseItem.PurchaseItemId == 0)
                     {
+                        a store name, rating etc??
                         command.CommandText = string.Format(
-                        "INSERT INTO PURCHASE(Name, Timestamp, TotalCost, ItemCost, ItemsNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId);
+                        "INSERT INTO PURCHASEITEM(PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber, StoreId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
+                        purchaseItem.PurchaseId, purchaseItem.Timestamp, purchaseItem.TotalCost.ToString(formatCulture), purchaseItem.ItemCost.ToString(formatCulture), purchaseItem.ItemsNumber.ToString(formatCulture), purchaseItem.StoreId);
                     }
                     else
                     {
                         command.CommandText = string.Format(
-                        "UPDATE PURCHASE SET Name = '{0}', Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, TypeId = {5} WHERE PurchaseId = {6}",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId, purchase.PurchaseId);
+                        "UPDATE PURCHASE SET PurchaseId = '{0}', Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, StoreId = {5} WHERE PurchaseItemId = {6}",
+                        purchaseItem.PurchaseId, purchaseItem.Timestamp, purchaseItem.TotalCost.ToString(formatCulture), purchaseItem.ItemCost.ToString(formatCulture), purchaseItem.ItemsNumber.ToString(formatCulture), purchaseItem.StoreId, purchaseItem.PurchaseItemId);
                     }
 
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -233,11 +246,43 @@ namespace HomeCalc.Model.DbService
             catch (Exception ex)
             {
                 result = false;
-                logger.Error("Exception during execution method \"AddPurchase\": {0}", ex.Message);
+                logger.Error("Exception during execution method \"SavePurchaseItem\": {0}", ex.Message);
             }
             return result;
         }
-        public async Task<bool> SavePurchaseBulk(IEnumerable<PurchaseModel> purchases, StorageConnection connection = null)
+        public async Task<bool> SavePurchase(PurchaseModel purchase)
+        {
+            bool result = false;
+            try
+            {
+                using (var db = dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    if (purchase.PurchaseId == 0)
+                    {
+                        command.CommandText = string.Format(
+                        "INSERT INTO PURCHASE(Name, TypeId, SubTypeId, IsMonthly) VALUES ('{0}', {1}, {2}, {3})",
+                        purchase.Name, purchase.TypeId, purchase.SubTypeId, purchase.IsMonthly);
+                    }
+                    else
+                    {
+                        command.CommandText = string.Format(
+                        "UPDATE PURCHASE SET Name = '{0}', TypeId = {1}, SubTypeId = {2}, IsMonthly = {3} WHERE PurchaseId = {4}",
+                        purchase.Name, purchase.TypeId, purchase.SubTypeId, purchase.IsMonthly, purchase.PurchaseId);
+                    }
+
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error("Exception during execution method \"SavePurchase\": {0}", ex.Message);
+            }
+            return result;
+        }
+        public async Task<bool> SavePurchaseItemBulk(IEnumerable<PurchaseItemModel> purchases, StorageConnection connection = null)
         {
             bool result = false;
             try
@@ -249,8 +294,8 @@ namespace HomeCalc.Model.DbService
                     foreach (var purchase in purchases)
                     {
                         command.CommandText = string.Format(
-                        "INSERT INTO PURCHASE(Name, Timestamp, TotalCost, ItemCost, ItemNumber, TypeId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
-                        purchase.Name, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.TypeId);
+                        "INSERT INTO PURCHASE(PurchaseId, Timestamp, TotalCost, ItemCost, ItemNumber, StoreId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
+                        purchase.PurchaseId, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.StoreId);
 
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
@@ -260,7 +305,7 @@ namespace HomeCalc.Model.DbService
             catch (Exception ex)
             {
                 result = false;
-                logger.Error("Exception during execution method \"SavePurchaseBulk\": {0}", ex.Message);
+                logger.Error("Exception during execution method \"SavePurchaseItemBulk\": {0}", ex.Message);
             }
             return result;
         }
@@ -320,6 +365,36 @@ namespace HomeCalc.Model.DbService
             }
             return result;
         }
+        public async Task<PurchaseItemModel> LoadPurchaseItem(int id)
+        {
+            PurchaseItemModel purchaseItem = null;
+            try
+            {
+                using (var db = dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT * FROM PURCHASEITEM WHERE PurchaseItemId = {0}", id);
+                    var dbReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    if (dbReader.HasRows && dbReader.Read())
+                    {
+                        purchaseItem = new PurchaseItemModel
+                        {
+                            PurchaseId = dbReader.GetInt64(0),
+                            Timestamp = dbReader.GetInt64(1),
+                            TotalCost = dbReader.GetDouble(2),
+                            ItemCost = dbReader.GetDouble(3),
+                            ItemsNumber = dbReader.GetDouble(4),
+                            StoreId = dbReader.GetInt32(5)
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadPurchaseItem\": {0}", ex.Message);
+            }
+            return purchaseItem;
+        }
         public async Task<PurchaseModel> LoadPurchase(int id, StorageConnection connection = null)
         {
             PurchaseModel purchase = null;
@@ -336,11 +411,9 @@ namespace HomeCalc.Model.DbService
                         {
                             PurchaseId = dbReader.GetInt64(0),
                             Name = dbReader.GetString(1),
-                            Timestamp = dbReader.GetInt64(2),
-                            TotalCost = dbReader.GetDouble(3),
-                            ItemCost = dbReader.GetDouble(4),
-                            ItemsNumber = dbReader.GetDouble(5),
-                            TypeId = dbReader.GetInt64(6)
+                            TypeId = dbReader.GetInt32(2),
+                            SubTypeId =dbReader.GetInt32(3),
+                            IsMonthly = dbReader.GetBoolean(4)
                         };
                     }
                 }
@@ -351,7 +424,7 @@ namespace HomeCalc.Model.DbService
             }
             return purchase;
         }
-        public async Task<List<PurchaseModel>> LoadPurchaseList(SearchRequestModel filter, StorageConnection connection = null)
+        public async Task<List<PurchaseModel>> LoadPurchaseList()
         {
             var list = new List<PurchaseModel>();
 
@@ -359,33 +432,10 @@ namespace HomeCalc.Model.DbService
             {
                 logger.Debug("DatabaseService.LoadPurchaseList: Loading purchase list");
 
-                using (var db = connection ?? dbManager.GetConnection())
+                using (var db = dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    string queue = "SELECT * FROM PURCHASE WHERE";
-                    if (filter.SearchByName)
-                    {
-                        queue = string.Format("{0} Name LIKE '%{1}%' ", queue, filter.Name.Trim(' '));
-                    }
-                    if (filter.SearchByType)
-                    {
-                        queue = string.Format("{0} TypeId = {1} ", queue, filter.TypeId);
-                    }
-                    if (filter.SearchByDate)
-                    {
-                        queue = string.Format("{0} Timestamp BETWEEN {1} AND {2} ", queue, filter.DateStart.Ticks, filter.DateEnd.Ticks);
-                    }
-                    if (filter.SearchByCost)
-                    {
-                        queue = string.Format("{0} TotalCost BETWEEN {1} AND {2} ", queue, filter.CostStart, filter.CostEnd);
-                    }
-
-                    command.CommandText = queue
-                        .TrimEnd(" WHERE")
-                        .TrimEnd(' ')
-                        .Replace("  ", " AND ");
-
-                    logger.Debug("DatabaseService.LoadPurchaseList: queue: {0}", command.CommandText);
+                    command.CommandText = "SELECT * FROM PURCHASE";
 
                     var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     
@@ -395,11 +445,9 @@ namespace HomeCalc.Model.DbService
                         {
                             PurchaseId = dataReader.GetInt64(0),
                             Name = dataReader.GetString(1),
-                            Timestamp = dataReader.GetInt64(2),
-                            TotalCost = dataReader.GetDouble(3),
-                            ItemCost = dataReader.GetDouble(4),
-                            ItemsNumber = dataReader.GetDouble(5),
-                            TypeId = dataReader.GetInt64(6)
+                            TypeId = dataReader.GetInt32(2),
+                            SubTypeId = dataReader.GetInt32(3),
+                            IsMonthly = dataReader.GetBoolean(4)
                         });
                     }
 
@@ -412,10 +460,83 @@ namespace HomeCalc.Model.DbService
             }
             return list;
         }
-        public async Task<List<PurchaseModel>> LoadCompletePurchaseList(StorageConnection connection = null)
+        public async Task<List<PurchaseItemModel>> LoadPurchaseItemList(SearchRequestModel filter)
         {
-            logger.Debug("DatabaseService: Loading complete purchase list");
-            return await LoadPurchaseList(new SearchRequestModel(), connection);
+            var list = new List<PurchaseItemModel>();
+
+            try
+            {
+                logger.Debug("DatabaseService.LoadPurchaseItemList: Loading purchase items list");
+
+                using (var db = dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    string queue = "SELECT P.PurchaseId, Name, Timestamp, TotalCost, ItemCost, ItemsNumber, TypeId, SubTypeId, StoreId, IsMonthly FROM PURCHASEITEM PI JOIN PURCHASE P ON PI.PurchaseId=P.PurchaseId WHERE";
+                    a store name, rating etc??
+                    if (filter.SearchByName)
+                    {
+                        queue = string.Format("{0} Name LIKE '%{1}%' ", queue, filter.Name.Trim(' '));
+                    }
+                    if (filter.SearchByType)
+                    {
+                        queue = string.Format("{0} TypeId = {1} ", queue, filter.TypeId);
+                    }
+                    if (filter.SearchBySubType)
+                    {
+                        queue = string.Format("{0} SubTypeId = {1} ", queue, filter.TypeId);
+                    }
+                    if (filter.SearchByDate)
+                    {
+                        queue = string.Format("{0} Timestamp BETWEEN {1} AND {2} ", queue, filter.DateStart.Ticks, filter.DateEnd.Ticks);
+                    }
+                    if (filter.SearchByCost)
+                    {
+                        queue = string.Format("{0} TotalCost BETWEEN {1} AND {2} ", queue, filter.CostStart, filter.CostEnd);
+                    }
+                    if (filter.SearchByMonthly)
+                    {
+                        queue = string.Format("{0} IsMonthly = {1} ", queue, filter.IsMonthly);
+                    }
+
+                    command.CommandText = queue
+                        .TrimEnd(" WHERE")
+                        .TrimEnd(' ')
+                        .Replace("  ", " AND ");
+
+                    logger.Debug("DatabaseService.LoadPurchaseItemList: queue: {0}", command.CommandText);
+
+                    var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+                    while (dataReader.Read())
+                    {
+                        list.Add(new PurchaseItemModel
+                        {
+                            PurchaseId = dataReader.GetInt64(0),
+                            Name = dataReader.GetString(1),
+                            Timestamp = dataReader.GetInt64(2),
+                            TotalCost = dataReader.GetDouble(3),
+                            ItemCost = dataReader.GetDouble(4),
+                            ItemsNumber = dataReader.GetDouble(5),
+                            TypeId = dataReader.GetInt32(6),
+                            SubTypeId = dataReader.GetInt32(7),
+                            StoreId = dataReader.GetInt32(8),
+                            IsMonthly = dataReader.GetBoolean(9)
+                        });
+                    }
+
+                    logger.Debug("DatabaseService.LoadPurchaseList: data fetched succesfully");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadPurchaseList\": {0}", ex.Message);
+            }
+            return list;
+        }
+        public async Task<List<PurchaseItemModel>> LoadCompletePurchaseItemList()
+        {
+            logger.Debug("DatabaseService: Loading complete purchase items list");
+            return await LoadPurchaseItemList(new SearchRequestModel());
         }
         public async Task<IEnumerable<PurchaseTypeModel>> LoadPurchaseTypeList(StorageConnection connection = null)
         {
@@ -490,6 +611,27 @@ namespace HomeCalc.Model.DbService
                 logger.Error("Exception during execution method \"RemovePurchase\": {0}", ex.Message);
             }
             
+            return result;
+        }
+        public async Task<bool> DeletePurchaseItem(long purchaseItemId)
+        {
+            bool result = false;
+            try
+            {
+                using (var db = dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    command.CommandText = string.Format("DELETE FROM PURCHASEITEM WHERE PurchaseItemId = {0}", purchaseItemId);
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error("Exception during execution method \"DeletePurchaseItem\": {0}", ex.Message);
+            }
+
             return result;
         }
 

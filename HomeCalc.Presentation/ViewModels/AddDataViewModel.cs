@@ -29,6 +29,7 @@ namespace HomeCalc.Presentation.ViewModels
             StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
             Status.Post("Все готово для роботи!");
+
         }
 
         protected override void Initialize()

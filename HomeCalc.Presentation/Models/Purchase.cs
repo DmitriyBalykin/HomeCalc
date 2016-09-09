@@ -23,6 +23,13 @@ namespace HomeCalc.Presentation.Models
             ItemsNumber = purchase.ItemsNumber;
             TotalCost = purchase.TotalCost;
             Type = purchase.Type;
+            SubType = purchase.SubType;
+            MonthlyPurchase = purchase.MonthlyPurchase;
+            PurchaseRate = purchase.PurchaseRate;
+            PurchaseComment = purchase.PurchaseComment;
+            StoreName = purchase.StoreName;
+            StoreRate = purchase.StoreRate;
+            StoreComment = purchase.StoreComment;
         }
         public int Id { get; set; }
 
@@ -148,6 +155,91 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
+        private string storeName;
+        public string StoreName
+        {
+            get
+            {
+                return storeName;
+            }
+            set
+            {
+                if (value != storeName)
+                {
+                    storeName = value;
+                    PublishChange("StoreName");
+                }
+            }
+        }
+
+        private string storeComment;
+        public string StoreComment
+        {
+            get
+            {
+                return storeComment;
+            }
+            set
+            {
+                if (value != storeComment)
+                {
+                    storeComment = value;
+                    PublishChange("StoreComment");
+                }
+            }
+        }
+
+        private int storeRate;
+        public int StoreRate
+        {
+            get
+            {
+                return storeRate;
+            }
+            set
+            {
+                if (value != storeRate)
+                {
+                    storeRate = value;
+                    PublishChange("StoreRate");
+                }
+            }
+        }
+
+        private string purchaseComment;
+        public string PurchaseComment
+        {
+            get
+            {
+                return purchaseComment;
+            }
+            set
+            {
+                if (value != purchaseComment)
+                {
+                    purchaseComment = value;
+                    PublishChange("PurchaseComment");
+                }
+            }
+        }
+
+        private int purchaseRate;
+        public int PurchaseRate
+        {
+            get
+            {
+                return purchaseRate;
+            }
+            set
+            {
+                if (value != purchaseRate)
+                {
+                    purchaseRate = value;
+                    PublishChange("PurchaseRate");
+                }
+            }
+        }
+
         private bool monthlyPurchase;
         public bool MonthlyPurchase
         {
@@ -168,6 +260,28 @@ namespace HomeCalc.Presentation.Models
         public override bool Equals(object obj)
         {
             return (obj is Purchase) && ((Purchase)obj).Id == this.Id;
+        }
+        public bool DeepEquals(object obj)
+        {
+            var p = obj as Purchase;
+
+            return p != null && 
+                (
+                p.Date == Date &&
+                p.Id == Id &&
+                p.ItemCost == ItemCost &&
+                p.ItemsNumber == ItemsNumber &&
+                p.MonthlyPurchase == MonthlyPurchase &&
+                p.Name == Name &&
+                p.PurchaseComment == PurchaseComment &&
+                p.PurchaseRate == PurchaseRate &&
+                p.StoreComment == StoreComment &&
+                p.StoreName == StoreName &&
+                p.StoreRate == StoreRate &&
+                p.SubType.Id == SubType.Id &&
+                p.TotalCost == TotalCost &&
+                p.Type.TypeId == Type.TypeId
+                );
         }
         public override int GetHashCode()
         {
