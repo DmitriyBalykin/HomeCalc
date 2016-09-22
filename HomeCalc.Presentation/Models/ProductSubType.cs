@@ -5,9 +5,10 @@ using System.Text;
 
 namespace HomeCalc.Presentation.Models
 {
-    public class PurchaseSubType
+    public class ProductSubType
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
+        public long TypeId { get; set; }
         public string Name { get; set; }
 
         public override string ToString()

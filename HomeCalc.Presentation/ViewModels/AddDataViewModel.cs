@@ -36,9 +36,9 @@ namespace HomeCalc.Presentation.ViewModels
         {
             base.Initialize();
 
-            if (PurchaseType == null && TypeSelectorItems.Count() > 0)
+            if (ProductType == null && TypeSelectorItems.Count() > 0)
             {
-                PurchaseType = TypeSelectorItems.FirstOrDefault();
+                ProductType = TypeSelectorItems.FirstOrDefault();
             }
 
             actualCalculationTarget = Services.DataService.CalculationTargetProperty.TotalCost;
@@ -83,14 +83,14 @@ namespace HomeCalc.Presentation.ViewModels
 
         #region helpers
 
-        private void LoadPurchaseTypes()
+        private void LoadProductTypes()
         {
             Task.Factory.StartNew(async () => 
             {
-                TypeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
-                if (PurchaseType == null && TypeSelectorItems.Count() > 0)
+                TypeSelectorItems = new ObservableCollection<ProductType>(await StoreService.LoadProductTypeList().ConfigureAwait(false));
+                if (ProductType == null && TypeSelectorItems.Count() > 0)
                 {
-                    PurchaseType = TypeSelectorItems.FirstOrDefault();
+                    ProductType = TypeSelectorItems.FirstOrDefault();
                 }
             });
         }
@@ -117,7 +117,7 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 resultList = exactPurchases;
 
-                PurchaseType = resultList.FirstOrDefault().Type;
+                ProductType = resultList.FirstOrDefault().Type;
             }
             else
             {
@@ -234,12 +234,12 @@ namespace HomeCalc.Presentation.ViewModels
 
         public bool MonthlyPurchase
         {
-            get { return purchase.MonthlyPurchase; }
+            get { return purchase.IsMonthly; }
             set
             {
-                if (purchase.MonthlyPurchase != value)
+                if (purchase.IsMonthly != value)
                 {
-                    purchase.MonthlyPurchase = value;
+                    purchase.IsMonthly = value;
                     OnPropertyChanged(() => MonthlyPurchase);
                 }
             }
@@ -309,7 +309,7 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        public PurchaseType PurchaseType
+        public ProductType ProductType
         {
             get
             {
@@ -321,12 +321,12 @@ namespace HomeCalc.Presentation.ViewModels
                 if (type != purchase.Type)
                 {
                     purchase.Type = type;
-                    OnPropertyChanged(() => PurchaseType);
+                    OnPropertyChanged(() => ProductType);
                 }
             }
         }
 
-        public PurchaseSubType PurchaseSubType
+        public ProductSubType ProductSubType
         {
             get
             {
@@ -334,11 +334,11 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
-                var type = PurchaseSubTypes.Where(e => e.Name == value.Name).FirstOrDefault();
+                var type = ProductSubTypes.Where(e => e.Name == value.Name).FirstOrDefault();
                 if (type != purchase.SubType)
                 {
                     purchase.SubType = type;
-                    OnPropertyChanged(() => PurchaseSubType);
+                    OnPropertyChanged(() => ProductSubType);
                 }
             }
         }

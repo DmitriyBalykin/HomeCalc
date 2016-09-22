@@ -13,11 +13,11 @@ namespace HomeCalc.Presentation.Services
         Task<Purchase> LoadPurchase(int id);
         Task<List<Purchase>> LoadPurchaseList(SearchRequestModel filter);
         Task<List<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter);
-        Task<List<PurchaseType>> LoadPurchaseTypeList();
+        Task<List<ProductType>> LoadProductTypeList();
         Task<List<SettingsModel>> LoadSettings();
-        Task<PurchaseType> ResolvePurchaseType(long id, string name);
-        Task<bool> SavePurchaseBulk(List<Purchase> purchases);
-        Task<bool> SavePurchaseType(PurchaseType purchaseType);
+        Task<ProductType> ResolveProductType(long id, string name);
+        //Task<bool> SavePurchaseBulk(List<Purchase> purchases);
+        Task<bool> SaveProductType(ProductType purchaseType);
         Task<bool> SaveSettings(SettingsModel settings);
         event EventHandler TypesUpdated;
         Task<bool> UpdatePurchase(Purchase purchase);

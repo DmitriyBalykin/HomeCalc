@@ -24,12 +24,14 @@ namespace HomeCalc.Presentation.Models
             TotalCost = purchase.TotalCost;
             Type = purchase.Type;
             SubType = purchase.SubType;
-            MonthlyPurchase = purchase.MonthlyPurchase;
+            IsMonthly = purchase.IsMonthly;
             PurchaseRate = purchase.PurchaseRate;
             PurchaseComment = purchase.PurchaseComment;
             StoreName = purchase.StoreName;
             StoreRate = purchase.StoreRate;
             StoreComment = purchase.StoreComment;
+            StoreId = purchase.StoreId;
+            CommentId = purchase.CommentId;
         }
         public int Id { get; set; }
 
@@ -121,8 +123,8 @@ namespace HomeCalc.Presentation.Models
                 }
             }
         }
-        private PurchaseType type;
-        public PurchaseType Type
+        private ProductType type;
+        public ProductType Type
         {
             get
             {
@@ -138,8 +140,8 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
-        private PurchaseSubType subType;
-        public PurchaseSubType SubType
+        private ProductSubType subType;
+        public ProductSubType SubType
         {
             get
             {
@@ -155,6 +157,8 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
+        public long StoreId { get; set; }
+        
         private string storeName;
         public string StoreName
         {
@@ -206,6 +210,8 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
+        public long CommentId { get; set; }
+
         private string purchaseComment;
         public string PurchaseComment
         {
@@ -241,7 +247,7 @@ namespace HomeCalc.Presentation.Models
         }
 
         private bool monthlyPurchase;
-        public bool MonthlyPurchase
+        public bool IsMonthly
         {
             get
             {
@@ -271,10 +277,12 @@ namespace HomeCalc.Presentation.Models
                 p.Id == Id &&
                 p.ItemCost == ItemCost &&
                 p.ItemsNumber == ItemsNumber &&
-                p.MonthlyPurchase == MonthlyPurchase &&
+                p.IsMonthly == IsMonthly &&
                 p.Name == Name &&
+                p.CommentId == CommentId &&
                 p.PurchaseComment == PurchaseComment &&
                 p.PurchaseRate == PurchaseRate &&
+                p.StoreId == StoreId &&
                 p.StoreComment == StoreComment &&
                 p.StoreName == StoreName &&
                 p.StoreRate == StoreRate &&

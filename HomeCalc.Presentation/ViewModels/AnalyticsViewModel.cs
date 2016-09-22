@@ -26,13 +26,13 @@ namespace HomeCalc.Presentation.ViewModels
         {
             base.Initialize();
 
-            TypeSelectorItems.Insert(0, new PurchaseType { Name = "Не обрано", TypeId = -1 });
+            TypeSelectorItems.Insert(0, new ProductType { Name = "Не обрано", TypeId = -1 });
 
             IntervalList = AggregationInterval.GetList();
 
             SelectedInterval = IntervalList.FirstOrDefault();
 
-            PurchaseType = TypeSelectorItems.FirstOrDefault();
+            ProductType = TypeSelectorItems.FirstOrDefault();
         }
 
         private void ShowDataCommandExecuted(object obj)
@@ -40,11 +40,11 @@ namespace HomeCalc.Presentation.ViewModels
             var searchRequest = new SearchRequestModel
             {
                 Name = PurchaseName,
-                TypeId = PurchaseType.TypeId,
+                TypeId = ProductType.TypeId,
                 DateStart = SearchFromDate,
                 DateEnd = SearchToDate,
                 SearchByName = !string.IsNullOrEmpty(PurchaseName),
-                SearchByType = PurchaseType.TypeId != -1,
+                SearchByType = ProductType.TypeId != -1,
                 SearchByDate = true,
                 SearchByCost = false,
             };

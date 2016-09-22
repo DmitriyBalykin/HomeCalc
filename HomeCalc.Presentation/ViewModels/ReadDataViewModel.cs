@@ -53,7 +53,7 @@ namespace HomeCalc.Presentation.ViewModels
                     {
                         if (result == DialogResult.OK)
                         {
-                            if (await StoreService.RemovePurchase(purchase.Id))
+                            if (await StoreService.RemoveProduct(purchase.Id))
                             {
                                 BackupSearchList(SearchResultList);
                                 Status.Post("Покупка \"{0}\" видалена", purchase.Name);
@@ -137,7 +137,7 @@ namespace HomeCalc.Presentation.ViewModels
             var searchRequest = new SearchRequestModel
             {
                 Name = purchaseName,
-                TypeId = PurchaseType != null ?PurchaseType.TypeId : -1,
+                TypeId = ProductType != null ?ProductType.TypeId : -1,
                 CostStart = costStart,
                 CostEnd = costEnd,
                 DateStart = searchFromDate,
@@ -306,8 +306,8 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        private PurchaseType purchaseType;
-        public PurchaseType PurchaseType
+        private ProductType purchaseType;
+        public ProductType ProductType
         {
             get
             {
@@ -320,7 +320,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (purchaseType != value)
                 {
                     purchaseType = value;
-                    OnPropertyChanged(() => PurchaseType);
+                    OnPropertyChanged(() => ProductType);
                 }
             }
         }

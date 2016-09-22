@@ -33,7 +33,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Показувати підтип покупки" />
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseSubType, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowProductSubType, Mode=TwoWay}"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Показувати оцінку покупки" />
                     <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ShowPurchaseRate, Mode=TwoWay}"/>

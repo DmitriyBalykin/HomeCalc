@@ -36,14 +36,14 @@ namespace HomeCalc.Presentation.BasicModels
         {
             return Task.Factory.StartNew(async () => 
             {
-                TypeSelectorItems = new ObservableCollection<PurchaseType>(await StoreService.LoadPurchaseTypeList().ConfigureAwait(false));
+                TypeSelectorItems = new ObservableCollection<ProductType>(await StoreService.LoadProductTypeList().ConfigureAwait(false));
             });
         }
         private Task LoadSubTypes()
         {
             return Task.Factory.StartNew(async () =>
             {
-                PurchaseSubTypes = new ObservableCollection<PurchaseSubType>(await StoreService.LoadPurchaseSubTypeList().ConfigureAwait(false));
+                ProductSubTypes = new ObservableCollection<ProductSubType>(await StoreService.LoadProductSubTypeList().ConfigureAwait(false));
             });
         }
         void StoreService_TypesUpdated(object sender, EventArgs e)
@@ -91,8 +91,8 @@ namespace HomeCalc.Presentation.BasicModels
         
         #endregion
         #region Common Properties
-        private ObservableCollection<PurchaseType> typeSelectorItems;
-        public ObservableCollection<PurchaseType> TypeSelectorItems
+        private ObservableCollection<ProductType> typeSelectorItems;
+        public ObservableCollection<ProductType> TypeSelectorItems
         {
             get
             {
@@ -108,8 +108,8 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
 
-        private ObservableCollection<PurchaseSubType> purchaseSubTypes;
-        public ObservableCollection<PurchaseSubType> PurchaseSubTypes
+        private ObservableCollection<ProductSubType> purchaseSubTypes;
+        public ObservableCollection<ProductSubType> ProductSubTypes
         {
             get
             {
@@ -120,20 +120,20 @@ namespace HomeCalc.Presentation.BasicModels
                 if (purchaseSubTypes != value)
                 {
                     purchaseSubTypes = value;
-                    OnPropertyChanged(() => PurchaseSubTypes);
+                    OnPropertyChanged(() => ProductSubTypes);
                 }
             }
         }
 
         [SettingProperty]
-        public bool ShowPurchaseSubType
+        public bool ShowProductSubType
         {
-            get { return Settings.GetSetting("ShowPurchaseSubType").SettingBoolValue; }
+            get { return Settings.GetSetting("ShowProductSubType").SettingBoolValue; }
             set
             {
-                if (value != Settings.GetSetting("ShowPurchaseSubType").SettingBoolValue)
+                if (value != Settings.GetSetting("ShowProductSubType").SettingBoolValue)
                 {
-                    OnPropertyChanged(() => ShowPurchaseSubType, value);
+                    OnPropertyChanged(() => ShowProductSubType, value);
                     OnPropertyChanged(() => ShowRatingPanel);
                 }
             }
@@ -236,7 +236,7 @@ namespace HomeCalc.Presentation.BasicModels
         {
             get
             {
-                var result = Settings.GetSetting("ShowPurchaseSubType").SettingBoolValue ||
+                var result = Settings.GetSetting("ShowProductSubType").SettingBoolValue ||
                         Settings.GetSetting("ShowPurchaseRate").SettingBoolValue ||
                         Settings.GetSetting("ShowPurchaseComment").SettingBoolValue ||
                         Settings.GetSetting("ShowStoreRate").SettingBoolValue ||

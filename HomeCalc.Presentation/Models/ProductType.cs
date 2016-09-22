@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HomeCalc.Presentation.Models
 {
-    public class PurchaseType
+    public class ProductType
     {
         public int TypeId { get; set; }
         public string Name { get; set; }

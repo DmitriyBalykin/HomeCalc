@@ -28,28 +28,28 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("RenameSubType", new DelegateCommand(RenameSubTypeCommandExecute, CanRenameSubType));
             AddCommand("DeleteSubType", new DelegateCommand(DeleteSubTypeCommandExecute, CanDeleteSubType));
 
-            NewPurchaseTypeEditable = true;
+            NewProductTypeEditable = true;
 
         }
         #region commands
         private bool CanAddType(object obj)
         {
-            return !string.IsNullOrWhiteSpace(NewPurchaseType);
+            return !string.IsNullOrWhiteSpace(NewProductType);
         }
 
         private void AddTypeCommandExecute(object obj)
         {
             Task.Factory.StartNew(async () => 
             {
-                if (await StoreService.SavePurchaseType(new PurchaseType { Name = NewPurchaseType }))
+                if (await StoreService.SaveProductType(new ProductType { Name = NewProductType }))
                 {
-                    logger.Info("Purchase type {0} saved", NewPurchaseType);
-                    Status.Post("Тип покупки \"{0}\" збережено", NewPurchaseType);
+                    logger.Info("Purchase type {0} saved", NewProductType);
+                    Status.Post("Тип покупки \"{0}\" збережено", NewProductType);
                 }
                 else
                 {
-                    logger.Warn("Purchase type {0} not saved", NewPurchaseType);
-                    Status.Post("Помилка: тип покупки \"{0}\" не збережено", NewPurchaseType);
+                    logger.Warn("Purchase type {0} not saved", NewProductType);
+                    Status.Post("Помилка: тип покупки \"{0}\" не збережено", NewProductType);
                 }
             });
             
@@ -57,40 +57,40 @@ namespace HomeCalc.Presentation.ViewModels
 
         private bool CanRenameType(object obj)
         {
-            return PurchaseType != null && !string.IsNullOrWhiteSpace(NewPurchaseType);
+            return ProductType != null && !string.IsNullOrWhiteSpace(NewProductType);
         }
 
         private void RenameTypeCommandExecute(object obj)
         {
-            NewPurchaseTypeEditable = false;
+            NewProductTypeEditable = false;
             Task.Factory.StartNew(async () =>
             {
-                if (await StoreService.RenamePurchaseType(PurchaseType, NewPurchaseType))
+                if (await StoreService.RenameProductType(ProductType, NewProductType))
                 {
-                    logger.Info("Purchase type {0} renamed", NewPurchaseType);
-                    Status.Post("Тип покупки \"{0}\" перейменовано", NewPurchaseType);
+                    logger.Info("Purchase type {0} renamed", NewProductType);
+                    Status.Post("Тип покупки \"{0}\" перейменовано", NewProductType);
                 }
                 else
                 {
-                    logger.Warn("Purchase type {0} not renamed", NewPurchaseType);
-                    Status.Post("Помилка: тип покупки \"{0}\" не перейменовано", NewPurchaseType);
+                    logger.Warn("Purchase type {0} not renamed", NewProductType);
+                    Status.Post("Помилка: тип покупки \"{0}\" не перейменовано", NewProductType);
                 }
-                NewPurchaseType = string.Empty;
-                NewPurchaseTypeEditable = true;
+                NewProductType = string.Empty;
+                NewProductTypeEditable = true;
             });
         }
 
         private bool CanDeleteType(object obj)
         {
-            return PurchaseType != null;
+            return ProductType != null;
         }
 
         private void DeleteTypeCommandExecute(object obj)
         {
             Task.Factory.StartNew(async () => 
             {
-                var typeToDeleteName = PurchaseType.Name;
-                if (await StoreService.RemovePurchaseType(PurchaseType))
+                var typeToDeleteName = ProductType.Name;
+                if (await StoreService.RemoveProductType(ProductType))
                 {
                     logger.Info("Purchase type {0} removed", typeToDeleteName);
                     Status.Post("Тип покупки \"{0}\" видалено", typeToDeleteName);
@@ -100,29 +100,29 @@ namespace HomeCalc.Presentation.ViewModels
                     logger.Warn("Purchase type {0} not removed", typeToDeleteName);
                     Status.Post("Помилка: тип покупки \"{0}\" не видалено", typeToDeleteName);
                 }
-                NewPurchaseType = string.Empty;
-                NewPurchaseTypeEditable = true;
+                NewProductType = string.Empty;
+                NewProductTypeEditable = true;
             });
         }
 
         private bool CanAddSubType(object obj)
         {
-            return !string.IsNullOrWhiteSpace(NewPurchaseSubType);
+            return !string.IsNullOrWhiteSpace(NewProductSubType);
         }
 
         private void AddSubTypeCommandExecute(object obj)
         {
             Task.Factory.StartNew(async () =>
             {
-                if (await StoreService.SavePurchaseSubType(new PurchaseSubType { Name = NewPurchaseSubType }))
+                if (await StoreService.SaveProductSubType(new ProductSubType { Name = NewProductSubType }))
                 {
-                    logger.Info("Purchase sub type {0} saved", NewPurchaseSubType);
-                    Status.Post("Підтип покупки \"{0}\" збережено", NewPurchaseSubType);
+                    logger.Info("Purchase sub type {0} saved", NewProductSubType);
+                    Status.Post("Підтип покупки \"{0}\" збережено", NewProductSubType);
                 }
                 else
                 {
-                    logger.Warn("Purchase Sub type {0} not saved", NewPurchaseSubType);
-                    Status.Post("Помилка: підтип покупки \"{0}\" не збережено", NewPurchaseSubType);
+                    logger.Warn("Purchase Sub type {0} not saved", NewProductSubType);
+                    Status.Post("Помилка: підтип покупки \"{0}\" не збережено", NewProductSubType);
                 }
             });
 
@@ -130,40 +130,41 @@ namespace HomeCalc.Presentation.ViewModels
 
         private bool CanRenameSubType(object obj)
         {
-            return PurchaseSubType != null && !string.IsNullOrWhiteSpace(NewPurchaseSubType);
+            return ProductSubType != null && !string.IsNullOrWhiteSpace(NewProductSubType);
         }
 
         private void RenameSubTypeCommandExecute(object obj)
         {
-            NewPurchaseSubTypeEditable = false;
+            NewProductSubTypeEditable = false;
             Task.Factory.StartNew(async () =>
             {
-                if (await StoreService.RenamePurchaseSubType(PurchaseSubType, NewPurchaseSubType))
+                ProductSubType.Name = NewProductSubType;
+                if (await StoreService.SaveProductSubType(ProductSubType))
                 {
-                    logger.Info("Purchase Sub type {0} renamed", NewPurchaseSubType);
-                    Status.Post("Підтип покупки \"{0}\" перейменовано", NewPurchaseSubType);
+                    logger.Info("Product Sub type {0} renamed", NewProductSubType);
+                    Status.Post("Підтип покупки \"{0}\" перейменовано", NewProductSubType);
                 }
                 else
                 {
-                    logger.Warn("Purchase Sub type {0} not renamed", NewPurchaseSubType);
-                    Status.Post("Помилка: підтип покупки \"{0}\" не перейменовано", NewPurchaseSubType);
+                    logger.Warn("Product Sub type {0} not renamed", NewProductSubType);
+                    Status.Post("Помилка: підтип покупки \"{0}\" не перейменовано", NewProductSubType);
                 }
-                NewPurchaseSubType = string.Empty;
-                NewPurchaseSubTypeEditable = true;
+                NewProductSubType = string.Empty;
+                NewProductSubTypeEditable = true;
             });
         }
 
         private bool CanDeleteSubType(object obj)
         {
-            return PurchaseSubType != null;
+            return ProductSubType != null;
         }
 
         private void DeleteSubTypeCommandExecute(object obj)
         {
             Task.Factory.StartNew(async () =>
             {
-                var typeToDeleteName = PurchaseSubType.Name;
-                if (await StoreService.RemovePurchaseSubType(PurchaseSubType))
+                var typeToDeleteName = ProductSubType.Name;
+                if (await StoreService.RemoveProductSubType(ProductSubType))
                 {
                     logger.Info("Purchase Sub type {0} removed", typeToDeleteName);
                     Status.Post("Підтип покупки \"{0}\" видалено", typeToDeleteName);
@@ -173,8 +174,8 @@ namespace HomeCalc.Presentation.ViewModels
                     logger.Warn("Purchase Sub type {0} not removed", typeToDeleteName);
                     Status.Post("Помилка: підтип покупки \"{0}\" не видалено", typeToDeleteName);
                 }
-                NewPurchaseSubType = string.Empty;
-                NewPurchaseSubTypeEditable = true;
+                NewProductSubType = string.Empty;
+                NewProductSubTypeEditable = true;
             });
         }
 
@@ -234,42 +235,42 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
-        private string newPurchaseType;
-        public string NewPurchaseType
+        private string newProductType;
+        public string NewProductType
         {
             get
             {
-                return newPurchaseType;
+                return newProductType;
             }
             set
             {
-                if (newPurchaseType != value)
+                if (newProductType != value)
                 {
-                    newPurchaseType = value;
-                    OnPropertyChanged(() => NewPurchaseType);
+                    newProductType = value;
+                    OnPropertyChanged(() => NewProductType);
                 }
             }
         }
 
-        private bool newPurchaseTypeEditable;
-        public bool NewPurchaseTypeEditable
+        private bool newProductTypeEditable;
+        public bool NewProductTypeEditable
         {
             get
             {
-                return newPurchaseTypeEditable;
+                return newProductTypeEditable;
             }
             set
             {
-                if (newPurchaseTypeEditable != value)
+                if (newProductTypeEditable != value)
                 {
-                    newPurchaseTypeEditable = value;
-                    OnPropertyChanged(() => NewPurchaseTypeEditable);
+                    newProductTypeEditable = value;
+                    OnPropertyChanged(() => NewProductTypeEditable);
                 }
             }
         }
 
-        private PurchaseType purchaseType;
-        public PurchaseType PurchaseType
+        private ProductType purchaseType;
+        public ProductType ProductType
         {
             get
             {
@@ -277,7 +278,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
-                PurchaseType type;
+                ProductType type;
                 if (value != null)
                 {
                     type = TypeSelectorItems.Where(e => e.Name == value.Name).FirstOrDefault();
@@ -289,47 +290,47 @@ namespace HomeCalc.Presentation.ViewModels
                 if (type != purchaseType)
                 {
                     purchaseType = type;
-                    OnPropertyChanged(() => PurchaseType);
+                    OnPropertyChanged(() => ProductType);
                 }
             }
         }
 
-        private string newPurchaseSubType;
-        public string NewPurchaseSubType
+        private string newProductSubType;
+        public string NewProductSubType
         {
             get
             {
-                return newPurchaseSubType;
+                return newProductSubType;
             }
             set
             {
-                if (newPurchaseSubType != value)
+                if (newProductSubType != value)
                 {
-                    newPurchaseSubType = value;
-                    OnPropertyChanged(() => NewPurchaseSubType);
+                    newProductSubType = value;
+                    OnPropertyChanged(() => NewProductSubType);
                 }
             }
         }
 
-        private bool newPurchaseSubTypeEditable;
-        public bool NewPurchaseSubTypeEditable
+        private bool newProductSubTypeEditable;
+        public bool NewProductSubTypeEditable
         {
             get
             {
-                return newPurchaseSubTypeEditable;
+                return newProductSubTypeEditable;
             }
             set
             {
-                if (newPurchaseSubTypeEditable != value)
+                if (newProductSubTypeEditable != value)
                 {
-                    newPurchaseSubTypeEditable = value;
-                    OnPropertyChanged(() => NewPurchaseSubTypeEditable);
+                    newProductSubTypeEditable = value;
+                    OnPropertyChanged(() => NewProductSubTypeEditable);
                 }
             }
         }
 
-        private PurchaseSubType purchaseSubType;
-        public PurchaseSubType PurchaseSubType
+        private ProductSubType purchaseSubType;
+        public ProductSubType ProductSubType
         {
             get
             {
@@ -337,19 +338,19 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
-                PurchaseSubType subType;
+                ProductSubType subType;
                 if (value != null)
                 {
-                    subType = PurchaseSubTypes.Where(e => e.Name == value.Name).FirstOrDefault();
+                    subType = ProductSubTypes.Where(e => e.Name == value.Name).FirstOrDefault();
                 }
                 else
                 {
-                    subType = PurchaseSubTypes.FirstOrDefault();
+                    subType = ProductSubTypes.FirstOrDefault();
                 }
                 if (subType != purchaseSubType)
                 {
                     purchaseSubType = subType;
-                    OnPropertyChanged(() => PurchaseSubType);
+                    OnPropertyChanged(() => ProductSubType);
                 }
             }
         }

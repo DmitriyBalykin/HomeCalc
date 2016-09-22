@@ -10,16 +10,16 @@ namespace HomeCalc.Model.DbService
     public static class DefaultDbContent
     {
 
-        public static List<DbItem<PurchaseTypeModel>> Values
+        public static List<DbItem<ProductTypeModel>> Values
         {
             get
             {
-            return new List<DbItem<PurchaseTypeModel>>(){
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Еда" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Хозяйственные товары" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Автомобиль" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Квартира" }},
-                new DbItem<PurchaseTypeModel>{ Table = "PURCHASETYPE" , Value = new PurchaseTypeModel{ Name = "Снаряжение" }},
+            return new List<DbItem<ProductTypeModel>>(){
+                new DbItem<ProductTypeModel>{ Table = "PRODUCTTYPE" , Value = new ProductTypeModel{ Name = "Еда" }},
+                new DbItem<ProductTypeModel>{ Table = "PRODUCTTYPE" , Value = new ProductTypeModel{ Name = "Хозяйственные товары" }},
+                new DbItem<ProductTypeModel>{ Table = "PRODUCTTYPE" , Value = new ProductTypeModel{ Name = "Автомобиль" }},
+                new DbItem<ProductTypeModel>{ Table = "PRODUCTTYPE" , Value = new ProductTypeModel{ Name = "Квартира" }},
+                new DbItem<ProductTypeModel>{ Table = "PRODUCTTYPE" , Value = new ProductTypeModel{ Name = "Снаряжение" }},
             };
             }
         }
@@ -55,7 +55,7 @@ namespace HomeCalc.Model.DbService
                 {
                     ProfileId = 0,
                     SettingId = 3,
-                    SettingName = "ShowPurchaseSubType",
+                    SettingName = "ShowProductSubType",
                     SettingValue = "false"
                 });
                 list.Add(new SettingsStorageModel

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HomeCalc.Model.DataModels
 {
-    public class PurchaseTypeModel
+    public class ProductTypeModel
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
@@ -17,7 +17,7 @@ namespace HomeCalc.Model.DataModels
 
         public override bool Equals(object obj)
         {
-            return (obj is PurchaseTypeModel) && ((PurchaseTypeModel)obj).TypeId == this.TypeId;
+            return (obj is ProductTypeModel) && ((ProductTypeModel)obj).TypeId == this.TypeId;
         }
 
         public override int GetHashCode()

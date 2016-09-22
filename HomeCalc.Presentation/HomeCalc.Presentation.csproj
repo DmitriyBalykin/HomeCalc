@@ -56,9 +56,10 @@
     <Compile Include="BasicModels\ViewModel.Dynamic.cs" />
     <Compile Include="BasicModels\ViewModel.cs" />
     <Compile Include="Models\AggregationInterval.cs" />
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Purchase.cs" />
-    <Compile Include="Models\PurchaseSubType.cs" />
-    <Compile Include="Models\PurchaseType.cs" />
+    <Compile Include="Models\ProductSubType.cs" />
+    <Compile Include="Models\ProductType.cs" />
     <Compile Include="Models\SettingsModel.cs" />
     <Compile Include="Services\BackupService.cs" />
     <Compile Include="Services\DataService.cs" />

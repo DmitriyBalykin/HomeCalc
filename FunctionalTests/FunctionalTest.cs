@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using HomeCalc.Presentation.Models;
+using System.Linq;
 
 namespace FunctionalTests
 {
@@ -10,7 +11,11 @@ namespace FunctionalTests
     {
         private static StorageService StoreService;
         [TestMethod]
-        private void DatabaseTest()
+        private void DatabaseUpgradeTest()
+        {
+        }
+        [TestMethod]
+        private void DatabaseStateTest()
         {
             StoreService = StorageService.GetInstance();
 
@@ -23,15 +28,15 @@ namespace FunctionalTests
                     ItemCost = 10.4,
                     ItemsNumber = 135.2,
                     TotalCost = 1406.08,
-                    MonthlyPurchase = true,
+                    IsMonthly = true,
                     Name = "Cote d'Azure apple",
                     PurchaseComment = "Воно чудо'ве",
                     PurchaseRate = 10,
                     StoreComment = "Цікави'й магазин",
                     StoreName = "Нову'с магазин",
                     StoreRate = 5,
-                    Type = new PurchaseType { Name = "Їжа", TypeId = 1 },
-                    SubType = new PurchaseSubType { Name = "Фрукт", Id = 1 }
+                    Type = new ProductType { Name = "Їжа", TypeId = 1 },
+                    SubType = new ProductSubType { Name = "Фрукт", Id = 1 }
                 };
                 //Save test
                 if (!await StoreService.AddPurchase(purchase))
@@ -51,7 +56,7 @@ namespace FunctionalTests
                     throw new Exception("Purchase storage error: not consistent");
                 }
                 //update test
-                purchase.MonthlyPurchase = false;
+                purchase.IsMonthly = false;
                 purchase.Name = "Звичайне яблуко";
 
                 if (!await StoreService.AddPurchase(purchase))
@@ -66,7 +71,7 @@ namespace FunctionalTests
                 }
 
                 //delete test
-                if (!await StoreService.RemovePurchase(purchase.Id))
+                if (!await StoreService.DeletePurchase(purchase))
                 {
                     throw new Exception("Purchase deletion error");
                 }

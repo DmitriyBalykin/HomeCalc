@@ -15,77 +15,77 @@ namespace HomeCalc.Presentation.Utils
     public class Migrator
     {
         private static Logger logger = LogService.GetLogger();
-        public static async Task<MigrationResult> MigrateFromCsv(string folderPath, Action<MigrationResultArgs> DataMigrationStatusUpdated)
-        {
-            string filePath = Path.Combine(folderPath, FileUtilities.HOMEEX_DATA_FILE);
-            if (!FileUtilities.FileExists(filePath))
-            {
-                logger.Warn("File with data absent at path: {0}", filePath);
-                return null;
-            }
+    //    public static async Task<MigrationResult> MigrateFromCsv(string folderPath, Action<MigrationResultArgs> DataMigrationStatusUpdated)
+    //    {
+    //        string filePath = Path.Combine(folderPath, FileUtilities.HOMEEX_DATA_FILE);
+    //        if (!FileUtilities.FileExists(filePath))
+    //        {
+    //            logger.Warn("File with data absent at path: {0}", filePath);
+    //            return null;
+    //        }
 
-            var ctsource = new CancellationTokenSource();
-            var progress = new Progress<MigrationResultArgs>(DataMigrationStatusUpdated);
-            //TODO implement cancel
-            return await StartMigrationTask(filePath, progress, ctsource.Token);
-        }
+    //        var ctsource = new CancellationTokenSource();
+    //        var progress = new Progress<MigrationResultArgs>(DataMigrationStatusUpdated);
+    //        //TODO implement cancel
+    //        return await StartMigrationTask(filePath, progress, ctsource.Token);
+    //    }
 
-        private static async Task<MigrationResult> StartMigrationTask(string sourceFilePath, IProgress<MigrationResultArgs> progress, CancellationToken ctoken)
-        {
-            if (string.IsNullOrEmpty(sourceFilePath))
-            {
-                return null;
-            }
+    //    private static async Task<MigrationResult> StartMigrationTask(string sourceFilePath, IProgress<MigrationResultArgs> progress, CancellationToken ctoken)
+    //    {
+    //        if (string.IsNullOrEmpty(sourceFilePath))
+    //        {
+    //            return null;
+    //        }
 
-            var content = File.ReadAllLines(sourceFilePath);
+    //        var content = File.ReadAllLines(sourceFilePath);
 
-            int totalCount = content.Length;
-            MigrationResult migrationResult = null;
-            try
-            {
-                migrationResult = await Task.Run<MigrationResult>(async () =>
-                {
-                    var taskResult = new MigrationResult();
-                    var storageService = StorageService.GetInstance();
-                    var purchaseList = new List<Purchase>(totalCount);
+    //        int totalCount = content.Length;
+    //        MigrationResult migrationResult = null;
+    //        try
+    //        {
+    //            migrationResult = await Task.Run<MigrationResult>(async () =>
+    //            {
+    //                var taskResult = new MigrationResult();
+    //                var storageService = StorageService.GetInstance();
+    //                var purchaseList = new List<Purchase>(totalCount);
 
-                    foreach (var line in File.ReadAllLines(sourceFilePath).Skip(1))
-                    {
-                        if (ctoken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-                        try
-                        {
-                            var columns = line.Split(';');
+    //                foreach (var line in File.ReadAllLines(sourceFilePath).Skip(1))
+    //                {
+    //                    if (ctoken.IsCancellationRequested)
+    //                    {
+    //                        break;
+    //                    }
+    //                    try
+    //                    {
+    //                        var columns = line.Split(';');
 
-                            purchaseList.Add(
-                                new Purchase
-                                {
-                                    Date = DateTime.ParseExact(columns[1], "yyyyMMdd", CultureInfo.InvariantCulture),
-                                    ItemCost = double.Parse(columns[5].Replace('.', ',')),
-                                    ItemsNumber = double.Parse(columns[4].Replace('.', ',')),
-                                    TotalCost = double.Parse(columns[6].Replace('.', ',')),
-                                    Name = columns[3],
-                                    Type = await storageService.ResolvePurchaseType(name: columns[2])
-                                });
-                            taskResult.AddSucceededLine();
-                        }
-                        catch (Exception)
-                        {
-                            taskResult.AddFailedLine();
-                        }
-                        progress.Report(new MigrationResultArgs { Total = totalCount, Processed = taskResult.ResultProcessed });
-                    }
-                    await storageService.SavePurchaseBulk(purchaseList);
-                    return taskResult;
-                });
-            }
-            catch (TaskCanceledException)
-            { }
+    //                        purchaseList.Add(
+    //                            new Purchase
+    //                            {
+    //                                Date = DateTime.ParseExact(columns[1], "yyyyMMdd", CultureInfo.InvariantCulture),
+    //                                ItemCost = double.Parse(columns[5].Replace('.', ',')),
+    //                                ItemsNumber = double.Parse(columns[4].Replace('.', ',')),
+    //                                TotalCost = double.Parse(columns[6].Replace('.', ',')),
+    //                                Name = columns[3],
+    //                                Type = await storageService.ResolveProductType(name: columns[2])
+    //                            });
+    //                        taskResult.AddSucceededLine();
+    //                    }
+    //                    catch (Exception)
+    //                    {
+    //                        taskResult.AddFailedLine();
+    //                    }
+    //                    progress.Report(new MigrationResultArgs { Total = totalCount, Processed = taskResult.ResultProcessed });
+    //                }
+    //                await storageService.SavePurchaseBulk(purchaseList);
+    //                return taskResult;
+    //            });
+    //        }
+    //        catch (TaskCanceledException)
+    //        { }
 
-            return migrationResult;
-        }
+    //        return migrationResult;
+    //    }
     }
     public class MigrationResult
     {

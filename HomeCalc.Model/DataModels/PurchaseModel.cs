@@ -12,10 +12,23 @@ namespace HomeCalc.Model.DataModels
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public Int64 PurchaseId { get; set; }
-        public string Name { get; set; }
-        public int TypeId { get; set; }
-        public int SubTypeId { get; set; }
+        public long Id { get; set; }
+        public long ProductId { get; set; }
+        public string ProductName { get; set; }
+        public long Timestamp { get; set; }
+        public double TotalCost { get; set; }
+        public double ItemCost { get; set; }
+        public double ItemsNumber { get; set; }
+        public int Rate { get; set; }
+        public long CommentId { get; set; }
+        public string Comment { get; set; }
+        public long StoreId { get; set; }
+        public string StoreName { get; set; }
+        public string StoreComment { get; set; }
+        public int StoreRate { get; set; }
         public bool IsMonthly { get; set; }
+        public long TypeId { get; set; }
+        public long SubTypeId { get; set; }
     }
+
 }

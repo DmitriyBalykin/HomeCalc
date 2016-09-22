@@ -66,18 +66,25 @@
     <Compile Include="..\HomeCalc.View\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DataModels\PurchaseItemModel.cs" />
-    <Compile Include="DataModels\PurchaseSubTypeModel.cs" />
+    <Compile Include="DataModels\CommentModel.cs" />
+    <Compile Include="DataModels\PurchaseModel.cs" />
+    <Compile Include="DataModels\ProductSubTypeModel.cs" />
     <Compile Include="DataModels\SearchRequest.cs" />
     <Compile Include="DataModels\SettingsModel.cs" />
+    <Compile Include="DataModels\StoreModel.cs" />
     <Compile Include="DbConnectionWrappers\StorageConnection.cs" />
-    <Compile Include="DbService\DataBaseService.cs" />
+    <Compile Include="DbService\DataBaseService.Comment.cs" />
+    <Compile Include="DbService\DataBaseService.Store.cs" />
+    <Compile Include="DbService\DataBaseService.Settings.cs" />
+    <Compile Include="DbService\DataBaseService.Product.cs" />
+    <Compile Include="DbService\DataBaseService.Purchase.cs" />
+    <Compile Include="DbService\DataBaseService.Common.cs" />
     <Compile Include="DbService\DefaultDbContent.cs" />
     <Compile Include="DbService\FilenameService.cs" />
     <Compile Include="DbService\IDatabaseManager.cs" />
     <Compile Include="DbService\SQLiteManager.cs" />
-    <Compile Include="DataModels\PurchaseModel.cs" />
-    <Compile Include="DataModels\PurchaseTypeModel.cs" />
+    <Compile Include="DataModels\ProductModel.cs" />
+    <Compile Include="DataModels\ProductTypeModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

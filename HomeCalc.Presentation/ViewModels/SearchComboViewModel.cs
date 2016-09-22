@@ -16,24 +16,24 @@ namespace HomeCalc.Presentation.ViewModels
         {
             logger = LogService.GetLogger();
 
-            List<PurchaseTypeModel> types = new List<PurchaseTypeModel>();
-            types.Add(new PurchaseTypeModel { TypeId = 0, Name = "Еда" });
-            types.Add(new PurchaseTypeModel { TypeId = 1, Name = "Хозяйственные товары" });
-            types.Add(new PurchaseTypeModel { TypeId = 2, Name = "Автомобиль" });
-            types.Add(new PurchaseTypeModel { TypeId = 3, Name = "Квартира" });
-            types.Add(new PurchaseTypeModel { TypeId = 4, Name = "Снаряжение" });
+            List<ProductTypeModel> types = new List<ProductTypeModel>();
+            types.Add(new ProductTypeModel { TypeId = 0, Name = "Еда" });
+            types.Add(new ProductTypeModel { TypeId = 1, Name = "Хозяйственные товары" });
+            types.Add(new ProductTypeModel { TypeId = 2, Name = "Автомобиль" });
+            types.Add(new ProductTypeModel { TypeId = 3, Name = "Квартира" });
+            types.Add(new ProductTypeModel { TypeId = 4, Name = "Снаряжение" });
 
-            searchResultList = new List<PurchaseModel>();
+            searchResultList = new List<ProductModel>();
            // searchResultList.Add(new Purchase { Id = 0, Ty });
             
         }
 
-        private List<PurchaseModel> searchResultList;
-        public ObservableCollection<PurchaseModel> SearchResultList
+        private List<ProductModel> searchResultList;
+        public ObservableCollection<ProductModel> SearchResultList
         {
             get
             {
-                return new ObservableCollection<PurchaseModel>(searchResultList);
+                return new ObservableCollection<ProductModel>(searchResultList);
             }
         }
     }

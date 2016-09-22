@@ -25,8 +25,8 @@ namespace HomeCalc.Presentation.Models
 
         private StatusService Status;
 
-        private Cache<PurchaseType> PurchaseTypesCache = new Cache<PurchaseType>();
-        private Cache<PurchaseSubType> PurchaseSubTypesCache = new Cache<PurchaseSubType>();
+        private Cache<ProductType> ProductTypesCache = new Cache<ProductType>();
+        private Cache<ProductSubType> ProductSubTypesCache = new Cache<ProductSubType>();
         private Cache<SettingsModel> SettingsCache = new Cache<SettingsModel>();
 
         private Logger logger;
@@ -76,7 +76,7 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
-        internal static StorageService GetInstance()
+        public static StorageService GetInstance()
         {
             if (instance == null)
             {
@@ -84,7 +84,7 @@ namespace HomeCalc.Presentation.Models
             }
             return instance;
         }
-
+        #region Settings
         public async Task<bool> SaveSettings(SettingsModel settings)
         {
             SettingsCache.SetNeedRefresh();
@@ -99,99 +99,107 @@ namespace HomeCalc.Presentation.Models
             }
             return SettingsCache.GetCache();
         }
+        #endregion
+
+        #region Purchase
         public async Task<bool> AddPurchase(Purchase purchase)
         {
-            var result = await DBService.SavePurchase(PurchaseToModel(purchase)).ConfigureAwait(false);
-            if (result)
+            //Product always has name
+            var productId = await DBService.SaveProduct(ProductToModel(purchase)).ConfigureAwait(false);
+            if (productId < 1)
+            {
+                logger.Error("AddPurchase: Error occured during product saving: {0}", purchase.Name);
+                return false;
+            }
+            
+            long storeId = 0;
+            if (!string.IsNullOrEmpty(purchase.StoreName))
+            {
+                storeId = await DBService.SaveStore(
+                    new StoreModel 
+                    {
+                        Id = purchase.StoreId,
+                        Name = purchase.StoreName
+                    }).ConfigureAwait(false);
+                if (storeId < 1)
+                {
+                    logger.Error("AddPurchase: Error occured during store saving: {0}", purchase.Name);
+                    return false;
+                }
+            }
+            
+            long commentId = 0;
+            if (!string.IsNullOrEmpty(purchase.PurchaseComment))
+            {
+                commentId = await DBService.SaveComment(
+                    new CommentModel
+                    {
+                        Id = purchase.CommentId,
+                        PurchaseId = purchase.Id,
+                        StoreId = purchase.StoreId,
+                        Text = purchase.PurchaseComment
+                    }).ConfigureAwait(false);
+                if (storeId < 1)
+                {
+                    logger.Error("AddPurchase: Error occured during comment saving: {0}", purchase.Name);
+                    return false;
+                }
+            }
+            //Store comment not binded to purchase
+            if (!string.IsNullOrEmpty(purchase.StoreComment))
+            {
+                await DBService.SaveComment(
+                    new CommentModel
+                    {
+                        Id = purchase.CommentId,
+                        PurchaseId = purchase.Id,
+                        StoreId = purchase.StoreId,
+                        Text = purchase.StoreComment
+                    }).ConfigureAwait(false);
+                if (storeId < 1)
+                {
+                    logger.Error("AddPurchase: Error occured during store comment saving: {0}", purchase.Name);
+                    return false;
+                }
+            }
+
+            var purchaseResult = await DBService.SavePurchase(PurchaseToModel(purchase, productId, storeId, commentId)).ConfigureAwait(false);
+            if (productId > 0)
             {
                 purchaseHistory.Add(new Purchase(purchase));
                 AnnounceHistoryUpdate();
+                return true;
             }
-            return result;
+            return false;
         }
         public async Task<bool> UpdatePurchase(Purchase purchase)
         {
-            if (await DBService.SavePurchase(PurchaseToModel(purchase)).ConfigureAwait(false))
+            if (await DBService.SaveProduct(ProductToModel(purchase)).ConfigureAwait(false) != -1)
             {
                 Status.Post("Запис \"{0}\" оновлено", purchase.Name);
                 return true;
             }
             return false;
         }
-        public async Task<bool> SavePurchaseBulk(List<Purchase> purchases)
+        public async Task<bool> DeletePurchase(Purchase purchase)
         {
-            var result = await DBService.SavePurchaseItemBulk(purchases.Select(p => PurchaseToModel(p))).ConfigureAwait(false);
-            if (result)
+            if (await DBService.DeletePurchase(purchase.Id).ConfigureAwait(false))
             {
-                purchaseHistory.AddRange(purchases);
-                AnnounceHistoryUpdate();
+                Status.Post("Запис \"{0}\" видалено", purchase.Name);
+                return true;
             }
-            return result;
+            return false;
         }
-        public async Task<bool> SavePurchaseType(PurchaseType purchaseType)
-        {
-            PurchaseTypesCache.SetNeedRefresh();
-            var result = await DBService.SavePurchaseType(TypeToModel(purchaseType)).ConfigureAwait(false);
-            if (result)
-            {
-                TypeUpdated();
-            }
-            return result;
-        }
-
-        public async Task<bool> RemovePurchaseType(PurchaseType pType)
-        {
-            var result = await DBService.DeletePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
-            if (result)
-            {
-                TypeUpdated();
-            }
-            return result;
-        }
-
-        public async Task<bool> RenamePurchaseType(PurchaseType pType, string newPurchaseTypeName)
-        {
-            pType.Name = newPurchaseTypeName;
-            var result = await DBService.SavePurchaseType(TypeToModel(pType)).ConfigureAwait(false);
-            if (result)
-            {
-                TypeUpdated();
-            }
-            return result;
-        }
-
-        public async Task<bool> SavePurchaseSubType(PurchaseSubType purchaseSubType)
-        {
-            PurchaseSubTypesCache.SetNeedRefresh();
-            var result = await DBService.SavePurchaseSubType(SubTypeToModel(purchaseSubType)).ConfigureAwait(false);
-            if (result)
-            {
-                SubTypeUpdated();
-            }
-            return result;
-        }
-
-        public async Task<bool> RemovePurchaseSubType(PurchaseSubType pSubType)
-        {
-            var result = await DBService.DeletePurchaseSubType(SubTypeToModel(pSubType)).ConfigureAwait(false);
-            if (result)
-            {
-                SubTypeUpdated();
-            }
-            return result;
-        }
-
-        public async Task<bool> RenamePurchaseSubType(PurchaseSubType pSubType, string newPurchaseSubTypeName)
-        {
-            pSubType.Name = newPurchaseSubTypeName;
-            var result = await DBService.SavePurchaseSubType(SubTypeToModel(pSubType)).ConfigureAwait(false);
-            if (result)
-            {
-                SubTypeUpdated();
-            }
-            return result;
-        }
-
+        //public async Task<bool> SavePurchaseBulk(List<Purchase> purchases)
+        //{
+        //    var result = await DBService.SavePurchaseBulk(purchases.Select(p => ProductToModel(p))).ConfigureAwait(false);
+        //    if (result)
+        //    {
+        //        purchaseHistory.AddRange(purchases);
+        //        AnnounceHistoryUpdate();
+        //    }
+        //    return result;
+        //}
         public async Task<Purchase> LoadPurchase(int id)
         {
             return await ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
@@ -204,7 +212,7 @@ namespace HomeCalc.Presentation.Models
                 case SearchRequestModel.Requests.Empty:
                     logger.Debug("Selected load purchase with no filter");
                     var modelsList = await DBService.LoadCompletePurchaseList().ConfigureAwait(false);
-                    foreach(var model in modelsList)
+                    foreach (var model in modelsList)
                     {
                         list.Add(await ModelToPurchase(model));
                     }
@@ -225,100 +233,225 @@ namespace HomeCalc.Presentation.Models
 
             return convertedList;
         }
-        public async Task<List<PurchaseType>> LoadPurchaseTypeList()
+        #endregion
+        #region Product
+        public async Task<Product> LoadProduct(int id)
         {
-            if (!PurchaseTypesCache.IsActual())
+            return ModelToProduct(await DBService.LoadProduct(id).ConfigureAwait(false));
+        }
+        public async Task<List<Product>> LoadProductList(SearchRequestModel.Requests enumFilter)
+        {
+            var list = new List<Product>();
+            switch (enumFilter)
             {
-                PurchaseTypesCache.SetCache(
-                    (await DBService.LoadPurchaseTypeList().ConfigureAwait(false)).Select(p => ModelToType(p)).ToList()
+                case SearchRequestModel.Requests.Empty:
+                    logger.Debug("Selected load purchase with no filter");
+                    var modelsList = await DBService.LoadProductList(new SearchRequestModel()).ConfigureAwait(false);
+                    foreach (var model in modelsList)
+                    {
+                        list.Add(ModelToProduct(model));
+                    }
+                    break;
+            }
+            logger.Debug("StorageService: product list loaded");
+            return list;
+        }
+        
+        #endregion
+        #region ProductType
+        public async Task<bool> SaveProductType(ProductType productType)
+        {
+            ProductTypesCache.SetNeedRefresh();
+            var result = await DBService.SaveProductType(TypeToModel(productType)).ConfigureAwait(false);
+            if (result)
+            {
+                TypeUpdated();
+            }
+            return result;
+        }
+
+        public async Task<bool> RemoveProductType(ProductType pType)
+        {
+            var result = await DBService.DeleteProductType(TypeToModel(pType)).ConfigureAwait(false);
+            if (result)
+            {
+                TypeUpdated();
+            }
+            return result;
+        }
+
+        public async Task<bool> RenameProductType(ProductType pType, string newProductTypeName)
+        {
+            pType.Name = newProductTypeName;
+            var result = await DBService.SaveProductType(TypeToModel(pType)).ConfigureAwait(false);
+            if (result)
+            {
+                TypeUpdated();
+            }
+            return result;
+        }
+        public async Task<List<ProductType>> LoadProductTypeList()
+        {
+            if (!ProductTypesCache.IsActual())
+            {
+                ProductTypesCache.SetCache(
+                    (await DBService.LoadProductTypeList().ConfigureAwait(false)).Select(p => ModelToType(p)).ToList()
                     );
             }
-            return PurchaseTypesCache.GetCache();
+            return ProductTypesCache.GetCache();
         }
-        public async Task<List<PurchaseSubType>> LoadPurchaseSubTypeList()
-        {
-            if (!PurchaseSubTypesCache.IsActual())
-            {
-                PurchaseSubTypesCache.SetCache(
-                    (await DBService.LoadPurchaseSubTypeList().ConfigureAwait(false)).Select(p => ModelToSubType(p)).ToList()
-                    );
-            }
-            return PurchaseSubTypesCache.GetCache();
-        }
-        public async Task<PurchaseType> ResolvePurchaseType(long id = -1, string name = null)
+        public async Task<ProductType> ResolveProductType(long id = -1, string name = null)
         {
             if (id > -1)
             {
-                logger.Debug("StorageService: resolving purchase type without name");
-                return (await LoadPurchaseTypeList()).Where(type => type.TypeId == id).SingleOrDefault();
+                logger.Debug("StorageService: resolving product type without name");
+                return (await LoadProductTypeList()).Where(type => type.TypeId == id).SingleOrDefault();
             }
             else if (name != null)
             {
-                logger.Debug("StorageService: resolving purchase type with name");
-                var matchedType = PurchaseTypesCache.GetCache().Where(type => type.Name == name).SingleOrDefault();
+                logger.Debug("StorageService: resolving product type with name");
+                var matchedType = ProductTypesCache.GetCache().Where(type => type.Name == name).SingleOrDefault();
                 return matchedType;
             }
             else
             {
-                logger.Debug("StorageService: resolving failed, incorrect id: {0}", id);
+                logger.Debug("StorageService: type resolving failed, incorrect id: {0}", id);
                 return null;
             }
         }
-        private PurchaseType ModelToType(PurchaseTypeModel model)
+        public async Task<ProductSubType> ResolveProductSubType(long id = -1, string name = null)
         {
-            return new PurchaseType { TypeId = (int)model.TypeId, Name = model.Name };
+            if (id > -1)
+            {
+                logger.Debug("StorageService: resolving product sub type without name");
+                return (await LoadProductSubTypeList()).Where(type => type.TypeId == id).SingleOrDefault();
+            }
+            else if (name != null)
+            {
+                logger.Debug("StorageService: resolving product sub type with name");
+                var matchedType = ProductSubTypesCache.GetCache().Where(type => type.Name == name).SingleOrDefault();
+                return matchedType;
+            }
+            else
+            {
+                logger.Debug("StorageService: sub type resolving failed, incorrect id: {0}", id);
+                return null;
+            }
+        }
+        internal async Task<bool> RemoveProduct(int productId)
+        {
+            bool result = await DBService.DeleteProduct(productId).ConfigureAwait(false);
+            if (result)
+            {
+                purchaseHistory.Remove(new Purchase { Id = productId });
+            }
+            return result;
+        }
+        #endregion
+        #region ProductSubType
+        public async Task<bool> SaveProductSubType(ProductSubType productSubType)
+        {
+            ProductSubTypesCache.SetNeedRefresh();
+            var result = await DBService.SaveProductSubType(SubTypeToModel(productSubType)).ConfigureAwait(false);
+            if (result)
+            {
+                SubTypeUpdated();
+            }
+            return result;
         }
 
-        private PurchaseTypeModel TypeToModel(PurchaseType type)
+        public async Task<bool> RemoveProductSubType(ProductSubType pSubType)
         {
-            return new PurchaseTypeModel { TypeId = type.TypeId, Name = StringUtilities.EscapeStringForDatabase(type.Name) };
-        }
-        private PurchaseSubType ModelToSubType(PurchaseSubTypeModel model)
-        {
-            return new PurchaseSubType { Id = (int)model.Id, Name = model.Name };
+            var result = await DBService.DeleteProductSubType(SubTypeToModel(pSubType)).ConfigureAwait(false);
+            if (result)
+            {
+                SubTypeUpdated();
+            }
+            return result;
         }
 
-        private PurchaseSubTypeModel SubTypeToModel(PurchaseSubType subType)
+        public async Task<List<ProductSubType>> LoadProductSubTypeList()
         {
-            return new PurchaseSubTypeModel { Id = subType.Id, Name = StringUtilities.EscapeStringForDatabase(subType.Name) };
+            if (!ProductSubTypesCache.IsActual())
+            {
+                ProductSubTypesCache.SetCache(
+                    (await DBService.LoadProductSubTypeList().ConfigureAwait(false)).Select(p => ModelToSubType(p)).ToList()
+                    );
+            }
+            return ProductSubTypesCache.GetCache();
+        }
+
+        #endregion
+        #region Store
+        #endregion
+        #region Comment
+        #endregion
+
+        private ProductType ModelToType(ProductTypeModel model)
+        {
+            return new ProductType { TypeId = (int)model.TypeId, Name = model.Name };
+        }
+
+        private ProductTypeModel TypeToModel(ProductType type)
+        {
+            return new ProductTypeModel { TypeId = type.TypeId, Name = StringUtilities.EscapeStringForDatabase(type.Name) };
+        }
+        private ProductSubType ModelToSubType(ProductSubTypeModel model)
+        {
+            return new ProductSubType { Id = (int)model.Id, Name = model.Name };
+        }
+
+        private ProductSubTypeModel SubTypeToModel(ProductSubType subType)
+        {
+            return new ProductSubTypeModel { Id = subType.Id, Name = StringUtilities.EscapeStringForDatabase(subType.Name) };
+        }
+        private Product ModelToProduct(ProductModel model)
+        {
+            logger.Debug("StorageService: converting product storage model to product");
+            return new Product {
+                Id = (int)model.Id,
+                Name = model.Name,
+                IsMonthly = model.IsMonthly,
+                TypeId = model.TypeId,
+                SubTypeId = model.SubTypeId
+            };
+        }
+        private ProductModel ProductToModel(Purchase purchase)
+        {
+            return new ProductModel
+            {
+                Id = purchase.Id,
+                Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
+                TypeId = purchase.Type.TypeId,
+                SubTypeId = purchase.SubType.Id,
+                IsMonthly = purchase.IsMonthly
+            };
         }
         private async Task<Purchase> ModelToPurchase(PurchaseModel model)
         {
             logger.Debug("StorageService: converting purchase storage model to purchase");
-            return new Purchase {
-                Id = (int)model.PurchaseId,
-                Date = new DateTime(model.Timestamp),
-                ItemCost = model.ItemCost,
-                ItemsNumber = model.ItemsNumber,
-                Name = model.Name,
-                TotalCost = model.TotalCost,
-                Type = await ResolvePurchaseType(model.TypeId)
+            return new Purchase
+            {
+                Id = (int)model.Id,
+                Name = model.ProductName,
+                IsMonthly = model.IsMonthly,
+                Type = await ResolveProductType(model.TypeId),
+                SubType = await ResolveProductSubType(model.SubTypeId)
             };
         }
-        private PurchaseModel PurchaseToModel(Purchase purchase)
+        private PurchaseModel PurchaseToModel(Purchase purchase, long productId, long storeId, long commentId)
         {
             return new PurchaseModel
             {
-                PurchaseId = purchase.Id,
-                Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
-                TypeId = purchase.Type.TypeId,
-                SubTypeId = purchase.SubType.Id
-            };
-        }
-        private PurchaseItemModel PurchaseToItemModel(Purchase purchase)
-        {
-            return new PurchaseItemModel
-            {
-                PurchaseId = purchase.Id,
+                Id = purchase.Id,
+                ProductId = productId,
+                StoreId = storeId,
+                CommentId = commentId,
                 Timestamp = purchase.Date.Ticks,
-                Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
                 ItemsNumber = purchase.ItemsNumber,
                 ItemCost = purchase.ItemCost,
                 TotalCost = purchase.TotalCost,
-                TypeId = purchase.Type.TypeId,
-                SubTypeId = purchase.SubType.Id,
-                IsMonthly = purchase.MonthlyPurchase,
-
+                Rate = purchase.PurchaseRate
             };
         }
         private SettingsStorageModel SettingToStorage(SettingsModel settings)
@@ -359,15 +492,7 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
-        internal async Task<bool> RemovePurchase(int purchaseId)
-        {
-            bool result = await DBService.RemovePurchase(purchaseId).ConfigureAwait(false);
-            if (result)
-            {
-                purchaseHistory.Remove(new Purchase { Id = purchaseId });
-            }
-            return result;
-        }
+        
 
         public List<Purchase> PurchaseHistory
         {
