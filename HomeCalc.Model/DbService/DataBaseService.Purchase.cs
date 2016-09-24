@@ -48,9 +48,9 @@ namespace HomeCalc.Model.DbService
                         purchase.ItemCost.ToString(formatCulture),
                         purchase.ItemsNumber.ToString(formatCulture),
                         purchase.StoreId);
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
-
-                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    
                     transaction.Commit();
                 }
             }
@@ -157,12 +157,6 @@ namespace HomeCalc.Model.DbService
 
                     while (dataReader.Read())
                     {
-                        //var rateRaw = dataReader.GetValue(dataReader.GetOrdinal("Rate"));
-                        //    var Rate = (rateRaw as long?) ?? 0;
-                        //    var Comment = (dataReader.GetString(dataReader.GetOrdinal("Comment")) as string) ?? string.Empty;
-                        //    var IsMonthly = (dataReader.GetBoolean(dataReader.GetOrdinal("IsMonthly")) as bool?) ?? false;
-                        //    var StoreId = (dataReader.GetInt64(dataReader.GetOrdinal("StoreId")) as long?) ?? 0;
-                        //    var StoreName = (dataReader.GetString(dataReader.GetOrdinal("StoreName")) as string) ?? string.Empty;
                         list.Add(new PurchaseModel
                         {
                             Id = dataReader.GetInt64(dataReader.GetOrdinal("Id")),

@@ -399,6 +399,12 @@ namespace HomeCalc.Presentation.Models
             {
                 Id = (int)model.Id,
                 Name = model.ProductName,
+                ItemCost = model.ItemCost,
+                TotalCost = model.TotalCost,
+                ItemsNumber = model.ItemsNumber,
+                PurchaseComment = model.Comment,
+                PurchaseRate = model.Rate,
+                StoreName = model.StoreName,
                 IsMonthly = model.IsMonthly,
                 Type = await ResolveProductType(model.TypeId),
                 SubType = await ResolveProductSubType(model.SubTypeId)

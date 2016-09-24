@@ -278,10 +278,7 @@ namespace HomeCalc.Presentation.Models
                 p.Name == Name &&
                 p.PurchaseComment == PurchaseComment &&
                 p.PurchaseRate == PurchaseRate &&
-                p.StoreId == StoreId &&
-                p.StoreComment == StoreComment &&
                 p.StoreName == StoreName &&
-                p.StoreRate == StoreRate &&
                 p.SubType.Id == SubType.Id &&
                 p.TotalCost == TotalCost &&
                 p.Type.TypeId == Type.TypeId
