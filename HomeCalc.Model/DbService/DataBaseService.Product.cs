@@ -24,24 +24,33 @@ namespace HomeCalc.Model.DbService
             try
             {
                 using (var db = dbManager.GetConnection())
+                using (var transaction = db.Connection.BeginTransaction())
                 using (var command = db.Connection.CreateCommand())
                 {
                     if (product.Id == 0)
                     {
+                        command.CommandText = string.Format("SELECT Id FROM PRODUCT WHERE Name='{0}'", product.Name);
+                        productId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0L);
+                    }
+                    else
+                    {
+                        productId = product.Id;
+                    }
+                    if (productId == 0)
+                    {
                         command.CommandText = string.Format(
-                        "INSERT INTO PRODUCT(Name, TypeId, SubTypeId, IsMonthly) VALUES ('{0}', {1}, {2}, {3}); SELECT last_insert_rowid()",
+                        "INSERT INTO PRODUCT(Name, TypeId, SubTypeId, IsMonthly) VALUES ('{0}', {1}, {2}, '{3}'); SELECT last_insert_rowid() FROM PRODUCT",
                         product.Name, product.TypeId, product.SubTypeId, product.IsMonthly);
                         productId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
-
                     }
                     else
                     {
                         command.CommandText = string.Format(
-                        "UPDATE PRODUCT SET Name = '{0}', TypeId = {1}, SubTypeId = {2}, IsMonthly = {3} WHERE Id = {4}",
-                        product.Name, product.TypeId, product.SubTypeId, product.IsMonthly, product.Id);
+                        "UPDATE PRODUCT SET Name = '{0}', TypeId = {1}, SubTypeId = {2}, IsMonthly = '{3}' WHERE Id = {4}",
+                        product.Name, product.TypeId, product.SubTypeId, product.IsMonthly, productId);
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                        productId = product.Id;
                     }
+                    transaction.Commit();
                 }
             }
             catch (Exception ex)
@@ -94,7 +103,7 @@ namespace HomeCalc.Model.DbService
 
                     if (filter.SearchByName)
                     {
-                        queue = string.Format("{0} Name LIKE '%{1}%' ", queue, filter.Name.Trim(' '));
+                        queue = string.Format("{0} Name LIKE '%{1}%' ", queue, StringUtilities.EscapeStringForDatabase(filter.Name.Trim(' ')));
                     }
                     if (filter.SearchByType)
                     {

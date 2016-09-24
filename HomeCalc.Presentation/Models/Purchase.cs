@@ -31,7 +31,6 @@ namespace HomeCalc.Presentation.Models
             StoreRate = purchase.StoreRate;
             StoreComment = purchase.StoreComment;
             StoreId = purchase.StoreId;
-            CommentId = purchase.CommentId;
         }
         public int Id { get; set; }
 
@@ -210,8 +209,6 @@ namespace HomeCalc.Presentation.Models
             }
         }
 
-        public long CommentId { get; set; }
-
         private string purchaseComment;
         public string PurchaseComment
         {
@@ -279,7 +276,6 @@ namespace HomeCalc.Presentation.Models
                 p.ItemsNumber == ItemsNumber &&
                 p.IsMonthly == IsMonthly &&
                 p.Name == Name &&
-                p.CommentId == CommentId &&
                 p.PurchaseComment == PurchaseComment &&
                 p.PurchaseRate == PurchaseRate &&
                 p.StoreId == StoreId &&

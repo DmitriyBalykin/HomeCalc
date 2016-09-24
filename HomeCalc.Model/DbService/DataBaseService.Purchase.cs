@@ -17,51 +17,49 @@ namespace HomeCalc.Model.DbService
 {
     public partial class DataBaseService
     {
-        public async Task<bool> SavePurchase(PurchaseModel purchase)
+        public async Task<long> SavePurchase(PurchaseModel purchase)
         {
-            bool result = false;
+            long purchaseId = purchase.Id;
             try
             {
                 using (var db = dbManager.GetConnection())
                 using (var transaction = db.Connection.BeginTransaction())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    if (purchase.Id == 0)
+                    if (purchaseId == 0)
                     {
                         command.CommandText = string.Format(
-                        "INSERT INTO PURCHASE(ProductId, Timestamp, TotalCost, ItemCost, ItemsNumber, StoreId, CommentId) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+                        "INSERT INTO PURCHASE(ProductId, Timestamp, TotalCost, ItemCost, ItemsNumber, StoreId) VALUES ({0}, {1}, {2}, {3}, {4}, {5}); SELECT last_insert_rowid() FROM PURCHASE",
                         purchase.ProductId,
                         purchase.Timestamp,
                         purchase.TotalCost.ToString(formatCulture),
                         purchase.ItemCost.ToString(formatCulture),
                         purchase.ItemsNumber.ToString(formatCulture),
-                        purchase.StoreId,
-                        purchase.CommentId);
+                        purchase.StoreId);
+                        purchaseId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
                     }
                     else
                     {
                         command.CommandText = string.Format(
-                        "UPDATE PURCHASE SET ProductId = {0}, Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, StoreId = {5}, CommentId = {6} WHERE Id = {7}",
+                        "UPDATE PURCHASE SET ProductId = {0}, Timestamp = {1}, TotalCost = {2}, ItemCost = {3}, ItemsNumber = {4}, StoreId = {5} WHERE Id = {6}",
                         purchase.ProductId,
                         purchase.Timestamp,
                         purchase.TotalCost.ToString(formatCulture),
                         purchase.ItemCost.ToString(formatCulture),
                         purchase.ItemsNumber.ToString(formatCulture),
-                        purchase.StoreId,
-                        purchase.CommentId);
+                        purchase.StoreId);
                     }
 
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     transaction.Commit();
-                    result = true;
                 }
             }
             catch (Exception ex)
             {
-                result = false;
+                purchaseId = -1;
                 logger.Error("Exception during execution method \"SavePurchase\": {0}", ex.Message);
             }
-            return result;
+            return purchaseId;
         }
         public async Task<bool> SavePurchaseBulk(IEnumerable<PurchaseModel> purchases, StorageConnection connection = null)
         {
@@ -114,18 +112,22 @@ namespace HomeCalc.Model.DbService
                 using (var db = dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    string queue = "SELECT pu.Id AS Id, pu.Timestamp, pu.TotalCost, pu.ItemCost, pu.ItemsNumber,"+
+                    string queue = "SELECT pu.Id AS Id, pu.Timestamp, pu.TotalCost, pu.ItemCost, pu.ItemsNumber," +
                                     "p.Id AS ProductId, p.Name AS ProductName, p.TypeId, p.SubTypeId, p.IsMonthly, "+
                                     "s.Id AS StoreId, s.Name AS StoreName, "+
-                                    "c.Id AS CommentId, c.Text AS Comment, c.Rate "+
+                                    "c.Text AS Comment, c.Rate "+
                     "FROM PURCHASE pu "+
-                    "JOIN PRODUCT p ON PU.ProductId=p.Id "+
-                    "JOIN STORE s ON PU.StoreId=s.Id "+
-                    "JOIN COMMENT c ON PU.CommentId=c.Id "+
+                    "LEFT JOIN PRODUCT p ON PU.ProductId=p.Id "+
+                    "LEFT JOIN STORE s ON PU.StoreId=s.Id "+
+                    "LEFT JOIN COMMENT c ON PU.Id=c.PurchaseId "+
                     "WHERE";
                     if (filter.SearchById)
                     {
                         queue = string.Format("{0} Id={1} ", queue, filter.PurchaseId);
+                    }
+                    if (filter.SearchByName)
+                    {
+                        queue = string.Format("{0} ProductName LIKE '%{1}%' ", queue, StringUtilities.EscapeStringForDatabase(filter.Name.Trim(' ')));
                     }
                     if (filter.SearchByDate)
                     {
@@ -155,6 +157,12 @@ namespace HomeCalc.Model.DbService
 
                     while (dataReader.Read())
                     {
+                        //var rateRaw = dataReader.GetValue(dataReader.GetOrdinal("Rate"));
+                        //    var Rate = (rateRaw as long?) ?? 0;
+                        //    var Comment = (dataReader.GetString(dataReader.GetOrdinal("Comment")) as string) ?? string.Empty;
+                        //    var IsMonthly = (dataReader.GetBoolean(dataReader.GetOrdinal("IsMonthly")) as bool?) ?? false;
+                        //    var StoreId = (dataReader.GetInt64(dataReader.GetOrdinal("StoreId")) as long?) ?? 0;
+                        //    var StoreName = (dataReader.GetString(dataReader.GetOrdinal("StoreName")) as string) ?? string.Empty;
                         list.Add(new PurchaseModel
                         {
                             Id = dataReader.GetInt64(dataReader.GetOrdinal("Id")),
@@ -164,12 +172,11 @@ namespace HomeCalc.Model.DbService
                             TotalCost = dataReader.GetDouble(dataReader.GetOrdinal("TotalCost")),
                             ItemCost = dataReader.GetDouble(dataReader.GetOrdinal("ItemCost")),
                             ItemsNumber = dataReader.GetDouble(dataReader.GetOrdinal("ItemsNumber")),
-                            Rate = dataReader.GetInt32(dataReader.GetOrdinal("Rate")),
-                            CommentId = dataReader.GetInt64(dataReader.GetOrdinal("CommentId")),
-                            Comment = dataReader.GetString(dataReader.GetOrdinal("Comment")),
-                            IsMonthly = dataReader.GetBoolean(dataReader.GetOrdinal("IsMonthly")),
-                            StoreId = dataReader.GetInt32(dataReader.GetOrdinal("StoreId")),
-                            StoreName = dataReader.GetString(dataReader.GetOrdinal("StoreName"))
+                            Rate = (int)((dataReader.GetValue(dataReader.GetOrdinal("Rate")) as long?) ?? 0L),
+                            Comment = (dataReader.GetValue(dataReader.GetOrdinal("Comment")) as string) ?? string.Empty,
+                            IsMonthly = (dataReader.GetValue(dataReader.GetOrdinal("IsMonthly")) as bool?) ?? false,
+                            StoreId = (dataReader.GetValue(dataReader.GetOrdinal("StoreId")) as long?) ?? 0,
+                            StoreName = (dataReader.GetValue(dataReader.GetOrdinal("StoreName")) as string) ?? string.Empty
                         });
                     }
 

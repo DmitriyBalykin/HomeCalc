@@ -17,7 +17,7 @@ namespace HomeCalc.Presentation.Models
         DataBaseService DBService;
         private static StorageService instance;
 
-        private List<Purchase> purchaseHistory;
+        private ListSafe<Purchase> purchaseHistory;
 
         public event EventHandler TypesUpdated;
         public event EventHandler SubTypesUpdated;
@@ -40,6 +40,7 @@ namespace HomeCalc.Presentation.Models
             logger.Debug("Storage service initiated");
             logger.Debug("Starting history update");
             Task.Factory.StartNew(async () => await UpdateHistory());
+            purchaseHistory = new ListSafe<Purchase>();
         }
 
         private async Task UpdateHistory()
@@ -47,7 +48,7 @@ namespace HomeCalc.Presentation.Models
             try
             {
                 logger.Debug("Purchase history update started");
-                purchaseHistory = await LoadPurchaseList(SearchRequestModel.Requests.Empty).ConfigureAwait(false);
+                purchaseHistory.AddRange(await LoadPurchaseList(SearchRequestModel.Requests.Empty).ConfigureAwait(false));
                 logger.Debug("Purchase data loaded");
                 if (purchaseHistory != null && purchaseHistory.Count() > 0)
                 {
@@ -104,6 +105,7 @@ namespace HomeCalc.Presentation.Models
         #region Purchase
         public async Task<bool> AddPurchase(Purchase purchase)
         {
+            bool result = false;
             //Product always has name
             var productId = await DBService.SaveProduct(ProductToModel(purchase)).ConfigureAwait(false);
             if (productId < 1)
@@ -112,34 +114,40 @@ namespace HomeCalc.Presentation.Models
                 return false;
             }
             
-            long storeId = 0;
             if (!string.IsNullOrEmpty(purchase.StoreName))
             {
-                storeId = await DBService.SaveStore(
+                purchase.StoreId = await DBService.SaveStore(
                     new StoreModel 
                     {
                         Id = purchase.StoreId,
-                        Name = purchase.StoreName
+                        Name = StringUtilities.EscapeStringForDatabase(purchase.StoreName)
                     }).ConfigureAwait(false);
-                if (storeId < 1)
+                if (purchase.StoreId < 1)
                 {
                     logger.Error("AddPurchase: Error occured during store saving: {0}", purchase.Name);
                     return false;
                 }
             }
+
             
-            long commentId = 0;
+
+            var purchaseId = await DBService.SavePurchase(PurchaseToModel(purchase, productId, purchase.StoreId)).ConfigureAwait(false);
+            if (purchaseId > 0)
+            {
+                purchaseHistory.Add(new Purchase(purchase));
+                AnnounceHistoryUpdate();
+                result = true;
+            }
             if (!string.IsNullOrEmpty(purchase.PurchaseComment))
             {
-                commentId = await DBService.SaveComment(
+                long commentId = await DBService.SaveComment(
                     new CommentModel
                     {
-                        Id = purchase.CommentId,
-                        PurchaseId = purchase.Id,
+                        PurchaseId = purchaseId,
                         StoreId = purchase.StoreId,
-                        Text = purchase.PurchaseComment
+                        Text = StringUtilities.EscapeStringForDatabase(purchase.PurchaseComment)
                     }).ConfigureAwait(false);
-                if (storeId < 1)
+                if (commentId < 1)
                 {
                     logger.Error("AddPurchase: Error occured during comment saving: {0}", purchase.Name);
                     return false;
@@ -148,29 +156,21 @@ namespace HomeCalc.Presentation.Models
             //Store comment not binded to purchase
             if (!string.IsNullOrEmpty(purchase.StoreComment))
             {
-                await DBService.SaveComment(
+                long storeCommentId = await DBService.SaveComment(
                     new CommentModel
                     {
-                        Id = purchase.CommentId,
                         PurchaseId = purchase.Id,
                         StoreId = purchase.StoreId,
-                        Text = purchase.StoreComment
+                        Text = StringUtilities.EscapeStringForDatabase(purchase.StoreComment)
                     }).ConfigureAwait(false);
-                if (storeId < 1)
+                if (storeCommentId < 1)
                 {
                     logger.Error("AddPurchase: Error occured during store comment saving: {0}", purchase.Name);
                     return false;
                 }
             }
 
-            var purchaseResult = await DBService.SavePurchase(PurchaseToModel(purchase, productId, storeId, commentId)).ConfigureAwait(false);
-            if (productId > 0)
-            {
-                purchaseHistory.Add(new Purchase(purchase));
-                AnnounceHistoryUpdate();
-                return true;
-            }
-            return false;
+            return result;
         }
         public async Task<bool> UpdatePurchase(Purchase purchase)
         {
@@ -190,16 +190,6 @@ namespace HomeCalc.Presentation.Models
             }
             return false;
         }
-        //public async Task<bool> SavePurchaseBulk(List<Purchase> purchases)
-        //{
-        //    var result = await DBService.SavePurchaseBulk(purchases.Select(p => ProductToModel(p))).ConfigureAwait(false);
-        //    if (result)
-        //    {
-        //        purchaseHistory.AddRange(purchases);
-        //        AnnounceHistoryUpdate();
-        //    }
-        //    return result;
-        //}
         public async Task<Purchase> LoadPurchase(int id)
         {
             return await ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
@@ -235,28 +225,6 @@ namespace HomeCalc.Presentation.Models
         }
         #endregion
         #region Product
-        public async Task<Product> LoadProduct(int id)
-        {
-            return ModelToProduct(await DBService.LoadProduct(id).ConfigureAwait(false));
-        }
-        public async Task<List<Product>> LoadProductList(SearchRequestModel.Requests enumFilter)
-        {
-            var list = new List<Product>();
-            switch (enumFilter)
-            {
-                case SearchRequestModel.Requests.Empty:
-                    logger.Debug("Selected load purchase with no filter");
-                    var modelsList = await DBService.LoadProductList(new SearchRequestModel()).ConfigureAwait(false);
-                    foreach (var model in modelsList)
-                    {
-                        list.Add(ModelToProduct(model));
-                    }
-                    break;
-            }
-            logger.Debug("StorageService: product list loaded");
-            return list;
-        }
-        
         #endregion
         #region ProductType
         public async Task<bool> SaveProductType(ProductType productType)
@@ -405,17 +373,6 @@ namespace HomeCalc.Presentation.Models
         {
             return new ProductSubTypeModel { Id = subType.Id, Name = StringUtilities.EscapeStringForDatabase(subType.Name) };
         }
-        private Product ModelToProduct(ProductModel model)
-        {
-            logger.Debug("StorageService: converting product storage model to product");
-            return new Product {
-                Id = (int)model.Id,
-                Name = model.Name,
-                IsMonthly = model.IsMonthly,
-                TypeId = model.TypeId,
-                SubTypeId = model.SubTypeId
-            };
-        }
         private ProductModel ProductToModel(Purchase purchase)
         {
             return new ProductModel
@@ -439,14 +396,13 @@ namespace HomeCalc.Presentation.Models
                 SubType = await ResolveProductSubType(model.SubTypeId)
             };
         }
-        private PurchaseModel PurchaseToModel(Purchase purchase, long productId, long storeId, long commentId)
+        private PurchaseModel PurchaseToModel(Purchase purchase, long productId, long storeId)
         {
             return new PurchaseModel
             {
                 Id = purchase.Id,
                 ProductId = productId,
                 StoreId = storeId,
-                CommentId = commentId,
                 Timestamp = purchase.Date.Ticks,
                 ItemsNumber = purchase.ItemsNumber,
                 ItemCost = purchase.ItemCost,

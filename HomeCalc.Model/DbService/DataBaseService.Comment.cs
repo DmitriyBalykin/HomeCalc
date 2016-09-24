@@ -27,9 +27,9 @@ namespace HomeCalc.Model.DbService
                 {
                     if (comment.Id == 0)
 	                {
-                        command.CommandText = string.Format("INSERT INTO COMMENT(PurchaseId, StoreId, Text, Rate) VALUES ({0}, '{1}', '{2}', '{3}'); SELECT last_insert_rowid()",
+                        command.CommandText = string.Format("INSERT INTO COMMENT(PurchaseId, StoreId, Text, Rate) VALUES ({0}, '{1}', '{2}', '{3}'); SELECT last_insert_rowid() FROM COMMENT",
                             comment.PurchaseId, comment.StoreId, comment.Text, comment.Rate);
-                        commentId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
+                        commentId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0L);
                     }
                     else
                     {

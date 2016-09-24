@@ -67,6 +67,7 @@
     <Compile Include="Services\StatusService.cs" />
     <Compile Include="Utilities\Cache.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
+    <Compile Include="Utilities\ListSafe.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

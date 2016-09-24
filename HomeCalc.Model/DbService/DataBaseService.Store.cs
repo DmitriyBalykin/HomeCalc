@@ -27,14 +27,22 @@ namespace HomeCalc.Model.DbService
                 {
                     if (store.Id == 0)
                     {
-                        command.CommandText = string.Format("INSERT INTO STORE(Name) VALUES ('{0}'); SELECT last_insert_rowid()", store.Name);
+                        command.CommandText = string.Format("SELECT Id FROM STORE WHERE Name='{0}'", store.Name);
+                        storeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0L);
+                    }
+                    else
+                    {
+                        storeId = store.Id;
+                    }
+                    if (storeId == 0)
+                    {
+                        command.CommandText = string.Format("INSERT INTO STORE(Name) VALUES ('{0}'); SELECT last_insert_rowid() FROM STORE", store.Name);
                         storeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
                     }
                     else
                     {
-                        command.CommandText = string.Format("UPDATE STORE SET Name = '{0}' WHERE Id = {1}", store.Name, store.Id);
+                        command.CommandText = string.Format("UPDATE STORE SET Name = '{0}' WHERE Id = {1}", store.Name, storeId);
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                        storeId = store.Id;
                     }
                 }
             }

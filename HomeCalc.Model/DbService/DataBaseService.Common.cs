@@ -84,9 +84,9 @@ namespace HomeCalc.Model.DbService
                             command.CommandText =
                                     "create table if not exists PRODUCTSUBTYPE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);" +
                                     "create table if not exists STORE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);" +
-                                    "create table if not exists PRODUCT (Id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT, TypeId INTEGER, SubTypeId INTEGER, IsMonthly BOOLEAN);" +
-                                    "create table if not exists PURCHASE (Id INTEGER PRIMARY KEY AUTOINCREMENT, ProductId INTEGER, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, StoreId INTEGER, CommentId INTEGER);" +
-                                    "create table if not exists COMMENT (Id INTEGER PRIMARY KEY AUTOINCREMENT, PurchaseId, StoreId, Text TEXT, Rate Integer);";
+                                    "create table if not exists PRODUCT (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, TypeId INTEGER, SubTypeId INTEGER, IsMonthly BOOLEAN);" +
+                                    "create table if not exists PURCHASE (Id INTEGER PRIMARY KEY AUTOINCREMENT, ProductId INTEGER, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, StoreId INTEGER);" +
+                                    "create table if not exists COMMENT (Id INTEGER PRIMARY KEY AUTOINCREMENT, PurchaseId INTEGER, StoreId INTEGER, Text TEXT, Rate INTEGER);";
                                 command.ExecuteNonQuery();
                             if (IsTableExists("PURCHASETYPEMODELS") && IsTableExists("SETTINGMODELS") && IsTableExists("PURCHASEMODELS"))
                             {
@@ -95,7 +95,7 @@ namespace HomeCalc.Model.DbService
                                     "ALTER TABLE PURCHASETYPEMODELS RENAME TO PRODUCTTYPE;" +
                                     "ALTER TABLE SETTINGMODELS RENAME TO SETTING;"+
                                     "INSERT INTO PRODUCT (Id, Name, TypeId) SELECT DISTINCT PurchaseId,Name, TypeId FROM PURCHASEMODELS;"+
-                                    "INSERT INTO PURCHASE (Id, Timestamp, TotalCost, ItemCost, ItemsNumber) SELECT p.PurchaseId, Timestamp, TotalCost, ItemCost, ItemsNumber FROM PURCHASEMODELS pm JOIN PRODUCT p on pm.Name=p.name;"+
+                                    "INSERT INTO PURCHASE (Id, ProductId, Timestamp, TotalCost, ItemCost, ItemsNumber) SELECT pm.PurchaseId, p.Id, Timestamp, TotalCost, ItemCost, ItemsNumber FROM PURCHASEMODELS pm JOIN PRODUCT p on pm.Name=p.name;"+
                                     "DROP TABLE PURCHASEMODELS";
                                     command.ExecuteNonQuery();
                             }
@@ -117,9 +117,9 @@ namespace HomeCalc.Model.DbService
                     transaction.Commit();
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
-                throw new Exception("Database initialization failed");
+                throw new Exception("Database initialization failed, "+ex.Message);
             }
         }
 

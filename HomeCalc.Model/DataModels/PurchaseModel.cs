@@ -20,7 +20,6 @@ namespace HomeCalc.Model.DataModels
         public double ItemCost { get; set; }
         public double ItemsNumber { get; set; }
         public int Rate { get; set; }
-        public long CommentId { get; set; }
         public string Comment { get; set; }
         public long StoreId { get; set; }
         public string StoreName { get; set; }
