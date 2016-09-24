@@ -57,7 +57,7 @@ namespace HomeCalc.Presentation.ViewModels
             Task.Factory.StartNew(async () => 
             {
                 var result = await StoreService.AddPurchase(purchase);
-                if (result)
+                if (result != null)
                 {
                     logger.Info("Purchase saved");
                     Status.Post("Покупка \"{0}\" збережена", PurchaseName);

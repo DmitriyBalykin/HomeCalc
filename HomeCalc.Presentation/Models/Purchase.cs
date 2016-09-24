@@ -32,7 +32,7 @@ namespace HomeCalc.Presentation.Models
             StoreComment = purchase.StoreComment;
             StoreId = purchase.StoreId;
         }
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void PublishChange(string propertyName)
@@ -289,7 +289,7 @@ namespace HomeCalc.Presentation.Models
         }
         public override int GetHashCode()
         {
-            return this.Id;
+            return (int)this.Id;
         }
     }
 }

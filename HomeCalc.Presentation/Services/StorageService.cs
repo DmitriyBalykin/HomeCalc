@@ -103,15 +103,14 @@ namespace HomeCalc.Presentation.Models
         #endregion
 
         #region Purchase
-        public async Task<bool> AddPurchase(Purchase purchase)
+        public async Task<Purchase> AddPurchase(Purchase purchase)
         {
-            bool result = false;
             //Product always has name
             var productId = await DBService.SaveProduct(ProductToModel(purchase)).ConfigureAwait(false);
             if (productId < 1)
             {
                 logger.Error("AddPurchase: Error occured during product saving: {0}", purchase.Name);
-                return false;
+                return null;
             }
             
             if (!string.IsNullOrEmpty(purchase.StoreName))
@@ -125,18 +124,15 @@ namespace HomeCalc.Presentation.Models
                 if (purchase.StoreId < 1)
                 {
                     logger.Error("AddPurchase: Error occured during store saving: {0}", purchase.Name);
-                    return false;
+                    return null;
                 }
             }
-
-            
 
             var purchaseId = await DBService.SavePurchase(PurchaseToModel(purchase, productId, purchase.StoreId)).ConfigureAwait(false);
             if (purchaseId > 0)
             {
                 purchaseHistory.Add(new Purchase(purchase));
                 AnnounceHistoryUpdate();
-                result = true;
             }
             if (!string.IsNullOrEmpty(purchase.PurchaseComment))
             {
@@ -150,7 +146,7 @@ namespace HomeCalc.Presentation.Models
                 if (commentId < 1)
                 {
                     logger.Error("AddPurchase: Error occured during comment saving: {0}", purchase.Name);
-                    return false;
+                    return null;
                 }
             }
             //Store comment not binded to purchase
@@ -166,11 +162,13 @@ namespace HomeCalc.Presentation.Models
                 if (storeCommentId < 1)
                 {
                     logger.Error("AddPurchase: Error occured during store comment saving: {0}", purchase.Name);
-                    return false;
+                    return null;
                 }
             }
 
-            return result;
+            purchase.Id = purchaseId;
+
+            return purchase;
         }
         public async Task<bool> UpdatePurchase(Purchase purchase)
         {
@@ -190,7 +188,17 @@ namespace HomeCalc.Presentation.Models
             }
             return false;
         }
-        public async Task<Purchase> LoadPurchase(int id)
+        [Obsolete("For Test purposes only!!!")]
+        public async Task<bool> DeletePurchase(string purchaseName)
+        {
+            if (await DBService.DeletePurchase(purchaseName).ConfigureAwait(false))
+            {
+                Status.Post("Запис \"{0}\" видалено", purchaseName);
+                return true;
+            }
+            return false;
+        }
+        public async Task<Purchase> LoadPurchase(long id)
         {
             return await ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
         }
@@ -306,7 +314,7 @@ namespace HomeCalc.Presentation.Models
                 return null;
             }
         }
-        internal async Task<bool> RemoveProduct(int productId)
+        internal async Task<bool> RemoveProduct(long productId)
         {
             bool result = await DBService.DeleteProduct(productId).ConfigureAwait(false);
             if (result)

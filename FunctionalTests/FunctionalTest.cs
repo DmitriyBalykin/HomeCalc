@@ -36,11 +36,12 @@ namespace FunctionalTests
                 Type = new ProductType { Name = "Їжа", TypeId = 1 },
                 SubType = new ProductSubType { Name = "Фрукт", Id = 1 }
             };
+            //Cleanup
+            Assert.IsTrue(StoreService.DeletePurchase(purchase.Name).Result, "Cleanup failed");
+            
             //Save test
-            if (!StoreService.AddPurchase(purchase).Result)
-            {
-                throw new Exception("Purchase saving error");
-            }
+            purchase = StoreService.AddPurchase(purchase).Result;
+            Assert.IsTrue(purchase != null, "Purchase saving error");
             //read test
 
             var searchRequest = new SearchRequestModel
@@ -48,36 +49,28 @@ namespace FunctionalTests
                 Name = purchase.Name,
                 SearchByName = true
             };
-            var controlPurchase = (StoreService.LoadPurchaseList(searchRequest).Result).FirstOrDefault();
-            if (!controlPurchase.DeepEquals(purchase))
-            {
-                throw new Exception("Purchase storage error: not consistent");
-            }
+
+            var foundList = StoreService.LoadPurchaseList(searchRequest).Result;
+            Assert.IsTrue(foundList.Count == 1, "Purchase storage error: records duplicating found");
+
+            var controlPurchase = foundList.FirstOrDefault();
+            Assert.IsTrue(controlPurchase.DeepEquals(purchase), "Purchase storage error: not consistent");
+
             //update test
             purchase.IsMonthly = false;
             purchase.Name = "Звичайне яблуко";
 
-            if (!StoreService.AddPurchase(purchase).Result)
-            {
-                throw new Exception("Purchase saving error");
-            }
+            purchase = StoreService.AddPurchase(purchase).Result;
+            Assert.IsTrue(purchase != null, "Purchase saving error");
             //repeated read test
             var controlPurchase2 = StoreService.LoadPurchase(controlPurchase.Id).Result;
-            if (!controlPurchase2.DeepEquals(purchase))
-            {
-                throw new Exception("Purchase storage error: not consistent");
-            }
+            Assert.IsTrue(controlPurchase2.DeepEquals(purchase), "Purchase storage error: not consistent");
 
             //delete test
-            if (!StoreService.DeletePurchase(purchase).Result)
-            {
-                throw new Exception("Purchase deletion error");
-            }
+            Assert.IsTrue(StoreService.DeletePurchase(purchase).Result, "Purchase deletion error");
+
             var deletedPurchase = StoreService.LoadPurchase(purchase.Id);
-            if (deletedPurchase != null)
-            {
-                throw new Exception("Purchase deletion error: not deleted");
-            }
+            Assert.IsTrue (deletedPurchase == null, "Purchase deletion error: not deleted");
 
         }
     }

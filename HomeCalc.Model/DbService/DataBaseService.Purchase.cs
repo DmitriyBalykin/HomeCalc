@@ -219,5 +219,34 @@ namespace HomeCalc.Model.DbService
 
             return result;
         }
+        [Obsolete("For test purposes only!!!")]
+        public async Task<bool> DeletePurchase(string purchaseName)
+        {
+            bool result = false;
+            purchaseName = StringUtilities.EscapeStringForDatabase(purchaseName);
+            try
+            {
+                using (var db = dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT Id FROM PRODUCT WHERE Name='{0}'", purchaseName);
+                    var productId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0);
+                    if (productId != 0)
+                    {
+                        command.CommandText = string.Format("DELETE FROM PURCHASE WHERE ProductId='{0}'", productId);
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    }
+                    
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                logger.Error("Exception during execution method \"DeletePurchase\": {0}", ex.Message);
+            }
+
+            return result;
+        }
     }
 }

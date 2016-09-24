@@ -8,9 +8,9 @@ namespace HomeCalc.Presentation.Services
 {
     interface IStorageService
     {
-        Task<bool> AddPurchase(Purchase purchase);
+        Task<Purchase> AddPurchase(Purchase purchase);
         event EventHandler HistoryUpdated;
-        Task<Purchase> LoadPurchase(int id);
+        Task<Purchase> LoadPurchase(long id);
         Task<List<Purchase>> LoadPurchaseList(SearchRequestModel filter);
         Task<List<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter);
         Task<List<ProductType>> LoadProductTypeList();
