@@ -47,7 +47,8 @@ namespace HomeCalc.Model.DbService
                         purchase.TotalCost.ToString(formatCulture),
                         purchase.ItemCost.ToString(formatCulture),
                         purchase.ItemsNumber.ToString(formatCulture),
-                        purchase.StoreId);
+                        purchase.StoreId,
+                        purchase.Id);
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
                     
@@ -112,7 +113,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    string queue = "SELECT pu.Id AS Id, pu.Timestamp, pu.TotalCost, pu.ItemCost, pu.ItemsNumber," +
+                    string queue = "SELECT pu.Id AS PurchaseId, pu.Timestamp, pu.TotalCost, pu.ItemCost, pu.ItemsNumber," +
                                     "p.Id AS ProductId, p.Name AS ProductName, p.TypeId, p.SubTypeId, p.IsMonthly, "+
                                     "s.Id AS StoreId, s.Name AS StoreName, "+
                                     "c.Text AS Comment, c.Rate "+
@@ -123,7 +124,7 @@ namespace HomeCalc.Model.DbService
                     "WHERE";
                     if (filter.SearchById)
                     {
-                        queue = string.Format("{0} Id={1} ", queue, filter.PurchaseId);
+                        queue = string.Format("{0} PurchaseId={1} ", queue, filter.PurchaseId);
                     }
                     if (filter.SearchByName)
                     {
@@ -159,7 +160,7 @@ namespace HomeCalc.Model.DbService
                     {
                         list.Add(new PurchaseModel
                         {
-                            Id = dataReader.GetInt64(dataReader.GetOrdinal("Id")),
+                            Id = dataReader.GetInt64(dataReader.GetOrdinal("PurchaseId")),
                             ProductName = dataReader.GetString(dataReader.GetOrdinal("ProductName")),
                             ProductId = dataReader.GetInt64(dataReader.GetOrdinal("ProductId")),
                             Timestamp = dataReader.GetInt64(dataReader.GetOrdinal("Timestamp")),

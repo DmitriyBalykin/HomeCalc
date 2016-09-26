@@ -134,6 +134,10 @@ namespace HomeCalc.Presentation.Models
                 purchaseHistory.Add(new Purchase(purchase));
                 AnnounceHistoryUpdate();
             }
+            else
+            {
+                return null;
+            }
             if (!string.IsNullOrEmpty(purchase.PurchaseComment))
             {
                 long commentId = await DBService.SaveComment(
@@ -387,7 +391,6 @@ namespace HomeCalc.Presentation.Models
         {
             return new ProductModel
             {
-                Id = purchase.Id,
                 Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
                 Type = TypeToModel(purchase.Type),
                 SubType = SubTypeToModel(purchase.SubType),
@@ -397,6 +400,10 @@ namespace HomeCalc.Presentation.Models
         private async Task<Purchase> ModelToPurchase(PurchaseModel model)
         {
             logger.Debug("StorageService: converting purchase storage model to purchase");
+            if (model == null)
+            {
+                return null;
+            }
             return new Purchase
             {
                 Id = (int)model.Id,

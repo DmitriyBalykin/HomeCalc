@@ -69,7 +69,7 @@ namespace FunctionalTests
             //delete test
             Assert.IsTrue(StoreService.DeletePurchase(purchase).Result, "Purchase deletion error");
 
-            var deletedPurchase = StoreService.LoadPurchase(purchase.Id);
+            var deletedPurchase = StoreService.LoadPurchase(purchase.Id).Result;
             Assert.IsTrue (deletedPurchase == null, "Purchase deletion error: not deleted");
 
         }
