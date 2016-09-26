@@ -279,9 +279,9 @@ namespace HomeCalc.Presentation.Models
                 p.PurchaseComment == PurchaseComment &&
                 p.PurchaseRate == PurchaseRate &&
                 p.StoreName == StoreName &&
-                p.SubType.Id == SubType.Id &&
+                p.SubType.Name == SubType.Name &&
                 p.TotalCost == TotalCost &&
-                p.Type.TypeId == Type.TypeId
+                p.Type.Name == Type.Name
                 );
         }
         public override int GetHashCode()

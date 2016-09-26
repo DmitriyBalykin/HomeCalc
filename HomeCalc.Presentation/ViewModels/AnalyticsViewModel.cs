@@ -26,7 +26,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             base.Initialize();
 
-            TypeSelectorItems.Insert(0, new ProductType { Name = "Не обрано", TypeId = -1 });
+            TypeSelectorItems.Insert(0, new ProductType { Name = "Не обрано", Id = -1 });
 
             IntervalList = AggregationInterval.GetList();
 
@@ -40,11 +40,11 @@ namespace HomeCalc.Presentation.ViewModels
             var searchRequest = new SearchRequestModel
             {
                 Name = PurchaseName,
-                TypeId = ProductType.TypeId,
+                TypeId = ProductType.Id,
                 DateStart = SearchFromDate,
                 DateEnd = SearchToDate,
                 SearchByName = !string.IsNullOrEmpty(PurchaseName),
-                SearchByType = ProductType.TypeId != -1,
+                SearchByType = ProductType.Id != -1,
                 SearchByDate = true,
                 SearchByCost = false,
             };

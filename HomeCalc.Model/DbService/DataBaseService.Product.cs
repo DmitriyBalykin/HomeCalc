@@ -23,10 +23,14 @@ namespace HomeCalc.Model.DbService
             long productId = -1;
             try
             {
+                long typeId = await SaveProductType(product.Type);
+                long subTypeId = await SaveProductSubType(product.SubType);
+
                 using (var db = dbManager.GetConnection())
                 using (var transaction = db.Connection.BeginTransaction())
                 using (var command = db.Connection.CreateCommand())
                 {
+
                     if (product.Id == 0)
                     {
                         command.CommandText = string.Format("SELECT Id FROM PRODUCT WHERE Name='{0}'", product.Name);
@@ -40,14 +44,14 @@ namespace HomeCalc.Model.DbService
                     {
                         command.CommandText = string.Format(
                         "INSERT INTO PRODUCT(Name, TypeId, SubTypeId, IsMonthly) VALUES ('{0}', {1}, {2}, '{3}'); SELECT last_insert_rowid() FROM PRODUCT",
-                        product.Name, product.TypeId, product.SubTypeId, product.IsMonthly);
+                        product.Name, typeId, subTypeId, product.IsMonthly);
                         productId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
                     }
                     else
                     {
                         command.CommandText = string.Format(
                         "UPDATE PRODUCT SET Name = '{0}', TypeId = {1}, SubTypeId = {2}, IsMonthly = '{3}' WHERE Id = {4}",
-                        product.Name, product.TypeId, product.SubTypeId, product.IsMonthly, productId);
+                        product.Name, typeId, subTypeId, product.IsMonthly, productId);
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
                     transaction.Commit();
@@ -61,32 +65,7 @@ namespace HomeCalc.Model.DbService
         }
         public async Task<ProductModel> LoadProduct(long id)
         {
-            ProductModel product = null;
-            try
-            {
-                using (var db = dbManager.GetConnection())
-                using (var command = db.Connection.CreateCommand())
-                {
-                    command.CommandText = string.Format("SELECT * FROM PRODUCT WHERE Id = {0}", id);
-                    var dbReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
-                    if (dbReader.HasRows && dbReader.Read())
-                    {
-                        product = new ProductModel
-                        {
-                            Id = dbReader.GetInt64(0),
-                            Name = dbReader.GetString(1),
-                            TypeId = dbReader.GetInt32(2),
-                            SubTypeId = dbReader.GetInt32(3),
-                            IsMonthly = dbReader.GetBoolean(4)
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Exception during execution method \"LoadProduct\": {0}", ex.Message);
-            }
-            return product;
+            return (await LoadProductList(new SearchRequestModel { SearchByProductId = true, ProductId = id }).ConfigureAwait(false)).FirstOrDefault();
         }
         public async Task<List<ProductModel>> LoadProductList(SearchRequestModel filter)
         {
@@ -99,8 +78,15 @@ namespace HomeCalc.Model.DbService
                 using (var db = dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    string queue = "SELECT * FROM PRODUCT WHERE";
-
+                    string queue = "SELECT p.Id as ProductId, p.Name as ProductName, p.IsMonthly, t.Id as TypeId, t.Name as TypeName, st.Id as SubTypeId, st.Name as SubTypeName"+
+                    "FROM PRODUCT p"+
+                    "JOIN PRODUCTTYPE t ON p.TypeId = t.Id" +
+                    "LEFT JOIN PRODUCTSUBTYPE st on p.SubTypeId = st.Id" +
+                    "WHERE";
+                    if (filter.SearchByProductId)
+                    {
+                        queue = string.Format("{0} Id = {1} ", queue, filter.ProductId);
+                    }
                     if (filter.SearchByName)
                     {
                         queue = string.Format("{0} Name LIKE '%{1}%' ", queue, StringUtilities.EscapeStringForDatabase(filter.Name.Trim(' ')));
@@ -129,11 +115,19 @@ namespace HomeCalc.Model.DbService
                     {
                         list.Add(new ProductModel
                         {
-                            Id = dataReader.GetInt64(0),
-                            Name = dataReader.GetString(1),
-                            TypeId = dataReader.GetInt32(2),
-                            SubTypeId = dataReader.GetInt32(3),
-                            IsMonthly = dataReader.GetBoolean(4)
+                            Id = dataReader.GetInt64(dataReader.GetOrdinal("ProductId")),
+                            Name = dataReader.GetString(dataReader.GetOrdinal("ProductName")),
+                            Type = new ProductTypeModel
+                            {
+                                TypeId = dataReader.GetInt64(dataReader.GetOrdinal("TypeId")),
+                                Name = dataReader.GetString(dataReader.GetOrdinal("TypeName"))
+                            },
+                            SubType = new ProductSubTypeModel
+                            {
+                                Id = (dataReader.GetValue(dataReader.GetOrdinal("SubTypeId")) as long?) ?? 0L,
+                                Name = (dataReader.GetValue(dataReader.GetOrdinal("SubTypeName")) as string) ?? string.Empty
+                            },
+                            IsMonthly = dataReader.GetBoolean(dataReader.GetOrdinal("IsMonthly"))
                         });
                     }
 
@@ -170,37 +164,63 @@ namespace HomeCalc.Model.DbService
         #endregion
 
         #region Type
-        public async Task<bool> SaveProductType(ProductTypeModel productType)
+        public async Task<long> SaveProductType(ProductTypeModel productType)
         {
-            return await SaveProductType(productType, null);
-        }
-        public async Task<bool> SaveProductType(ProductTypeModel productType, SQLiteCommand transactionCommand)
-        {
-
-            bool result = false;
+            long typeId = productType.TypeId;
             try
             {
                 using (var db = dbManager.GetConnection())
-                using (var command = transactionCommand ?? db.Connection.CreateCommand())
+                using (var command = db.Connection.CreateCommand())
                 {
-                    if (productType.TypeId == 0)
+                    if (typeId == 0)
                     {
-                        command.CommandText = string.Format("INSERT INTO PRODUCTTYPE (Name) VALUES ('{0}')", productType.Name);
+                        //is this part really needed?
+                        command.CommandText = string.Format("SELECT TypeId FROM PRODUCTTYPE WHERE Name='{0}'", productType.Name);
+                        typeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0L);
+                    }
+                    if (typeId == 0)
+                    {
+                        command.CommandText = string.Format("INSERT INTO PRODUCTTYPE (Name) VALUES ('{0}'); SELECT last_insert_rowid() FROM PRODUCTTYPE", productType.Name);
+                        typeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
                     }
                     else
                     {
                         command.CommandText = string.Format("UPDATE PRODUCTTYPE SET Name = '{0}' WHERE TypeId = {1}", productType.Name, productType.TypeId);
                     }
-                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                    result = true;
                 }
             }
             catch (Exception ex)
             {
-                result = false;
+                typeId = -1;
                 logger.Error("Exception during execution method \"SaveProductType\": {0}", ex.Message);
             }
-            return result;
+            return typeId;
+        }
+        public async Task<ProductTypeModel> LoadProductType(long typeId)
+        {
+            ProductTypeModel type = null;
+            try
+            {
+                using (var db = dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT * FROM PRODUCTTYPE WHERE Id={0}", typeId);
+                    var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    if (dataReader.Read())
+                    {
+                        type = new ProductTypeModel
+                        {
+                            TypeId = dataReader.GetInt64(0),
+                            Name = dataReader.GetString(1)
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadProductType\": {0}", ex.Message);
+            }
+            return type;
         }
         public async Task<IEnumerable<ProductTypeModel>> LoadProductTypeList()
         {
@@ -252,33 +272,63 @@ namespace HomeCalc.Model.DbService
         #endregion
 
         #region SubType
-        public async Task<bool> SaveProductSubType(ProductSubTypeModel productSubType)
+        public async Task<long> SaveProductSubType(ProductSubTypeModel productSubType)
         {
-
-            bool result = false;
+            long subTypeId = productSubType.Id;
             try
             {
                 using (var db = dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    if (productSubType.Id == 0)
+                    if (subTypeId == 0)
                     {
-                        command.CommandText = string.Format("INSERT INTO PRODUCTSUBTYPE (Name) VALUES ('{0}')", productSubType.Name);
+                        //is this part really needed?
+                        command.CommandText = string.Format("SELECT Id FROM PRODUCTSUBTYPE WHERE Name='{0}'", productSubType.Name);
+                        subTypeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0L);
+                    }
+                    if (subTypeId == 0)
+                    {
+                        command.CommandText = string.Format("INSERT INTO PRODUCTSUBTYPE (Name) VALUES ('{0}');SELECT last_insert_rowid() FROM PRODUCTSUBTYPE", productSubType.Name);
+                        subTypeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
                     }
                     else
                     {
                         command.CommandText = string.Format("UPDATE PRODUCTSUBTYPE SET Name = '{0}' WHERE Id = {1}", productSubType.Name, productSubType.Id);
                     }
-                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                    result = true;
                 }
             }
             catch (Exception ex)
             {
-                result = false;
+                subTypeId = -1;
                 logger.Error("Exception during execution method \"SaveProductSubType\": {0}", ex.Message);
             }
-            return result;
+            return subTypeId;
+        }
+        public async Task<ProductSubTypeModel> LoadProductSubType(long subTypeId)
+        {
+            ProductSubTypeModel subType = null;
+            try
+            {
+                using (var db = dbManager.GetConnection())
+                using (var command = db.Connection.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT * FROM PRODUCTSUBTYPE WHERE Id={0}", subTypeId);
+                    var dataReader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                    if (dataReader.Read())
+                    {
+                        subType = new ProductSubTypeModel
+                        {
+                            Id = dataReader.GetInt64(0),
+                            Name = dataReader.GetString(1)
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception during execution method \"LoadProductType\": {0}", ex.Message);
+            }
+            return subType;
         }
         public async Task<IEnumerable<ProductSubTypeModel>> LoadProductSubTypeList()
         {

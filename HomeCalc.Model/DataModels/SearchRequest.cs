@@ -13,6 +13,9 @@ namespace HomeCalc.Presentation.Models
         public bool SearchById { get; set; }
         public long PurchaseId { get; set; }
 
+        public bool SearchByProductId { get; set; }
+        public long ProductId { get; set; }
+
         public bool SearchByType { get; set; }
         public int TypeId { get; set; }
 
@@ -49,5 +52,7 @@ namespace HomeCalc.Presentation.Models
         {
             Empty
         }
+
+        
     }
 }

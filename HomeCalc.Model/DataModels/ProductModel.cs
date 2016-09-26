@@ -14,8 +14,8 @@ namespace HomeCalc.Model.DataModels
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public Int64 Id { get; set; }
         public string Name { get; set; }
-        public long TypeId { get; set; }
-        public long SubTypeId { get; set; }
+        public ProductTypeModel Type { get; set; }
+        public ProductSubTypeModel SubType { get; set; }
         public bool IsMonthly { get; set; }
     }
 }

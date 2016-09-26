@@ -117,9 +117,9 @@ namespace HomeCalc.Model.DbService
                                     "s.Id AS StoreId, s.Name AS StoreName, "+
                                     "c.Text AS Comment, c.Rate "+
                     "FROM PURCHASE pu "+
-                    "LEFT JOIN PRODUCT p ON PU.ProductId=p.Id "+
-                    "LEFT JOIN STORE s ON PU.StoreId=s.Id "+
-                    "LEFT JOIN COMMENT c ON PU.Id=c.PurchaseId "+
+                    "LEFT JOIN PRODUCT p ON pu.ProductId=p.Id "+
+                    "LEFT JOIN STORE s ON pu.StoreId=s.Id "+
+                    "LEFT JOIN COMMENT c ON pu.Id=c.PurchaseId "+
                     "WHERE";
                     if (filter.SearchById)
                     {
@@ -166,10 +166,12 @@ namespace HomeCalc.Model.DbService
                             TotalCost = dataReader.GetDouble(dataReader.GetOrdinal("TotalCost")),
                             ItemCost = dataReader.GetDouble(dataReader.GetOrdinal("ItemCost")),
                             ItemsNumber = dataReader.GetDouble(dataReader.GetOrdinal("ItemsNumber")),
+                            TypeId = dataReader.GetInt64(dataReader.GetOrdinal("TypeId")),
+                            SubTypeId = (dataReader.GetValue(dataReader.GetOrdinal("SubTypeId")) as long?) ?? 0L,
                             Rate = (int)((dataReader.GetValue(dataReader.GetOrdinal("Rate")) as long?) ?? 0L),
                             Comment = (dataReader.GetValue(dataReader.GetOrdinal("Comment")) as string) ?? string.Empty,
                             IsMonthly = (dataReader.GetValue(dataReader.GetOrdinal("IsMonthly")) as bool?) ?? false,
-                            StoreId = (dataReader.GetValue(dataReader.GetOrdinal("StoreId")) as long?) ?? 0,
+                            StoreId = (dataReader.GetValue(dataReader.GetOrdinal("StoreId")) as long?) ?? 0L,
                             StoreName = (dataReader.GetValue(dataReader.GetOrdinal("StoreName")) as string) ?? string.Empty
                         });
                     }
@@ -224,7 +226,7 @@ namespace HomeCalc.Model.DbService
                 using (var command = db.Connection.CreateCommand())
                 {
                     command.CommandText = string.Format("SELECT Id FROM PRODUCT WHERE Name='{0}'", purchaseName);
-                    var productId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0);
+                    var productId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false) ?? 0L);
                     if (productId != 0)
                     {
                         command.CommandText = string.Format("DELETE FROM PURCHASE WHERE ProductId='{0}'", productId);

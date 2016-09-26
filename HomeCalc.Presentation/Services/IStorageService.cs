@@ -17,7 +17,7 @@ namespace HomeCalc.Presentation.Services
         Task<List<SettingsModel>> LoadSettings();
         Task<ProductType> ResolveProductType(long id, string name);
         //Task<bool> SavePurchaseBulk(List<Purchase> purchases);
-        Task<bool> SaveProductType(ProductType purchaseType);
+        Task<long> SaveProductType(ProductType purchaseType);
         Task<bool> SaveSettings(SettingsModel settings);
         event EventHandler TypesUpdated;
         Task<bool> UpdatePurchase(Purchase purchase);

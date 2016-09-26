@@ -7,7 +7,7 @@ namespace HomeCalc.Presentation.Models
 {
     public class ProductType
     {
-        public int TypeId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public override string ToString()

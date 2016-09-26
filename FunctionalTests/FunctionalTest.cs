@@ -33,8 +33,8 @@ namespace FunctionalTests
                 StoreComment = "Цікави'й магазин",
                 StoreName = "Нову'с магазин",
                 StoreRate = 5,
-                Type = new ProductType { Name = "Їжа", TypeId = 1 },
-                SubType = new ProductSubType { Name = "Фрукт", Id = 1 }
+                Type = new ProductType { Name = "Їжа", Id = 0 },
+                SubType = new ProductSubType { Name = "Фрукт", Id = 0 }
             };
             //Cleanup
             Assert.IsTrue(StoreService.DeletePurchase(purchase.Name).Result, "Cleanup failed");

@@ -41,7 +41,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             Task.Factory.StartNew(async () => 
             {
-                if (await StoreService.SaveProductType(new ProductType { Name = NewProductType }))
+                if (await StoreService.SaveProductType(new ProductType { Name = NewProductType }) > 0)
                 {
                     logger.Info("Purchase type {0} saved", NewProductType);
                     Status.Post("Тип покупки \"{0}\" збережено", NewProductType);
@@ -65,7 +65,7 @@ namespace HomeCalc.Presentation.ViewModels
             NewProductTypeEditable = false;
             Task.Factory.StartNew(async () =>
             {
-                if (await StoreService.RenameProductType(ProductType, NewProductType))
+                if (await StoreService.RenameProductType(ProductType, NewProductType) > 0)
                 {
                     logger.Info("Purchase type {0} renamed", NewProductType);
                     Status.Post("Тип покупки \"{0}\" перейменовано", NewProductType);
@@ -114,7 +114,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             Task.Factory.StartNew(async () =>
             {
-                if (await StoreService.SaveProductSubType(new ProductSubType { Name = NewProductSubType }))
+                if (await StoreService.SaveProductSubType(new ProductSubType { Name = NewProductSubType }) > 0)
                 {
                     logger.Info("Purchase sub type {0} saved", NewProductSubType);
                     Status.Post("Підтип покупки \"{0}\" збережено", NewProductSubType);
@@ -139,7 +139,7 @@ namespace HomeCalc.Presentation.ViewModels
             Task.Factory.StartNew(async () =>
             {
                 ProductSubType.Name = NewProductSubType;
-                if (await StoreService.SaveProductSubType(ProductSubType))
+                if (await StoreService.SaveProductSubType(ProductSubType) > 0)
                 {
                     logger.Info("Product Sub type {0} renamed", NewProductSubType);
                     Status.Post("Підтип покупки \"{0}\" перейменовано", NewProductSubType);

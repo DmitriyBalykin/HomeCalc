@@ -137,7 +137,7 @@ namespace HomeCalc.Presentation.ViewModels
             var searchRequest = new SearchRequestModel
             {
                 Name = purchaseName,
-                TypeId = ProductType != null ?ProductType.TypeId : -1,
+                TypeId = ProductType != null ?ProductType.Id : -1,
                 CostStart = costStart,
                 CostEnd = costEnd,
                 DateStart = searchFromDate,

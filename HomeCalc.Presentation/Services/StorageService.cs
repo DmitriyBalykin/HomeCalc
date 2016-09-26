@@ -141,7 +141,8 @@ namespace HomeCalc.Presentation.Models
                     {
                         PurchaseId = purchaseId,
                         StoreId = purchase.StoreId,
-                        Text = StringUtilities.EscapeStringForDatabase(purchase.PurchaseComment)
+                        Text = StringUtilities.EscapeStringForDatabase(purchase.PurchaseComment),
+                        Rate = purchase.PurchaseRate
                     }).ConfigureAwait(false);
                 if (commentId < 1)
                 {
@@ -157,7 +158,8 @@ namespace HomeCalc.Presentation.Models
                     {
                         PurchaseId = purchase.Id,
                         StoreId = purchase.StoreId,
-                        Text = StringUtilities.EscapeStringForDatabase(purchase.StoreComment)
+                        Text = StringUtilities.EscapeStringForDatabase(purchase.StoreComment),
+                        Rate = purchase.StoreRate
                     }).ConfigureAwait(false);
                 if (storeCommentId < 1)
                 {
@@ -235,11 +237,11 @@ namespace HomeCalc.Presentation.Models
         #region Product
         #endregion
         #region ProductType
-        public async Task<bool> SaveProductType(ProductType productType)
+        public async Task<long> SaveProductType(ProductType productType)
         {
             ProductTypesCache.SetNeedRefresh();
             var result = await DBService.SaveProductType(TypeToModel(productType)).ConfigureAwait(false);
-            if (result)
+            if (result > 0)
             {
                 TypeUpdated();
             }
@@ -256,11 +258,11 @@ namespace HomeCalc.Presentation.Models
             return result;
         }
 
-        public async Task<bool> RenameProductType(ProductType pType, string newProductTypeName)
+        public async Task<long> RenameProductType(ProductType pType, string newProductTypeName)
         {
             pType.Name = newProductTypeName;
             var result = await DBService.SaveProductType(TypeToModel(pType)).ConfigureAwait(false);
-            if (result)
+            if (result > 0)
             {
                 TypeUpdated();
             }
@@ -281,7 +283,7 @@ namespace HomeCalc.Presentation.Models
             if (id > -1)
             {
                 logger.Debug("StorageService: resolving product type without name");
-                return (await LoadProductTypeList()).Where(type => type.TypeId == id).SingleOrDefault();
+                return (await LoadProductTypeList()).Where(type => type.Id == id).SingleOrDefault();
             }
             else if (name != null)
             {
@@ -297,10 +299,10 @@ namespace HomeCalc.Presentation.Models
         }
         public async Task<ProductSubType> ResolveProductSubType(long id = -1, string name = null)
         {
-            if (id > -1)
+            if (id > 0)
             {
                 logger.Debug("StorageService: resolving product sub type without name");
-                return (await LoadProductSubTypeList()).Where(type => type.TypeId == id).SingleOrDefault();
+                return (await LoadProductSubTypeList()).Where(type => type.Id == id).SingleOrDefault();
             }
             else if (name != null)
             {
@@ -325,11 +327,11 @@ namespace HomeCalc.Presentation.Models
         }
         #endregion
         #region ProductSubType
-        public async Task<bool> SaveProductSubType(ProductSubType productSubType)
+        public async Task<long> SaveProductSubType(ProductSubType productSubType)
         {
             ProductSubTypesCache.SetNeedRefresh();
             var result = await DBService.SaveProductSubType(SubTypeToModel(productSubType)).ConfigureAwait(false);
-            if (result)
+            if (result > 0)
             {
                 SubTypeUpdated();
             }
@@ -365,16 +367,16 @@ namespace HomeCalc.Presentation.Models
 
         private ProductType ModelToType(ProductTypeModel model)
         {
-            return new ProductType { TypeId = (int)model.TypeId, Name = model.Name };
+            return new ProductType { Id = (int)model.TypeId, Name = model.Name };
         }
 
         private ProductTypeModel TypeToModel(ProductType type)
         {
-            return new ProductTypeModel { TypeId = type.TypeId, Name = StringUtilities.EscapeStringForDatabase(type.Name) };
+            return new ProductTypeModel { TypeId = type.Id, Name = StringUtilities.EscapeStringForDatabase(type.Name) };
         }
         private ProductSubType ModelToSubType(ProductSubTypeModel model)
         {
-            return new ProductSubType { Id = (int)model.Id, Name = model.Name };
+            return new ProductSubType { Id = (int)model.Id, Name = StringUtilities.EscapeStringForDatabase(model.Name) };
         }
 
         private ProductSubTypeModel SubTypeToModel(ProductSubType subType)
@@ -387,8 +389,8 @@ namespace HomeCalc.Presentation.Models
             {
                 Id = purchase.Id,
                 Name = StringUtilities.EscapeStringForDatabase(purchase.Name),
-                TypeId = purchase.Type.TypeId,
-                SubTypeId = purchase.SubType.Id,
+                Type = TypeToModel(purchase.Type),
+                SubType = SubTypeToModel(purchase.SubType),
                 IsMonthly = purchase.IsMonthly
             };
         }
@@ -398,6 +400,7 @@ namespace HomeCalc.Presentation.Models
             return new Purchase
             {
                 Id = (int)model.Id,
+                Date = new DateTime(model.Timestamp),
                 Name = model.ProductName,
                 ItemCost = model.ItemCost,
                 TotalCost = model.TotalCost,
