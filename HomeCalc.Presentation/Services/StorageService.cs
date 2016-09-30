@@ -344,6 +344,7 @@ namespace HomeCalc.Presentation.Models
 
         public async Task<bool> RemoveProductSubType(ProductSubType pSubType)
         {
+            ProductSubTypesCache.SetNeedRefresh();
             var result = await DBService.DeleteProductSubType(SubTypeToModel(pSubType)).ConfigureAwait(false);
             if (result)
             {
@@ -352,7 +353,7 @@ namespace HomeCalc.Presentation.Models
             return result;
         }
 
-        public async Task<List<ProductSubType>> LoadProductSubTypeList()
+        public async Task<List<ProductSubType>> LoadProductSubTypeList(long typeId = 0)
         {
             if (!ProductSubTypesCache.IsActual())
             {
@@ -360,7 +361,13 @@ namespace HomeCalc.Presentation.Models
                     (await DBService.LoadProductSubTypeList().ConfigureAwait(false)).Select(p => ModelToSubType(p)).ToList()
                     );
             }
-            return ProductSubTypesCache.GetCache();
+            var result = ProductSubTypesCache.GetCache();
+            if (typeId != 0)
+            {
+                result = result.Where(sType => sType.TypeId == typeId).ToList();
+            }
+
+            return result;
         }
 
         #endregion
@@ -380,12 +387,16 @@ namespace HomeCalc.Presentation.Models
         }
         private ProductSubType ModelToSubType(ProductSubTypeModel model)
         {
-            return new ProductSubType { Id = (int)model.Id, Name = StringUtilities.EscapeStringForDatabase(model.Name) };
+            return new ProductSubType { Id = (int)model.Id, Name = StringUtilities.EscapeStringForDatabase(model.Name), TypeId = model.TypeId };
         }
 
         private ProductSubTypeModel SubTypeToModel(ProductSubType subType)
         {
-            return new ProductSubTypeModel { Id = subType.Id, Name = StringUtilities.EscapeStringForDatabase(subType.Name) };
+            if (subType == null)
+            {
+                return null;
+            }
+            return new ProductSubTypeModel { Id = subType.Id, Name = StringUtilities.EscapeStringForDatabase(subType.Name), TypeId = subType.TypeId };
         }
         private ProductModel ProductToModel(Purchase purchase)
         {

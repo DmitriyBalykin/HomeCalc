@@ -117,7 +117,9 @@ namespace HomeCalc.Presentation.ViewModels
             {
                 resultList = exactPurchases;
 
-                ProductType = resultList.FirstOrDefault().Type;
+                var selectedPurchase = resultList.FirstOrDefault();
+                ProductType = selectedPurchase.Type;
+                MonthlyPurchase = selectedPurchase.IsMonthly;
             }
             else
             {
@@ -322,6 +324,8 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     purchase.Type = type;
                     OnPropertyChanged(() => ProductType);
+
+                    LoadSubTypes(type.Id);
                 }
             }
         }

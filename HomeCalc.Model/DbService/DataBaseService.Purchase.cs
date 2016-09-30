@@ -140,11 +140,15 @@ namespace HomeCalc.Model.DbService
                     }
                     if (filter.SearchByCommentId)
                     {
-                        queue = string.Format("{0} CommentID={1}' ", queue, filter.CommentId);
+                        queue = string.Format("{0} CommentID={1} ", queue, filter.CommentId);
                     }
                     if (filter.SearchByStoreId)
                     {
-                        queue = string.Format("{0} StoreID={1}' ", queue, filter.StoreId);
+                        queue = string.Format("{0} StoreID={1} ", queue, filter.StoreId);
+                    }
+                    if (filter.SearchByMonthly)
+                    {
+                        queue = string.Format("{0} IsMonthly='{1}' ", queue, filter.IsMonthly);
                     }
 
                     command.CommandText = queue

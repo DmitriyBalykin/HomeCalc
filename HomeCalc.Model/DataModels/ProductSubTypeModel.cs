@@ -13,6 +13,7 @@ namespace HomeCalc.Model.DataModels
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public Int64 Id { get; set; }
+        public long TypeId { get; set; }
         public string Name { get; set; }
 
         public override bool Equals(object obj)

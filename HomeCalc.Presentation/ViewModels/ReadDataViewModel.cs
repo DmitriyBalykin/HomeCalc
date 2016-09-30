@@ -142,10 +142,12 @@ namespace HomeCalc.Presentation.ViewModels
                 CostEnd = costEnd,
                 DateStart = searchFromDate,
                 DateEnd = searchToDate,
+                IsMonthly = isMonthly,
                 SearchByName = searchByName,
                 SearchByType = searchByType,
                 SearchByDate = searchByDate,
                 SearchByCost = searchByCost,
+                SearchByMonthly = searchByMonthly
             };
 
             Task.Factory.StartNew(async () => 
@@ -242,6 +244,19 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     searchByCost = value;
                     OnPropertyChanged(() => SearchByCost);
+                }
+            }
+        }
+        private bool searchByMonthly;
+        public bool SearchByMonthly
+        {
+            get { return searchByMonthly; }
+            set
+            {
+                if (searchByMonthly != value)
+                {
+                    searchByMonthly = value;
+                    OnPropertyChanged(() => SearchByMonthly);
                 }
             }
         }
@@ -466,6 +481,23 @@ namespace HomeCalc.Presentation.ViewModels
                     CalcItemCost = false;
                 }
                 OnPropertyChanged(() => CalcTotalCost);
+            }
+        }
+
+        private bool isMonthly = false;
+        public bool IsMonthly
+        {
+            get
+            {
+                return isMonthly;
+            }
+            set
+            {
+                if (value != isMonthly)
+                {
+                    isMonthly = value;
+                    OnPropertyChanged(() => IsMonthly);
+                }
             }
         }
 

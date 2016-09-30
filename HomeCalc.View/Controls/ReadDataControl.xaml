@@ -34,6 +34,7 @@
                     <RowDefinition Height="40" />
                     <RowDefinition Height="40" />
                     <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30" />
@@ -46,11 +47,13 @@
                 <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding SearchByName}" />
                 <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding SearchByType}" />
                 <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding SearchByCost}" />
+                <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding SearchByMonthly}" />
 
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="за датою" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="за назвою" />
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="за типом" />
                 <TextBlock Grid.Row="3" Grid.Column="1" Text="за вартістю" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="щомісячні придбання" />
 
                 <DockPanel Grid.Row="0" Grid.Column="2">
                     <TextBlock Text="з"/>
@@ -81,7 +84,10 @@
                              Text="{Binding CostEnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </DockPanel>
 
-                <Button Grid.Row="4" Grid.Column="3" Content="Знайти записи" Command="{Binding Search}" />
+                <RadioButton GroupName="Monthly" Grid.Row="4" Grid.Column="2" IsChecked="{Binding IsMonthly}">Так</RadioButton>
+                <RadioButton GroupName="Monthly" Grid.Row="4" Grid.Column="3" IsChecked="{Binding IsMonthly, Converter={StaticResource inverseBooleanConverter}}">Ні</RadioButton>
+
+                <Button Grid.Row="5" Grid.Column="3" Content="Знайти записи" Command="{Binding Search}" />
             </Grid>
     </Border>
         <Border Grid.Row="1" IsEnabled="{Binding ShowDataCalcPopup, Converter={StaticResource inverseBooleanConverter}}">
@@ -106,6 +112,7 @@
                         <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
                         <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost, StringFormat={}{0:0.##}}" Width="110" />
                         <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost, StringFormat={}{0:0.##}}" Width="120" />
+                        <DataGridCheckBoxColumn Header="Щомісячна" Binding="{Binding IsMonthly}" Width="67" />
                     </DataGrid.Columns>
                 </DataGrid>
                 <StackPanel

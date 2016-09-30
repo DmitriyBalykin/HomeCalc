@@ -24,7 +24,13 @@ namespace HomeCalc.Model.DbService
             try
             {
                 long typeId = await SaveProductType(product.Type);
-                long subTypeId = await SaveProductSubType(product.SubType);
+                
+                long subTypeId = 0;
+                if (product.SubType != null)
+                {
+                    product.SubType.TypeId = typeId;
+                    subTypeId = await SaveProductSubType(product.SubType);
+                }
 
                 using (var db = dbManager.GetConnection())
                 using (var transaction = db.Connection.BeginTransaction())
@@ -78,7 +84,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    string queue = "SELECT p.Id as ProductId, p.Name as ProductName, p.IsMonthly, t.Id as TypeId, t.Name as TypeName, st.Id as SubTypeId, st.Name as SubTypeName"+
+                    string queue = "SELECT p.Id as ProductId, p.Name as ProductName, p.IsMonthly, t.Id as TypeId, t.Name as TypeName, st.Id as SubTypeId, st.TypeId as StTypeId, st.Name as SubTypeName"+
                     "FROM PRODUCT p"+
                     "JOIN PRODUCTTYPE t ON p.TypeId = t.Id" +
                     "LEFT JOIN PRODUCTSUBTYPE st on p.SubTypeId = st.Id" +
@@ -125,6 +131,7 @@ namespace HomeCalc.Model.DbService
                             SubType = new ProductSubTypeModel
                             {
                                 Id = (dataReader.GetValue(dataReader.GetOrdinal("SubTypeId")) as long?) ?? 0L,
+                                TypeId = (dataReader.GetValue(dataReader.GetOrdinal("StTypeId")) as long?) ?? 0L,
                                 Name = (dataReader.GetValue(dataReader.GetOrdinal("SubTypeName")) as string) ?? string.Empty
                             },
                             IsMonthly = dataReader.GetBoolean(dataReader.GetOrdinal("IsMonthly"))
@@ -288,12 +295,13 @@ namespace HomeCalc.Model.DbService
                     }
                     if (subTypeId == 0)
                     {
-                        command.CommandText = string.Format("INSERT INTO PRODUCTSUBTYPE (Name) VALUES ('{0}');SELECT last_insert_rowid() FROM PRODUCTSUBTYPE", productSubType.Name);
+                        command.CommandText = string.Format("INSERT INTO PRODUCTSUBTYPE (Name, TypeId) VALUES ('{0}', {1});SELECT last_insert_rowid() FROM PRODUCTSUBTYPE", productSubType.Name, productSubType.TypeId);
                         subTypeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
                     }
                     else
                     {
-                        command.CommandText = string.Format("UPDATE PRODUCTSUBTYPE SET Name = '{0}' WHERE Id = {1}", productSubType.Name, productSubType.Id);
+                        command.CommandText = string.Format("UPDATE PRODUCTSUBTYPE SET Name = '{0}', TypeId = {1} WHERE Id = {2}", productSubType.Name, productSubType.TypeId, productSubType.Id);
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
                 }
             }
@@ -345,7 +353,8 @@ namespace HomeCalc.Model.DbService
                         list.Add(new ProductSubTypeModel
                         {
                             Id = dataReader.GetInt64(0),
-                            Name = dataReader.GetString(1)
+                            Name = dataReader.GetString(1),
+                            TypeId = dataReader.GetInt64(2)
                         });
                     }
                 }
@@ -364,7 +373,7 @@ namespace HomeCalc.Model.DbService
                 using (var db = connection ?? dbManager.GetConnection())
                 using (var command = db.Connection.CreateCommand())
                 {
-                    command.CommandText = string.Format("DELETE FROM PURCHASESUBTYPE WHERE Id = {0}", subType.Id);
+                    command.CommandText = string.Format("DELETE FROM PRODUCTSUBTYPE WHERE Id = {0}", subType.Id);
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
                 }

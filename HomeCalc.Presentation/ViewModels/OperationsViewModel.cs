@@ -7,6 +7,7 @@ using HomeCalc.Presentation.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -28,8 +29,26 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("RenameSubType", new DelegateCommand(RenameSubTypeCommandExecute, CanRenameSubType));
             AddCommand("DeleteSubType", new DelegateCommand(DeleteSubTypeCommandExecute, CanDeleteSubType));
 
+            MsgDispatcher.AddHandler(HandleMessage);
+            StoreService.SubTypesUpdated += StoreService_SubTypesUpdated;
+
             NewProductTypeEditable = true;
 
+        }
+
+        private void HandleMessage(string msg)
+        {
+            switch (msg)
+            {
+                case "productSubTypesLoaded":
+                    ProductSubTypeSelectable = true;
+                    break;
+                case "productSubTypesUnLoaded":
+                    ProductSubTypeSelectable = false;
+                    break;
+                default:
+                    break;
+            }
         }
         #region commands
         private bool CanAddType(object obj)
@@ -114,7 +133,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             Task.Factory.StartNew(async () =>
             {
-                if (await StoreService.SaveProductSubType(new ProductSubType { Name = NewProductSubType }) > 0)
+                if (await StoreService.SaveProductSubType(new ProductSubType { Name = NewProductSubType, TypeId = ProductType.Id }) > 0)
                 {
                     logger.Info("Purchase sub type {0} saved", NewProductSubType);
                     Status.Post("Підтип покупки \"{0}\" збережено", NewProductSubType);
@@ -199,6 +218,10 @@ namespace HomeCalc.Presentation.ViewModels
         //}
 
         #endregion
+        void StoreService_SubTypesUpdated(object sender, EventArgs e)
+        {
+            LoadSubTypes(ProductType.Id);
+        }
 
         private void DataMigrationStatusUpdated(MigrationResultArgs e)
         {
@@ -269,12 +292,12 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        private ProductType purchaseType;
+        private ProductType productType;
         public ProductType ProductType
         {
             get
             {
-                return purchaseType;
+                return productType;
             }
             set
             {
@@ -282,14 +305,17 @@ namespace HomeCalc.Presentation.ViewModels
                 if (value != null)
                 {
                     type = TypeSelectorItems.Where(e => e.Name == value.Name).FirstOrDefault();
+                    NewProductSubTypeEditable = true;
                 }
                 else
                 {
                     type = TypeSelectorItems.FirstOrDefault();
+                    NewProductSubTypeEditable = false;
                 }
-                if (type != purchaseType)
+                if (type != productType)
                 {
-                    purchaseType = type;
+                    productType = type;
+                    LoadSubTypes(type.Id);
                     OnPropertyChanged(() => ProductType);
                 }
             }
@@ -325,6 +351,23 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     newProductSubTypeEditable = value;
                     OnPropertyChanged(() => NewProductSubTypeEditable);
+                }
+            }
+        }
+
+        private bool productSubTypeSelectable;
+        public bool ProductSubTypeSelectable
+        {
+            get
+            {
+                return productSubTypeSelectable;
+            }
+            set
+            {
+                if (productSubTypeSelectable != value)
+                {
+                    productSubTypeSelectable = value;
+                    OnPropertyChanged(() => ProductSubTypeSelectable);
                 }
             }
         }

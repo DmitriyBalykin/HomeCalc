@@ -25,11 +25,21 @@ namespace HomeCalc.Presentation.BasicModels
         private void InitializeProperties()
         {
             StoreService.TypesUpdated += StoreService_TypesUpdated;
-            StoreService.SubTypesUpdated += StoreService_SubTypesUpdated;
+            MsgDispatcher.AddHandler(HandleMessage);
 
-            LoadTypes()
-                .ContinueWith(task => LoadSubTypes())
-                .ContinueWith(task => Initialize());
+            LoadTypes().ContinueWith(task => Initialize());
+        }
+
+        private void HandleMessage(string message)
+        {
+            switch (message)
+            {
+                case "showRatingPanel":
+                    OnPropertyChanged(() => ShowRatingPanel);
+                    break;
+                default:
+                    break;
+            }
         }
         
         private Task LoadTypes()
@@ -39,21 +49,20 @@ namespace HomeCalc.Presentation.BasicModels
                 TypeSelectorItems = new ObservableCollection<ProductType>(await StoreService.LoadProductTypeList().ConfigureAwait(false));
             });
         }
-        private Task LoadSubTypes()
+
+        public Task LoadSubTypes(long typeId)
         {
             return Task.Factory.StartNew(async () =>
             {
-                ProductSubTypes = new ObservableCollection<ProductSubType>(await StoreService.LoadProductSubTypeList().ConfigureAwait(false));
+                ProductSubTypes = new ObservableCollection<ProductSubType>(await StoreService.LoadProductSubTypeList(typeId).ConfigureAwait(false));
             });
         }
+        
         void StoreService_TypesUpdated(object sender, EventArgs e)
         {
             LoadTypes();
         }
-        void StoreService_SubTypesUpdated(object sender, EventArgs e)
-        {
-            LoadSubTypes();
-        }
+        
         #region Properties Core
         protected void Settings_SettingsChanged(object sender, SettingChangedEventArgs e)
         {
@@ -108,19 +117,27 @@ namespace HomeCalc.Presentation.BasicModels
             }
         }
 
-        private ObservableCollection<ProductSubType> purchaseSubTypes;
+        private ObservableCollection<ProductSubType> productSubTypes;
         public ObservableCollection<ProductSubType> ProductSubTypes
         {
             get
             {
-                return purchaseSubTypes;
+                return productSubTypes;
             }
             set
             {
-                if (purchaseSubTypes != value)
+                if (productSubTypes != value)
                 {
-                    purchaseSubTypes = value;
+                    productSubTypes = value;
                     OnPropertyChanged(() => ProductSubTypes);
+                    if (ProductSubTypes.Count > 0)
+                    {
+                        MsgDispatcher.Post("productSubTypesLoaded");
+                    }
+                    else
+                    {
+                        MsgDispatcher.Post("productSubTypesUnLoaded");
+                    }
                 }
             }
         }
@@ -134,7 +151,7 @@ namespace HomeCalc.Presentation.BasicModels
                 if (value != Settings.GetSetting("ShowProductSubType").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowProductSubType, value);
-                    OnPropertyChanged(() => ShowRatingPanel);
+                    MsgDispatcher.Post("showRatingPanel");
                 }
             }
         }
@@ -147,7 +164,7 @@ namespace HomeCalc.Presentation.BasicModels
                 if (value != Settings.GetSetting("ShowPurchaseComment").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowPurchaseComment, value);
-                    OnPropertyChanged(() => ShowRatingPanel);
+                    MsgDispatcher.Post("showRatingPanel");
                 }
             }
         }
@@ -160,7 +177,7 @@ namespace HomeCalc.Presentation.BasicModels
                 if (value != Settings.GetSetting("ShowPurchaseRate").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowPurchaseRate, value);
-                    OnPropertyChanged(() => ShowRatingPanel);
+                    MsgDispatcher.Post("showRatingPanel");
                 }
             }
         }
@@ -185,7 +202,7 @@ namespace HomeCalc.Presentation.BasicModels
                 if (value != Settings.GetSetting("ShowStoreName").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreName, value);
-                    OnPropertyChanged(() => ShowRatingPanel);
+                    MsgDispatcher.Post("showRatingPanel");
                 }
                 if (!value)
                 {
@@ -203,7 +220,7 @@ namespace HomeCalc.Presentation.BasicModels
                 if (value != Settings.GetSetting("ShowStoreRate").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreRate, value);
-                    OnPropertyChanged(() => ShowRatingPanel);
+                    MsgDispatcher.Post("showRatingPanel");
                 }
                 if (value)
                 {
@@ -221,7 +238,7 @@ namespace HomeCalc.Presentation.BasicModels
                 if (value != Settings.GetSetting("ShowStoreComment").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreComment, value);
-                    OnPropertyChanged(() => ShowRatingPanel);
+                    MsgDispatcher.Post("showRatingPanel");
                     
                 }
                 if (value)

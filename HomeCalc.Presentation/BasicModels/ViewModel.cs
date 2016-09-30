@@ -19,6 +19,7 @@ namespace HomeCalc.Presentation.BasicModels
         protected StatusService Status;
         protected UpdateService UpdateService;
         protected SettingsService Settings;
+        protected MessageDispatcher MsgDispatcher;
         public ViewModel()
         {
             id = ++count;
@@ -37,6 +38,8 @@ namespace HomeCalc.Presentation.BasicModels
             Status = StatusService.GetInstance();
             UpdateService = UpdateService.GetInstance();
             Settings = SettingsService.GetInstance();
+            MsgDispatcher = MessageDispatcher.GetInstance();
+
             Settings.SettingsChanged += Settings_SettingsChanged;
         }
         

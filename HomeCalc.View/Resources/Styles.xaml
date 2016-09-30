@@ -7,6 +7,7 @@
     <converters:InverseBooleanConverter x:Key="inverseBooleanConverter" />
     <converters:UpdateStatusToColorConverter x:Key="updateStatusToColorConverter" />
     <converters:BoolToValueConverter x:Key="boolToValueConverter" />
+    <converters:BoolToStringConverter x:Key="boolToStringConverter" />
     
     <SolidColorBrush x:Key="LightBackground" Color="#FFD2ECF3" />
     <SolidColorBrush x:Key="SelectedBackground" Color="#FFEBFAFF" />
@@ -201,6 +202,12 @@
             </Style>
             <Style TargetType="controls:SearchComboBox" BasedOn="{StaticResource ComboBoxStyle}" />
             <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxStyle}" />
+            <Style TargetType="RadioButton">
+                <Style.Setters>
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style.Setters>
+            </Style>
             <Style TargetType="Border">
                 <Style.Setters>
                     <Setter Property="BorderThickness" Value="2" />

@@ -82,7 +82,7 @@ namespace HomeCalc.Model.DbService
                         case 0:
                             //create common tables
                             command.CommandText =
-                                    "create table if not exists PRODUCTSUBTYPE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);" +
+                                    "create table if not exists PRODUCTSUBTYPE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, TypeId INTEGER);" +
                                     "create table if not exists STORE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);" +
                                     "create table if not exists PRODUCT (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, TypeId INTEGER, SubTypeId INTEGER, IsMonthly BOOLEAN);" +
                                     "create table if not exists PURCHASE (Id INTEGER PRIMARY KEY AUTOINCREMENT, ProductId INTEGER, Timestamp INTEGER, TotalCost REAL, ItemCost REAL, ItemsNumber REAL, StoreId INTEGER);" +
