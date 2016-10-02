@@ -61,6 +61,7 @@
     <Compile Include="LogService\LogService.cs" />
     <Compile Include="Presentation\Converters\BoolToStringConverter.cs" />
     <Compile Include="Presentation\Converters\BoolToValueConverter.cs" />
+    <Compile Include="Presentation\Converters\ShowDetailsToMode.cs" />
     <Compile Include="Presentation\Converters\UpdateStatusToColorConverter.cs" />
     <Compile Include="Presentation\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Presentation\Converters\BoolToVisibilityConverter.cs" />

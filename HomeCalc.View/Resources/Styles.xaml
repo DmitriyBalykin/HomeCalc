@@ -8,6 +8,7 @@
     <converters:UpdateStatusToColorConverter x:Key="updateStatusToColorConverter" />
     <converters:BoolToValueConverter x:Key="boolToValueConverter" />
     <converters:BoolToStringConverter x:Key="boolToStringConverter" />
+    <converters:ShowDetailsToMode x:Key="showDetailsToMode" />
     
     <SolidColorBrush x:Key="LightBackground" Color="#FFD2ECF3" />
     <SolidColorBrush x:Key="SelectedBackground" Color="#FFEBFAFF" />

@@ -109,6 +109,18 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
+        [SettingProperty]
+        public bool ShowPurchaseDetails
+        {
+            get { return Settings.GetSetting("ShowPurchaseDetails").SettingBoolValue; }
+            set
+            {
+                if (value != Settings.GetSetting("ShowPurchaseDetails").SettingBoolValue)
+                {
+                    OnPropertyChanged(() => ShowPurchaseDetails, value);
+                }
+            }
+        }
         #endregion
 
         #region Helpers

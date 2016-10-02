@@ -104,7 +104,23 @@
                 CanUserSortColumns="True"
                 CanUserAddRows="False"
                 RowHeaderWidth="0"
+                RowDetailsVisibilityMode="{Binding ShowPurchaseDetails, Converter={StaticResource showDetailsToMode}}"
+                CanUserResizeColumns="True"
                 >
+                    <DataGrid.RowDetailsTemplate>
+                        <DataTemplate>
+                            <StackPanel FlowDirection="LeftToRight" Orientation="Horizontal">
+                                <TextBlock Text="Підтип: " />
+                                <TextBlock Text="{Binding SubType}" />
+                                <TextBlock Text="   Оцінка: " />
+                                <TextBlock Text="{Binding PurchaseRate}" />
+                                <TextBlock Text="   Коментар: " />
+                                <TextBlock Text="{Binding PurchaseComment}" />
+                                <TextBlock Text="   Магазин: " />
+                                <TextBlock Text="{Binding StoreName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGrid.RowDetailsTemplate>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100"/>
                         <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />

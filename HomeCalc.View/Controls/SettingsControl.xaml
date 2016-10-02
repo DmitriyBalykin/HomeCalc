@@ -102,6 +102,25 @@
 
                 </Grid>
             </TabItem>
+            <TabItem Header="Пошук данних">
+                <Grid Style="{StaticResource SettingsGridStyle}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="300" />
+                        <ColumnDefinition Width="50" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Показувати деталі покупки" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowPurchaseDetails, Mode=TwoWay}"/>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Border>
 

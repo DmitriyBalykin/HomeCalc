@@ -22,7 +22,8 @@ namespace HomeCalc.Presentation.Services
         public const string SHOW_MONTHLY_PURCHASE = "ShowMonthlyPurchase";
         public const string SHOW_STORE_NAME_KEY = "ShowStoreName";
         public const string SHOW_STORE_RATE_KEY = "ShowStoreRate";
-        public const string SHOW_STORE_COMMENT = "ShowStoreComment";
+        public const string SHOW_STORE_COMMENT_KEY = "ShowStoreComment";
+        public const string SHOW_PURCHASE_DETAILS_KEY = "ShowPurchaseDetails";
 
         private Dictionary<string, SettingsModel> HighLevelCache;
 

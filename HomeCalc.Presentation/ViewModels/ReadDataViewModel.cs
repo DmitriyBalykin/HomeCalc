@@ -558,6 +558,11 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
+        public bool ShowPurchaseDetails
+        {
+            get { return Settings.GetSetting("ShowPurchaseDetails").SettingBoolValue; }
+            set { }
+        }
         private DataService.CalculationTargetProperty actualCalculationTarget = DataService.CalculationTargetProperty.TotalCost;
     }
 }

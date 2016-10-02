@@ -65,13 +65,13 @@ namespace HomeCalc.Presentation.ViewModels
                 if (result != null)
                 {
                     logger.Info("Purchase saved");
-                    Status.Post("Покупка \"{0}\" збережена", PurchaseName);
+                    Status.Post("Покупка \"{0}\" збережена", purchase.Name);
                     CleanInputFields();
                 }
                 else
                 {
                     logger.Warn("Purchase not saved");
-                    Status.Post("Помилка: покупка \"{0}\" не збережена", PurchaseName);
+                    Status.Post("Помилка: покупка \"{0}\" не збережена", purchase.Name);
                 }
             });
             
@@ -438,73 +438,66 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        
-
-        double purchaseRate;
         public double PurchaseRate
         {
-            get { return purchaseRate; }
+            get { return purchase.PurchaseRate; }
             set
             {
-                if (purchaseRate != value)
+                if (purchase.PurchaseRate != value)
                 {
-                    purchaseRate = value;
+                    purchase.PurchaseRate = (int)value;
                     OnPropertyChanged(() => PurchaseRate);
                 }
             }
         }
 
-        string purchaseComment = string.Empty;
         public string PurchaseComment
         {
-            get { return purchaseComment; }
+            get { return purchase.PurchaseComment; }
             set
             {
-                if (purchaseComment != value)
+                if (purchase.PurchaseComment != value)
                 {
-                    purchaseComment = value;
+                    purchase.PurchaseComment = value;
                     OnPropertyChanged(() => PurchaseComment);
                 }
             }
         }
 
-        string storeName;
         public string StoreName
         {
-            get { return storeName; }
+            get { return purchase.StoreName; }
             set
             {
-                if (storeName != value)
+                if (purchase.StoreName != value)
                 {
-                    storeName = value;
+                    purchase.StoreName = value;
                     OnPropertyChanged(() => StoreName);
                 }
             }
         }
 
-        double storeRate;
         public double StoreRate
         {
-            get { return storeRate; }
+            get { return purchase.StoreRate; }
             set
             {
-                if (storeRate != value)
+                if (purchase.StoreRate != value)
                 {
-                    storeRate = value;
+                    purchase.StoreRate = (int)value;
                     OnPropertyChanged(() => StoreRate);
                 }
             }
         }
 
-        string storeComment = string.Empty;
         public string StoreComment
         {
-            get { return storeComment; }
+            get { return purchase.StoreComment; }
             set
             {
-                if (storeComment != value)
+                if (purchase.StoreComment != value)
                 {
-                    storeComment = value;
+                    purchase.StoreComment = value;
                     OnPropertyChanged(() => StoreComment);
                 }
             }
