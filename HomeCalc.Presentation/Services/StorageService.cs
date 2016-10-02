@@ -19,9 +19,7 @@ namespace HomeCalc.Presentation.Models
 
         private ListSafe<Purchase> purchaseHistory;
 
-        public event EventHandler TypesUpdated;
-        public event EventHandler SubTypesUpdated;
-        public event EventHandler HistoryUpdated;
+        private MessageDispatcher MsgDispatcher;
 
         private StatusService Status;
 
@@ -33,6 +31,7 @@ namespace HomeCalc.Presentation.Models
 
         public StorageService()
         {
+            MsgDispatcher = MessageDispatcher.GetInstance();
             logger = LogService.GetLogger(); ;
             DBService = DataBaseService.GetInstance();
             Status = StatusService.GetInstance();
@@ -71,10 +70,7 @@ namespace HomeCalc.Presentation.Models
         private void AnnounceHistoryUpdate()
         {
             logger.Debug("Announce history update");
-            if (HistoryUpdated != null)
-            {
-                HistoryUpdated(null, EventArgs.Empty);
-            }
+            MsgDispatcher.Post("historyUpdated");
         }
 
         public static StorageService GetInstance()
@@ -469,21 +465,13 @@ namespace HomeCalc.Presentation.Models
         }
         private void TypeUpdated()
         {
-            if (TypesUpdated != null)
-            {
-                TypesUpdated.Invoke(null, EventArgs.Empty);
-            }
+            MsgDispatcher.Post("typesUpdated");
         }
 
         private void SubTypeUpdated()
         {
-            if (SubTypesUpdated != null)
-            {
-                SubTypesUpdated.Invoke(null, EventArgs.Empty);
-            }
+            MsgDispatcher.Post("subTypesUpdated");
         }
-
-        
 
         public List<Purchase> PurchaseHistory
         {

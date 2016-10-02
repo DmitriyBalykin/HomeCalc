@@ -12,7 +12,6 @@ namespace HomeCalc.View.Controls
     ///
     public partial class UpdateControl : UserControl
     {
-        public event EventHandler CloseApplicationEventHandler;
         public UpdateControl()
         {
             InitializeComponent();

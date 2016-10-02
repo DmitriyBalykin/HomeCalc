@@ -22,11 +22,10 @@ namespace HomeCalc.Presentation.ViewModels
 
         public AddDataViewModel()
         {
+            MsgDispatcher.AddHandler(HandleMessage);
             purchase = new Purchase();
 
             AddCommand("Save", new DelegateCommand(SaveCommandExecute, SaveCommandCanExecute));
-            
-            StoreService.HistoryUpdated += UpdatePurchaseHistory;
 
             Status.Post("Все готово для роботи!");
 
@@ -45,12 +44,18 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         #region event handlers
-        void UpdatePurchaseHistory(object sender, EventArgs e)
+        private void HandleMessage(string message)
         {
-            logger.Debug("Purchase history updated, updating purchase list");
-            PurchaseHistoryItemsWrapper = StoreService.PurchaseHistory;
+            switch (message)
+            {
+                case "historyUpdated":
+                    logger.Debug("Purchase history updated, updating purchase list");
+                    PurchaseHistoryItemsWrapper = StoreService.PurchaseHistory;
+                    break;
+                default:
+                    break;
+            }
         }
-
         private void SaveCommandExecute(object obj)
         {
             purchase.Name = purchase.Name.Trim();

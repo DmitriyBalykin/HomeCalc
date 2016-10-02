@@ -60,7 +60,6 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         #region Properties
-        private bool autoUpdateCheck;
         [SettingProperty]
         public bool AutoUpdateCheck
         {

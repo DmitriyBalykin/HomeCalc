@@ -30,7 +30,6 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("DeleteSubType", new DelegateCommand(DeleteSubTypeCommandExecute, CanDeleteSubType));
 
             MsgDispatcher.AddHandler(HandleMessage);
-            StoreService.SubTypesUpdated += StoreService_SubTypesUpdated;
 
             NewProductTypeEditable = true;
 
@@ -45,6 +44,9 @@ namespace HomeCalc.Presentation.ViewModels
                     break;
                 case "productSubTypesUnLoaded":
                     ProductSubTypeSelectable = false;
+                    break;
+                case "subTypesUpdated":
+                    LoadSubTypes(ProductType.Id);
                     break;
                 default:
                     break;
@@ -218,10 +220,6 @@ namespace HomeCalc.Presentation.ViewModels
         //}
 
         #endregion
-        void StoreService_SubTypesUpdated(object sender, EventArgs e)
-        {
-            LoadSubTypes(ProductType.Id);
-        }
 
         private void DataMigrationStatusUpdated(MigrationResultArgs e)
         {

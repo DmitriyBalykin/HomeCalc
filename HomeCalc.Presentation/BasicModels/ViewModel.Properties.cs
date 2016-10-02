@@ -24,7 +24,6 @@ namespace HomeCalc.Presentation.BasicModels
     {
         private void InitializeProperties()
         {
-            StoreService.TypesUpdated += StoreService_TypesUpdated;
             MsgDispatcher.AddHandler(HandleMessage);
 
             LoadTypes().ContinueWith(task => Initialize());
@@ -36,6 +35,9 @@ namespace HomeCalc.Presentation.BasicModels
             {
                 case "showRatingPanel":
                     OnPropertyChanged(() => ShowRatingPanel);
+                    break;
+                case "typesUpdated":
+                    LoadTypes();
                     break;
                 default:
                     break;
@@ -56,11 +58,6 @@ namespace HomeCalc.Presentation.BasicModels
             {
                 ProductSubTypes = new ObservableCollection<ProductSubType>(await StoreService.LoadProductSubTypeList(typeId).ConfigureAwait(false));
             });
-        }
-        
-        void StoreService_TypesUpdated(object sender, EventArgs e)
-        {
-            LoadTypes();
         }
         
         #region Properties Core
