@@ -14,5 +14,13 @@ namespace HomeCalc.Presentation.Models
         {
             return Name;
         }
+        public override bool Equals(object obj)
+        {
+            return obj != null && (obj is ProductType) && ((ProductType)obj).Name == Name;
+        }
+        public override int GetHashCode()
+        {
+            return Id;
+        }
     }
 }

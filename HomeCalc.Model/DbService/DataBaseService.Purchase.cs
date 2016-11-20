@@ -37,6 +37,7 @@ namespace HomeCalc.Model.DbService
                         purchase.ItemsNumber.ToString(formatCulture),
                         purchase.StoreId);
                         purchaseId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
+                        logger.Debug("Saving new purchase with name={0} and id={1}", purchase.ProductName, purchaseId);
                     }
                     else
                     {
@@ -50,6 +51,7 @@ namespace HomeCalc.Model.DbService
                         purchase.StoreId,
                         purchase.Id);
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        logger.Debug("Updating existed purchase with name={0} and id={1}", purchase.ProductName, purchaseId);
                     }
                     
                     transaction.Commit();
@@ -78,6 +80,7 @@ namespace HomeCalc.Model.DbService
                         purchase.Id, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.StoreId);
 
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        logger.Debug("Saving new purchase with name={0} and id={1}", purchase.ProductName, purchase.Id);
                     }
                     transaction.Commit();
                 }
@@ -182,6 +185,7 @@ namespace HomeCalc.Model.DbService
                     }
 
                     logger.Debug("DatabaseService.LoadPurchaseList: data fetched succesfully");
+                    logger.Debug("Found {0} items", list.Count);
                 }
             }
             catch (Exception ex)

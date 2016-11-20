@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCalc.Presentation.Services
@@ -52,6 +53,7 @@ namespace HomeCalc.Presentation.Services
 
         public SettingsModel GetSetting(string settingKey)
         {
+            Console.WriteLine("Get settings, thread {0}", Thread.CurrentThread.ManagedThreadId);
             SettingsModel settingModel;
             if (HighLevelCache.TryGetValue(settingKey, out settingModel))
             {

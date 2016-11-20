@@ -6,6 +6,7 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeCalc.Model.DbConnectionWrappers
@@ -15,10 +16,18 @@ namespace HomeCalc.Model.DbConnectionWrappers
         public SQLiteConnection Connection;
         public StorageConnection(string connectionString)
         {
-            Connection = new SQLiteConnection(connectionString);
-            Connection.StateChange += Connection_StateChange;
+            try
+            {
+                Connection = new SQLiteConnection(connectionString);
+                Connection.StateChange += Connection_StateChange;
 
-            Connection.Open();
+                Connection.Open();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Storage connection failed: {0}", ex.Message);
+            }
+            
         }
 
         void Connection_StateChange(object sender, System.Data.StateChangeEventArgs e)
@@ -29,10 +38,18 @@ namespace HomeCalc.Model.DbConnectionWrappers
 
         public void Dispose()
         {
-            if (Connection != null && Connection.State == System.Data.ConnectionState.Open)
+            try
             {
-                Connection.Close();
+                if (Connection != null && Connection.State == System.Data.ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception during connection closing {0}", ex.Message);
+            }
+            
         }
     }
 }

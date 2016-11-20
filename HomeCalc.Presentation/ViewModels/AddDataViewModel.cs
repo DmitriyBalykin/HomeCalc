@@ -66,6 +66,7 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     logger.Info("Purchase saved");
                     Status.Post("Покупка \"{0}\" збережена", purchase.Name);
+                    purchase = new Purchase();
                     CleanInputFields();
                 }
                 else

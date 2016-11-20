@@ -268,21 +268,21 @@ namespace HomeCalc.Presentation.Models
         {
             var p = obj as Purchase;
 
-            return p != null && 
-                (
-                p.Date == Date &&
-                p.Id == Id &&
-                p.ItemCost == ItemCost &&
-                p.ItemsNumber == ItemsNumber &&
-                p.IsMonthly == IsMonthly &&
-                p.Name == Name &&
-                p.PurchaseComment == PurchaseComment &&
-                p.PurchaseRate == PurchaseRate &&
-                p.StoreName == StoreName &&
-                p.SubType.Name == SubType.Name &&
-                p.TotalCost == TotalCost &&
-                p.Type.Name == Type.Name
-                );
+            bool result = obj != null;
+            result &= p.Date == Date;
+            result &= p.Id == Id;
+            result &= p.ItemCost == ItemCost;
+            result &= p.ItemsNumber == ItemsNumber;
+            result &= p.IsMonthly == IsMonthly;
+            result &= p.Name == Name;
+            result &= p.PurchaseComment == PurchaseComment || (string.IsNullOrEmpty(p.PurchaseComment) && string.IsNullOrEmpty(PurchaseComment));
+            result &= p.PurchaseRate == PurchaseRate;
+            result &= p.StoreName == StoreName || (string.IsNullOrEmpty(p.StoreName) && string.IsNullOrEmpty(StoreName));
+            result &= (p.SubType == null && SubType ==null) || p.SubType.Equals(SubType);
+            result &= p.TotalCost == TotalCost;
+            result &= p.Type.Equals(Type);
+
+            return result;
         }
         public override int GetHashCode()
         {

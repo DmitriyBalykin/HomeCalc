@@ -63,6 +63,7 @@ namespace HomeCalc.Presentation.BasicModels
         #region Properties Core
         protected void Settings_SettingsChanged(object sender, SettingChangedEventArgs e)
         {
+            Console.WriteLine("settings changed, thread {0}", Thread.CurrentThread.ManagedThreadId);
             OnPropertyChanged(e.SettingName);
         }
         protected void OnPropertyChanged(string propertyName)
@@ -196,6 +197,7 @@ namespace HomeCalc.Presentation.BasicModels
             get { return Settings.GetSetting("ShowStoreName").SettingBoolValue; }
             set
             {
+                Console.WriteLine("show store name, thread {0}", Thread.CurrentThread.ManagedThreadId);
                 if (value != Settings.GetSetting("ShowStoreName").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreName, value);
@@ -214,6 +216,7 @@ namespace HomeCalc.Presentation.BasicModels
             get { return Settings.GetSetting("ShowStoreRate").SettingBoolValue; }
             set
             {
+                Console.WriteLine("show store rate, thread {0}", Thread.CurrentThread.ManagedThreadId);
                 if (value != Settings.GetSetting("ShowStoreRate").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreRate, value);
@@ -232,6 +235,7 @@ namespace HomeCalc.Presentation.BasicModels
             get { return Settings.GetSetting("ShowStoreComment").SettingBoolValue; }
             set
             {
+                Console.WriteLine("show store comment, thread {0}", Thread.CurrentThread.ManagedThreadId);
                 if (value != Settings.GetSetting("ShowStoreComment").SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreComment, value);

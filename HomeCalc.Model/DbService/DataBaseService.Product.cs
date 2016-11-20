@@ -52,6 +52,7 @@ namespace HomeCalc.Model.DbService
                         "INSERT INTO PRODUCT(Name, TypeId, SubTypeId, IsMonthly) VALUES ('{0}', {1}, {2}, '{3}'); SELECT last_insert_rowid() FROM PRODUCT",
                         product.Name, typeId, subTypeId, product.IsMonthly);
                         productId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
+                        logger.Debug("Saving new product with name={0} and id={1}", product.Name, productId);
                     }
                     else
                     {
@@ -59,6 +60,7 @@ namespace HomeCalc.Model.DbService
                         "UPDATE PRODUCT SET Name = '{0}', TypeId = {1}, SubTypeId = {2}, IsMonthly = '{3}' WHERE Id = {4}",
                         product.Name, typeId, subTypeId, product.IsMonthly, productId);
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        logger.Debug("Updating existed product with name={0} and id={1}", product.Name, productId);
                     }
                     transaction.Commit();
                 }
@@ -158,6 +160,7 @@ namespace HomeCalc.Model.DbService
                     command.CommandText = string.Format("DELETE FROM PRODUCT WHERE Id = {0}", productId);
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     result = true;
+                    logger.Debug("Deleting product with id={1}", productId);
                 }
             }
             catch (Exception ex)
@@ -189,10 +192,13 @@ namespace HomeCalc.Model.DbService
                     {
                         command.CommandText = string.Format("INSERT INTO PRODUCTTYPE (Name) VALUES ('{0}'); SELECT last_insert_rowid() FROM PRODUCTTYPE", productType.Name);
                         typeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
+                        logger.Debug("Saving new product type with name={0} and id={1}", productType.Name, typeId);
                     }
                     else
                     {
                         command.CommandText = string.Format("UPDATE PRODUCTTYPE SET Name = '{0}' WHERE TypeId = {1}", productType.Name, productType.TypeId);
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        logger.Debug("Updating existed product type with name={0} and id={1}", productType.Name, typeId);
                     }
                 }
             }
@@ -297,11 +303,13 @@ namespace HomeCalc.Model.DbService
                     {
                         command.CommandText = string.Format("INSERT INTO PRODUCTSUBTYPE (Name, TypeId) VALUES ('{0}', {1});SELECT last_insert_rowid() FROM PRODUCTSUBTYPE", productSubType.Name, productSubType.TypeId);
                         subTypeId = (long)(await command.ExecuteScalarAsync().ConfigureAwait(false));
+                        logger.Debug("Saving new product sub type with name={0} and id={1}", productSubType.Name, subTypeId);
                     }
                     else
                     {
                         command.CommandText = string.Format("UPDATE PRODUCTSUBTYPE SET Name = '{0}', TypeId = {1} WHERE Id = {2}", productSubType.Name, productSubType.TypeId, productSubType.Id);
                         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        logger.Debug("Updating existed product sub type with name={0} and id={1}", productSubType.Name, subTypeId);
                     }
                 }
             }

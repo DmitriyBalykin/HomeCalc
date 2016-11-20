@@ -282,12 +282,12 @@ namespace HomeCalc.Presentation.Models
         {
             if (id > -1)
             {
-                logger.Debug("StorageService: resolving product type without name");
+                // logger.Debug("StorageService: resolving product type without name");
                 return (await LoadProductTypeList()).Where(type => type.Id == id).SingleOrDefault();
             }
             else if (name != null)
             {
-                logger.Debug("StorageService: resolving product type with name");
+                // logger.Debug("StorageService: resolving product type with name");
                 var matchedType = ProductTypesCache.GetCache().Where(type => type.Name == name).SingleOrDefault();
                 return matchedType;
             }

@@ -121,6 +121,10 @@ namespace HomeCalc.Model.DbService
             {
                 throw new Exception("Database initialization failed, "+ex.Message);
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Unrecognized db exception: {0}", ex.Message);
+            }
         }
 
         private bool IsTableExists(string table)
@@ -135,10 +139,15 @@ namespace HomeCalc.Model.DbService
                     return true;
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
-                return false;
+                Console.WriteLine("Table {0} not exist", table);
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unrecognized db exception: {0}", ex.Message);
+            }
+            return false;
         }      
     }
 }

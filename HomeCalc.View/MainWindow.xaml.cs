@@ -1,4 +1,5 @@
-﻿using HomeCalc.Core.Services;
+﻿using HomeCalc.Core.LogService;
+using HomeCalc.Core.Services;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -11,8 +12,11 @@ namespace HomeCalc.View
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        StatusService statusService;
-        UpdateService updateService;
+        private const int WindowHeightDefaultValue = 550;
+
+        private StatusService statusService;
+        private UpdateService updateService;
+        private Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindow()
@@ -23,6 +27,7 @@ namespace HomeCalc.View
 
             statusService = StatusService.GetInstance();
             updateService = UpdateService.GetInstance();
+            logger = LogService.GetLogger();
 
             statusService.StatusChanged += statusService_StatusChanged;
             statusService.ProgressUpdated += statusService_ProgressUpdated;
@@ -137,20 +142,42 @@ namespace HomeCalc.View
             }
         }
 
-        private int windowHeight;
-        public int WindowHeight
+        public double WindowMaxHeight
         {
             get
             {
-                return windowHeight;
+                logger.Debug("Current max window max height: {0}", SystemParameters.PrimaryScreenHeight);
+
+                return SystemParameters.PrimaryScreenHeight;
+            }
+        }
+
+        public double WindowHeight
+        {
+            set
+            {
+                if ((WindowTop + value) > SystemParameters.PrimaryScreenHeight)
+                {
+                    logger.Debug("Set window top: {0}", (SystemParameters.PrimaryScreenHeight - value));
+
+                    WindowTop = SystemParameters.PrimaryScreenHeight - value;
+                }
+            }
+        }
+
+        private double windowTop;
+        public double WindowTop
+        {
+            get
+            {
+                return windowTop;
             }
             set
             {
-                if (value != windowHeight)
-                {
-                    windowHeight = value;
-                    OnUpdateProperty("WindowHeight");
-                }
+                logger.Debug("New window top: {0}", value);
+
+                windowTop = value;
+                OnUpdateProperty("WindowTop");
             }
         }
 
@@ -159,16 +186,6 @@ namespace HomeCalc.View
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
-            }
-        }
-
-        private void WindowSizeCheck(object sender, EventArgs e)
-        {
-            var height = System.Windows.SystemParameters.PrimaryScreenHeight;
-
-            if (WindowHeight > height)
-            {
-                WindowHeight = (int)height;
             }
         }
     }
