@@ -71,7 +71,7 @@ namespace HomeCalc.Presentation.Models
         {
             logger.Debug("Announce history update");
             MsgDispatcher.Post("historyUpdated");
-        }
+            }
 
         public static StorageService GetInstance()
         {
@@ -133,12 +133,12 @@ namespace HomeCalc.Presentation.Models
             else
             {
                 return null;
-            }
+        }
             if (!string.IsNullOrEmpty(purchase.PurchaseComment))
-            {
+        {
                 long commentId = await DBService.SaveComment(
                     new CommentModel
-                    {
+            {
                         PurchaseId = purchaseId,
                         StoreId = purchase.StoreId,
                         Text = StringUtilities.EscapeStringForDatabase(purchase.PurchaseComment),
@@ -148,11 +148,11 @@ namespace HomeCalc.Presentation.Models
                 {
                     logger.Error("AddPurchase: Error occured during comment saving: {0}", purchase.Name);
                     return null;
-                }
             }
+        }
             //Store comment not binded to purchase
             if (!string.IsNullOrEmpty(purchase.StoreComment))
-            {
+        {
                 long storeCommentId = await DBService.SaveComment(
                     new CommentModel
                     {
@@ -162,7 +162,7 @@ namespace HomeCalc.Presentation.Models
                         Rate = purchase.StoreRate
                     }).ConfigureAwait(false);
                 if (storeCommentId < 1)
-                {
+            {
                     logger.Error("AddPurchase: Error occured during store comment saving: {0}", purchase.Name);
                     return null;
                 }
@@ -469,7 +469,7 @@ namespace HomeCalc.Presentation.Models
         }
 
         private void SubTypeUpdated()
-        {
+            {
             MsgDispatcher.Post("subTypesUpdated");
         }
 

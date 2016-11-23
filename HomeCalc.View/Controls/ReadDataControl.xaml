@@ -4,17 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:HomeCalc.View.Controls"
+             xmlns:local="clr-namespace:HomeCalc.View.Controls"
              mc:Ignorable="d" 
              Width="900"
              Height="Auto"
              MinHeight="310"
-             MaxHeight="1000">
+             MaxHeight="1000"
+             x:Name="ReadDataControlImpl">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/HomeCalc.View;component/Resources/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource x:Key="purchaseTypes" Source="{Binding TypeSelectorItems}" />
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -124,7 +127,12 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}" Width="100"/>
                         <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="300" />
-                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" IsReadOnly="True" />
+                        <DataGridComboBoxColumn Header="Тип" Width="120"
+                                                ItemsSource="{Binding Source={StaticResource purchaseTypes}}"
+                                                SelectedItemBinding="{Binding Type}"
+                                                >
+                        </DataGridComboBoxColumn>
+
                         <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
                         <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost, StringFormat={}{0:0.##}}" Width="110" />
                         <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost, StringFormat={}{0:0.##}}" Width="120" />
