@@ -80,6 +80,7 @@ namespace HomeCalc.Model.DbService
                     switch (db_version)
                     {
                         case 0:
+                        case 1:
                             //create common tables
                             command.CommandText =
                                     "create table if not exists PRODUCTSUBTYPE (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, TypeId INTEGER);" +
@@ -94,8 +95,8 @@ namespace HomeCalc.Model.DbService
                                 command.CommandText =
                                     "ALTER TABLE PURCHASETYPEMODELS RENAME TO PRODUCTTYPE;" +
                                     "ALTER TABLE SETTINGMODELS RENAME TO SETTING;"+
-                                    "INSERT INTO PRODUCT (Id, Name, TypeId) SELECT DISTINCT PurchaseId,Name, TypeId FROM PURCHASEMODELS;"+
-                                    "INSERT INTO PURCHASE (Id, ProductId, Timestamp, TotalCost, ItemCost, ItemsNumber) SELECT pm.PurchaseId, p.Id, Timestamp, TotalCost, ItemCost, ItemsNumber FROM PURCHASEMODELS pm JOIN PRODUCT p on pm.Name=p.name;"+
+                                    "INSERT INTO PRODUCT (Name, TypeId) SELECT DISTINCT Name, TypeId FROM PURCHASEMODELS group by Name;" +
+                                    "INSERT INTO PURCHASE (Id, ProductId, Timestamp, TotalCost, ItemCost, ItemsNumber) SELECT pm.PurchaseId, p.Id, Timestamp, TotalCost, ItemCost, ItemsNumber FROM PURCHASEMODELS pm JOIN PRODUCT p on pm.Name=p.Name;"+
                                     "DROP TABLE PURCHASEMODELS";
                                     command.ExecuteNonQuery();
                             }
@@ -108,7 +109,7 @@ namespace HomeCalc.Model.DbService
                                 command.ExecuteNonQuery();
                             }
 
-                            command.CommandText = "PRAGMA user_version=1;";
+                            command.CommandText = "PRAGMA user_version=2;";
                             command.ExecuteNonQuery();
                             break;
                         default:
