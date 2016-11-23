@@ -133,6 +133,10 @@ namespace HomeCalc.Model.DbService
                     {
                         queue = string.Format("{0} ProductName LIKE '%{1}%' ", queue, StringUtilities.EscapeStringForDatabase(filter.Name.Trim(' ')));
                     }
+                    if (filter.SearchByType)
+                    {
+                        queue = string.Format("{0} TypeId={1} ", queue, filter.TypeId);
+                    }
                     if (filter.SearchByDate)
                     {
                         queue = string.Format("{0} Timestamp BETWEEN {1} AND {2} ", queue, filter.DateStart.Ticks, filter.DateEnd.Ticks);
@@ -151,7 +155,18 @@ namespace HomeCalc.Model.DbService
                     }
                     if (filter.SearchByMonthly)
                     {
-                        queue = string.Format("{0} IsMonthly='{1}' ", queue, filter.IsMonthly);
+                        var isMonthlyString = string.Format(" (IsMonthly='{0}' ", filter.IsMonthly);
+                        if (filter.IsMonthly)
+                        {
+                            isMonthlyString += ")";
+                        }
+                        else
+                        {
+                            isMonthlyString += "OR IsMonthly is NULL) ";
+                        }
+
+                        queue = string.Format("{0} {1} ", queue, isMonthlyString);
+                        
                     }
 
                     command.CommandText = queue
