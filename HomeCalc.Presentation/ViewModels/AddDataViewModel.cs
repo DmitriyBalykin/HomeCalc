@@ -64,14 +64,14 @@ namespace HomeCalc.Presentation.ViewModels
                 var result = await StoreService.AddPurchase(purchase);
                 if (result != null)
                 {
-                    logger.Info("Purchase saved");
+                    logger.Info("Purchase saved: {0}", purchase.Name);
                     Status.Post("Покупка \"{0}\" збережена", purchase.Name);
                     purchase = new Purchase();
                     CleanInputFields();
                 }
                 else
                 {
-                    logger.Warn("Purchase not saved");
+                    logger.Warn("Purchase not saved: {0}", purchase.Name);
                     Status.Post("Помилка: покупка \"{0}\" не збережена", purchase.Name);
                 }
             });

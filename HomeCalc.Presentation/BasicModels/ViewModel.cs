@@ -20,6 +20,7 @@ namespace HomeCalc.Presentation.BasicModels
         protected UpdateService UpdateService;
         protected SettingsService Settings;
         protected MessageDispatcher MsgDispatcher;
+
         public ViewModel()
         {
             id = ++count;
