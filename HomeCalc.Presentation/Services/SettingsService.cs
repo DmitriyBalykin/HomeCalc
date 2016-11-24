@@ -25,6 +25,7 @@ namespace HomeCalc.Presentation.Services
         public const string SHOW_STORE_RATE_KEY = "ShowStoreRate";
         public const string SHOW_STORE_COMMENT_KEY = "ShowStoreComment";
         public const string SHOW_PURCHASE_DETAILS_KEY = "ShowPurchaseDetails";
+        public const string SEND_EMAIL_AUTO_KEY = "SendEmailAuto";
 
         private Dictionary<string, SettingsModel> HighLevelCache;
 
@@ -33,20 +34,31 @@ namespace HomeCalc.Presentation.Services
         Logger logger;
         static SettingsService instance;
 
+        private static object monitor = new object();
+
         IStorageService storageService;
         private SettingsService()
         {
             logger = LogService.GetLogger();
+
             storageService = StorageService.GetInstance();
 
             HighLevelCache = storageService.LoadSettings().Result.ToDictionary(item => item.SettingName);
+
+            logger.SendEmail = GetSetting(SEND_EMAIL_AUTO_KEY).SettingBoolValue;
         }
 
         public static SettingsService GetInstance()
         {
             if (instance == null)
             {
-                instance = new SettingsService();
+                lock (monitor)
+                {
+                    if (instance == null)
+                    {
+                        instance = new SettingsService();
+                    }
+                }
             }
             return instance;
         }

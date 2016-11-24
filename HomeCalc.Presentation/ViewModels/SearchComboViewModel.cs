@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HomeCalc.Presentation.Services;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -15,6 +16,7 @@ namespace HomeCalc.Presentation.ViewModels
         public SearchComboViewModel()
         {
             logger = LogService.GetLogger();
+            logger.SendEmail = SettingsService.GetInstance().GetSetting(SettingsService.SEND_EMAIL_AUTO_KEY).SettingBoolValue;
 
             List<ProductTypeModel> types = new List<ProductTypeModel>();
             types.Add(new ProductTypeModel { TypeId = 0, Name = "Еда" });

@@ -15,6 +15,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    
     <StackPanel VerticalAlignment="Center">
         <Grid
             Margin="0,10"
@@ -159,7 +160,7 @@
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
                         </Grid.RowDefinitions>
-                        <DockPanel>
+                        <DockPanel Visibility="{Binding ShowStoreRate, Converter={StaticResource boolToVisibilityConverter}}">
                             <TextBlock Text="Погано"/>
                             <TextBlock HorizontalAlignment="Right" Text="Відмінно"/>
                         </DockPanel>
@@ -170,6 +171,7 @@
                             AutoToolTipPrecision="1"
                             AutoToolTipPlacement="TopLeft"
                             IsMoveToPointEnabled="True"
+                            Visibility="{Binding ShowStoreRate, Converter={StaticResource boolToVisibilityConverter}}"
                             />
                     </Grid>
                     <TextBox Grid.Row="2" Grid.Column="3" TextWrapping="Wrap" Visibility="{Binding ShowStoreComment, Converter={StaticResource boolToVisibilityConverter}}"

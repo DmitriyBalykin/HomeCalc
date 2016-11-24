@@ -13,6 +13,8 @@ namespace HomeCalc.Presentation.Services
         private static Logger logger = LogService.GetLogger();
         public static bool PerformCalculation(Purchase purchase, CalculationTargetProperty targetProperty)
         {
+            logger.SendEmail = SettingsService.GetInstance().GetSetting(SettingsService.SEND_EMAIL_AUTO_KEY).SettingBoolValue;
+
             bool result = true;
             try
             {

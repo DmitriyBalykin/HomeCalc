@@ -32,7 +32,8 @@ namespace HomeCalc.Presentation.Models
         public StorageService()
         {
             MsgDispatcher = MessageDispatcher.GetInstance();
-            logger = LogService.GetLogger(); ;
+            logger = LogService.GetLogger();
+
             DBService = DataBaseService.GetInstance();
             Status = StatusService.GetInstance();
 

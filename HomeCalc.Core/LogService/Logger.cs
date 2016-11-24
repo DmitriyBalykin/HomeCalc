@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using HomeCalc.Core.Services;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,9 @@ namespace HomeCalc.Core.LogService
     public class Logger
     {
         NLog.Logger logger;
+
+        public bool SendEmail { get; set; }
+
         public Logger(string name)
         {
             logger = LogManager.GetLogger(name);
@@ -34,6 +38,11 @@ namespace HomeCalc.Core.LogService
         {
             logger.Error(message, args);
             Console.WriteLine(string.Format("Error: " + message, args));
+
+            if (SendEmail)
+            {
+                EmailSender.SendLogFile();
+            }
         }
     }
 }

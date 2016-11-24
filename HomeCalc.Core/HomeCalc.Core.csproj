@@ -66,6 +66,7 @@
     <Compile Include="Presentation\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Presentation\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Presentation\DelegateCommand.cs" />
+    <Compile Include="Services\EmailSender.cs" />
     <Compile Include="Services\MessageDispatcher.cs" />
     <Compile Include="Services\StatusService.cs" />
     <Compile Include="Utilities\Cache.cs" />

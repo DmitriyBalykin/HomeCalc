@@ -94,6 +94,10 @@
                     </TabItem.Background>
                     <controls:UpdateControl/>
                 </TabItem>
+                <TabItem
+                    Header="Допомога">
+                    <controls:HelpControl />
+                </TabItem>
             </TabControl>
             <StackPanel
                 Grid.Row="2"

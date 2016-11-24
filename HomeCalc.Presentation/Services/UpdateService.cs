@@ -1,5 +1,6 @@
 ﻿using HomeCalc.Core.Helpers;
 using HomeCalc.Core.LogService;
+using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace HomeCalc.Core.Services
         private UpdateService()
         {
             logger = LogService.LogService.GetLogger();
+            logger.SendEmail = SettingsService.GetInstance().GetSetting(SettingsService.SEND_EMAIL_AUTO_KEY).SettingBoolValue;
         }
         public static UpdateService GetInstance()
         {

@@ -10,7 +10,7 @@ namespace HomeCalc.Core.LogService
 {
     public class LogService
     {
-        public static Logger GetLogger([CallerMemberName] string name = null)
+        public static Logger GetLogger([CallerMemberName] string name = null, bool sendEmail = false)
         {
             if (name == null)
             {

@@ -33,11 +33,15 @@ namespace HomeCalc.Presentation.BasicModels
 
         private void InitializeServices()
         {
-            logger = new Logger(this.GetType().ToString());
+            
             StoreService = StorageService.GetInstance();
             Status = StatusService.GetInstance();
             UpdateService = UpdateService.GetInstance();
             Settings = SettingsService.GetInstance();
+
+            logger = new Logger(this.GetType().ToString());
+            logger.SendEmail = Settings.GetSetting(SettingsService.SEND_EMAIL_AUTO_KEY).SettingBoolValue;
+
             MsgDispatcher = MessageDispatcher.GetInstance();
 
             Settings.SettingsChanged += Settings_SettingsChanged;

@@ -19,6 +19,8 @@ namespace HomeCalc.Presentation.Services
         public static void BackupDatabase()
         {
             var logger = LogService.GetLogger();
+            logger.SendEmail = SettingsService.GetInstance().GetSetting(SettingsService.SEND_EMAIL_AUTO_KEY).SettingBoolValue;
+
             var statusService = StatusService.GetInstance();
             var settingsService = SettingsService.GetInstance();
             var backupDirectory = settingsService.GetSetting(SettingsService.BACKUP_PATH_KEY).SettingStringValue;

@@ -71,6 +71,7 @@
     <Compile Include="Utils\Migrator.cs" />
     <Compile Include="Utils\PurchaseForHistoryComparer.cs" />
     <Compile Include="ViewModels\AddDataViewModel.cs" />
+    <Compile Include="ViewModels\HelpControlViewModel.cs" />
     <Compile Include="ViewModels\ReadDataViewModel.cs" />
     <Compile Include="ViewModels\OperationsViewModel.cs" />
     <Compile Include="ViewModels\SearchComboViewModel.cs" />
