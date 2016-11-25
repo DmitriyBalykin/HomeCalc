@@ -58,7 +58,8 @@ namespace HomeCalc.Presentation.ViewModels
         }
         private void SaveCommandExecute(object obj)
         {
-            purchase.Name = purchase.Name.Trim();
+            PreparePurchaseToSave();
+
             Task.Factory.StartNew(async () => 
             {
                 var result = await StoreService.AddPurchase(purchase);
@@ -77,6 +78,22 @@ namespace HomeCalc.Presentation.ViewModels
             });
             
         }
+
+        private void PreparePurchaseToSave()
+        {
+            purchase.Name = purchase.Name.Trim();
+
+            if (purchase.Type == null)
+            {
+                purchase.Type = ProductType;
+            }
+
+            if (purchase.SubType == null)
+            {
+                purchase.SubType = ProductSubType;
+            }
+        }
+
         private bool SaveCommandCanExecute(object obj)
         {
             return
@@ -126,6 +143,7 @@ namespace HomeCalc.Presentation.ViewModels
                 var selectedPurchase = resultList.FirstOrDefault();
                 ProductType = selectedPurchase.Type;
                 MonthlyPurchase = selectedPurchase.IsMonthly;
+                ProductSubType = selectedPurchase.SubType;
             }
             else
             {
@@ -325,13 +343,13 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
-                var type = TypeSelectorItems.Where(e => e.Name == value.Name).FirstOrDefault();
+                var type = TypeSelectorItems.Where(e => e.Id == value.Id).FirstOrDefault();
                 if (type != purchase.Type)
                 {
                     purchase.Type = type;
                     OnPropertyChanged(() => ProductType);
 
-                    LoadSubTypes(type.Id);
+                    LoadSubTypes(type.Id).ConfigureAwait(false);
                 }
             }
         }
@@ -344,7 +362,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
-                var type = ProductSubTypes.Where(e => e.Name == value.Name).FirstOrDefault();
+                var type = ProductSubTypes.Where(e => e.Id == value.Id).FirstOrDefault();
                 if (type != purchase.SubType)
                 {
                     purchase.SubType = type;

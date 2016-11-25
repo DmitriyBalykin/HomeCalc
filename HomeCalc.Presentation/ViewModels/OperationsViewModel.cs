@@ -85,19 +85,22 @@ namespace HomeCalc.Presentation.ViewModels
         private void RenameTypeCommandExecute(object obj)
         {
             NewProductTypeEditable = false;
+            
             Task.Factory.StartNew(async () =>
             {
                 if (await StoreService.RenameProductType(ProductType, NewProductType) > 0)
                 {
                     logger.Info("Purchase type {0} renamed", NewProductType);
                     Status.Post("Тип покупки \"{0}\" перейменовано", NewProductType);
+
+                    ProductType = TypeSelectorItems.Single(t => t.Id == ProductType.Id);
+                    NewProductType = string.Empty;
                 }
                 else
                 {
                     logger.Warn("Purchase type {0} not renamed", NewProductType);
                     Status.Post("Помилка: тип покупки \"{0}\" не перейменовано", NewProductType);
                 }
-                NewProductType = string.Empty;
                 NewProductTypeEditable = true;
             });
         }
@@ -144,6 +147,8 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     logger.Info("Purchase sub type {0} saved", NewProductSubType);
                     Status.Post("Підтип покупки \"{0}\" збережено", NewProductSubType);
+
+                    await LoadSubTypes(ProductType.Id);
                 }
                 else
                 {
@@ -169,13 +174,16 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     logger.Info("Product Sub type {0} renamed", NewProductSubType);
                     Status.Post("Підтип покупки \"{0}\" перейменовано", NewProductSubType);
+
+                    ProductSubType = ProductSubTypes.Single(st => st.Id == ProductSubType.Id);
+                    NewProductSubType = string.Empty;
                 }
                 else
                 {
                     logger.Warn("Product Sub type {0} not renamed", NewProductSubType);
                     Status.Post("Помилка: підтип покупки \"{0}\" не перейменовано", NewProductSubType);
                 }
-                NewProductSubType = string.Empty;
+                
                 NewProductSubTypeEditable = true;
             });
         }
@@ -315,12 +323,12 @@ namespace HomeCalc.Presentation.ViewModels
                     type = TypeSelectorItems.FirstOrDefault();
                     NewProductSubTypeEditable = false;
                 }
-                if (type != productType)
-                {
+                //if (type != productType)
+                //{
                     productType = type;
                     LoadSubTypes(type.Id);
                     OnPropertyChanged(() => ProductType);
-                }
+                //}
             }
         }
 
@@ -393,11 +401,11 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     subType = ProductSubTypes.FirstOrDefault();
                 }
-                if (subType != purchaseSubType)
-                {
+                //if (subType != purchaseSubType)
+                //{
                     purchaseSubType = subType;
                     OnPropertyChanged(() => ProductSubType);
-                }
+                //}
             }
         }
     }

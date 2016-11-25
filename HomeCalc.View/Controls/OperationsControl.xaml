@@ -42,11 +42,12 @@
 
         <ComboBox Grid.Row="1" Grid.Column="1"
                      ItemsSource="{Binding TypeSelectorItems}"
-                     SelectedItem="{Binding ProductType}"/>
+                     SelectedItem="{Binding ProductType, Mode=TwoWay}"
+                  />
 
         <ComboBox Grid.Row="3" Grid.Column="1"
                      ItemsSource="{Binding ProductSubTypes}"
-                     SelectedItem="{Binding ProductSubType}"
+                     SelectedItem="{Binding ProductSubType, Mode=TwoWay}"
                   IsEnabled="{Binding ProductSubTypeSelectable, UpdateSourceTrigger=PropertyChanged}"/>
 
         <Button Grid.Row="1" Grid.Column="2" Content="Перейменувати" Command="{Binding RenameType}"/>
