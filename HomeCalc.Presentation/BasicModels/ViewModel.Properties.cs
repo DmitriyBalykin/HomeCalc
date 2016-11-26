@@ -3,6 +3,7 @@ using HomeCalc.Core.Events;
 using HomeCalc.Core.Helpers;
 using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
+using HomeCalc.Core.Services.Messages;
 using HomeCalc.Model.DbService;
 using HomeCalc.Presentation.Models;
 using HomeCalc.Presentation.Services;
@@ -29,15 +30,18 @@ namespace HomeCalc.Presentation.BasicModels
             LoadTypes().ContinueWith(task => Initialize());
         }
 
-        private void HandleMessage(string message)
+        private void HandleMessage(Message message)
         {
-            switch (message)
+            switch (message.MessageType)
             {
-                case "showRatingPanel":
+                case MessageType.RATING_PANEL_SHOW:
                     OnPropertyChanged(() => ShowRatingPanel);
                     break;
-                case "typesUpdated":
+                case MessageType.TYPES_UPDATED:
                     LoadTypes();
+                    break;
+                case MessageType.SUBTYPES_UPDATED:
+                    LoadSubTypes((long)message.Data);
                     break;
                 default:
                     break;
@@ -56,7 +60,11 @@ namespace HomeCalc.Presentation.BasicModels
         {
             return Task.Factory.StartNew(async () =>
             {
-                ProductSubTypes = new ObservableCollection<ProductSubType>(await StoreService.LoadProductSubTypeList(typeId).ConfigureAwait(false));
+                var list = new List<ProductSubType>();
+                list.Add(new ProductSubType());
+                list.AddRange(await StoreService.LoadProductSubTypeList(typeId).ConfigureAwait(false));
+
+                ProductSubTypes = new ObservableCollection<ProductSubType>(list);
             });
         }
         
@@ -130,11 +138,11 @@ namespace HomeCalc.Presentation.BasicModels
                     OnPropertyChanged(() => ProductSubTypes);
                     if (ProductSubTypes.Count > 0)
                     {
-                        MsgDispatcher.Post("productSubTypesLoaded");
+                        MsgDispatcher.Post(MessageType.SUBTYPES_LOADED);
                     }
                     else
                     {
-                        MsgDispatcher.Post("productSubTypesUnLoaded");
+                        MsgDispatcher.Post(MessageType.SUBTYPES_UNLOADED);
                     }
                 }
             }
@@ -143,49 +151,49 @@ namespace HomeCalc.Presentation.BasicModels
         [SettingProperty]
         public bool ShowProductSubType
         {
-            get { return Settings.GetSetting("ShowProductSubType").SettingBoolValue; }
+            get { return Settings.GetSetting(SettingsService.SHOW_PRODUCT_SUBTYPE_KEY).SettingBoolValue; }
             set
             {
-                if (value != Settings.GetSetting("ShowProductSubType").SettingBoolValue)
+                if (value != Settings.GetSetting(SettingsService.SHOW_PRODUCT_SUBTYPE_KEY).SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowProductSubType, value);
-                    MsgDispatcher.Post("showRatingPanel");
+                    MsgDispatcher.Post(MessageType.RATING_PANEL_SHOW);
                 }
             }
         }
         [SettingProperty]
         public bool ShowPurchaseComment
         {
-            get { return Settings.GetSetting("ShowPurchaseComment").SettingBoolValue; }
+            get { return Settings.GetSetting(SettingsService.SHOW_PURCHASE_COMMENT_KEY).SettingBoolValue; }
             set
             {
-                if (value != Settings.GetSetting("ShowPurchaseComment").SettingBoolValue)
+                if (value != Settings.GetSetting(SettingsService.SHOW_PURCHASE_COMMENT_KEY).SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowPurchaseComment, value);
-                    MsgDispatcher.Post("showRatingPanel");
+                    MsgDispatcher.Post(MessageType.RATING_PANEL_SHOW);
                 }
             }
         }
         [SettingProperty]
         public bool ShowPurchaseRate
         {
-            get { return Settings.GetSetting("ShowPurchaseRate").SettingBoolValue; }
+            get { return Settings.GetSetting(SettingsService.SHOW_PURCHASE_RATE_KEY).SettingBoolValue; }
             set
             {
-                if (value != Settings.GetSetting("ShowPurchaseRate").SettingBoolValue)
+                if (value != Settings.GetSetting(SettingsService.SHOW_PURCHASE_RATE_KEY).SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowPurchaseRate, value);
-                    MsgDispatcher.Post("showRatingPanel");
+                    MsgDispatcher.Post(MessageType.RATING_PANEL_SHOW);
                 }
             }
         }
         [SettingProperty]
         public bool ShowMonthlyPurchase
         {
-            get { return Settings.GetSetting("ShowMonthlyPurchase").SettingBoolValue; }
+            get { return Settings.GetSetting(SettingsService.SHOW_MONTHLY_PURCHASE).SettingBoolValue; }
             set
             {
-                if (value != Settings.GetSetting("ShowMonthlyPurchase").SettingBoolValue)
+                if (value != Settings.GetSetting(SettingsService.SHOW_MONTHLY_PURCHASE).SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowMonthlyPurchase, value);
                 }
@@ -194,14 +202,14 @@ namespace HomeCalc.Presentation.BasicModels
         [SettingProperty]
         public bool ShowStoreName
         {
-            get { return Settings.GetSetting("ShowStoreName").SettingBoolValue; }
+            get { return Settings.GetSetting(SettingsService.SHOW_STORE_NAME_KEY).SettingBoolValue; }
             set
             {
                 Console.WriteLine("show store name, thread {0}", Thread.CurrentThread.ManagedThreadId);
-                if (value != Settings.GetSetting("ShowStoreName").SettingBoolValue)
+                if (value != Settings.GetSetting(SettingsService.SHOW_STORE_NAME_KEY).SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreName, value);
-                    MsgDispatcher.Post("showRatingPanel");
+                    MsgDispatcher.Post(MessageType.RATING_PANEL_SHOW);
                 }
                 if (!value)
                 {
@@ -213,14 +221,14 @@ namespace HomeCalc.Presentation.BasicModels
         [SettingProperty]
         public bool ShowStoreRate
         {
-            get { return Settings.GetSetting("ShowStoreRate").SettingBoolValue; }
+            get { return Settings.GetSetting(SettingsService.SHOW_STORE_RATE_KEY).SettingBoolValue; }
             set
             {
                 Console.WriteLine("show store rate, thread {0}", Thread.CurrentThread.ManagedThreadId);
-                if (value != Settings.GetSetting("ShowStoreRate").SettingBoolValue)
+                if (value != Settings.GetSetting(SettingsService.SHOW_STORE_RATE_KEY).SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreRate, value);
-                    MsgDispatcher.Post("showRatingPanel");
+                    MsgDispatcher.Post(MessageType.RATING_PANEL_SHOW);
                 }
                 if (value)
                 {
@@ -232,14 +240,14 @@ namespace HomeCalc.Presentation.BasicModels
         [SettingProperty]
         public bool ShowStoreComment
         {
-            get { return Settings.GetSetting("ShowStoreComment").SettingBoolValue; }
+            get { return Settings.GetSetting(SettingsService.SHOW_STORE_COMMENT_KEY).SettingBoolValue; }
             set
             {
                 Console.WriteLine("show store comment, thread {0}", Thread.CurrentThread.ManagedThreadId);
-                if (value != Settings.GetSetting("ShowStoreComment").SettingBoolValue)
+                if (value != Settings.GetSetting(SettingsService.SHOW_STORE_COMMENT_KEY).SettingBoolValue)
                 {
                     OnPropertyChanged(() => ShowStoreComment, value);
-                    MsgDispatcher.Post("showRatingPanel");
+                    MsgDispatcher.Post(MessageType.RATING_PANEL_SHOW);
                     
                 }
                 if (value)
@@ -254,11 +262,11 @@ namespace HomeCalc.Presentation.BasicModels
         {
             get
             {
-                var result = Settings.GetSetting("ShowProductSubType").SettingBoolValue ||
-                        Settings.GetSetting("ShowPurchaseRate").SettingBoolValue ||
-                        Settings.GetSetting("ShowPurchaseComment").SettingBoolValue ||
-                        Settings.GetSetting("ShowStoreRate").SettingBoolValue ||
-                        Settings.GetSetting("ShowStoreName").SettingBoolValue;
+                var result = Settings.GetSetting(SettingsService.SHOW_PRODUCT_SUBTYPE_KEY).SettingBoolValue ||
+                        Settings.GetSetting(SettingsService.SHOW_PURCHASE_RATE_KEY).SettingBoolValue ||
+                        Settings.GetSetting(SettingsService.SHOW_PURCHASE_COMMENT_KEY).SettingBoolValue ||
+                        Settings.GetSetting(SettingsService.SHOW_STORE_RATE_KEY).SettingBoolValue ||
+                        Settings.GetSetting(SettingsService.SHOW_STORE_NAME_KEY).SettingBoolValue;
 
                 return result;
             }

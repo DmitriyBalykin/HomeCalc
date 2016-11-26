@@ -60,6 +60,7 @@
     <Compile Include="LogService\Logger.cs" />
     <Compile Include="LogService\LogService.cs" />
     <Compile Include="Presentation\Converters\BoolToStringConverter.cs" />
+    <Compile Include="Presentation\Converters\StringToDoubleConverter.cs" />
     <Compile Include="Presentation\Converters\BoolToValueConverter.cs" />
     <Compile Include="Presentation\Converters\ShowDetailsToMode.cs" />
     <Compile Include="Presentation\Converters\UpdateStatusToColorConverter.cs" />
@@ -67,7 +68,9 @@
     <Compile Include="Presentation\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Presentation\DelegateCommand.cs" />
     <Compile Include="Services\EmailSender.cs" />
-    <Compile Include="Services\MessageDispatcher.cs" />
+    <Compile Include="Services\Messages\Message.cs" />
+    <Compile Include="Services\Messages\MessageDispatcher.cs" />
+    <Compile Include="Services\Messages\MessageType.cs" />
     <Compile Include="Services\StatusService.cs" />
     <Compile Include="Utilities\Cache.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />

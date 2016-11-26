@@ -64,34 +64,6 @@ namespace HomeCalc.Model.DbService
             }
             return purchaseId;
         }
-        public async Task<bool> SavePurchaseBulk(IEnumerable<PurchaseModel> purchases, StorageConnection connection = null)
-        {
-            bool result = false;
-            try
-            {
-                using (var db = connection ?? dbManager.GetConnection())
-                using (var transaction = db.Connection.BeginTransaction())
-                using (var command = db.Connection.CreateCommand())
-                {
-                    foreach (var purchase in purchases)
-                    {
-                        command.CommandText = string.Format(
-                        "INSERT INTO PURCHASE(PurchaseId, Timestamp, TotalCost, ItemCost, ItemNumber, StoreId) VALUES ('{0}', {1}, {2}, {3}, {4}, {5})",
-                        purchase.Id, purchase.Timestamp, purchase.TotalCost.ToString(formatCulture), purchase.ItemCost.ToString(formatCulture), purchase.ItemsNumber.ToString(formatCulture), purchase.StoreId);
-
-                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                        logger.Debug("Saving new purchase with name={0} and id={1}", purchase.ProductName, purchase.Id);
-                    }
-                    transaction.Commit();
-                }
-            }
-            catch (Exception ex)
-            {
-                result = false;
-                logger.Error("Exception during execution method \"SavePurchaseItemBulk\": {0}", ex.Message);
-            }
-            return result;
-        }
         public async Task<PurchaseModel> LoadPurchase(long id)
         {
             PurchaseModel purchase = null;

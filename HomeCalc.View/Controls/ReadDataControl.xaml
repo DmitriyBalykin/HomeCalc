@@ -133,9 +133,9 @@
                                                 >
                         </DataGridComboBoxColumn>
 
-                        <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber}" Width="70" />
-                        <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost, StringFormat={}{0:0.##}}" Width="110" />
-                        <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost, StringFormat={}{0:0.##}}" Width="120" />
+                        <DataGridTextColumn Header="Кількість" Binding="{Binding ItemsNumber, StringFormat={}{0:0.#####}, Converter={StaticResource stringToDoubleConverter}}" Width="70" />
+                        <DataGridTextColumn Header="Вартість одиниці" Binding="{Binding ItemCost, StringFormat={}{0:0.##}, Converter={StaticResource stringToDoubleConverter}}" Width="110" />
+                        <DataGridTextColumn Header="Загальная вартість" Binding="{Binding TotalCost, StringFormat={}{0:0.##}, Converter={StaticResource stringToDoubleConverter}}" Width="120" />
                         <DataGridCheckBoxColumn Header="Щомісячна" Binding="{Binding IsMonthly}" Width="67" />
                     </DataGrid.Columns>
                 </DataGrid>

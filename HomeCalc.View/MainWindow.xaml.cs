@@ -1,7 +1,9 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Services;
+using HomeCalc.Core.Services.Messages;
 using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
@@ -19,49 +21,48 @@ namespace HomeCalc.View
         private Logger logger;
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private MessageDispatcher MsgDispatcher;
+
         public MainWindow()
         {
             InitializeComponent();
 
             DataContext = this;
 
+            MsgDispatcher = MessageDispatcher.GetInstance();
+
+            MsgDispatcher.AddHandler(MessageHandler);
+
             statusService = StatusService.GetInstance();
             updateService = UpdateService.GetInstance();
             logger = LogService.GetLogger();
 
-            statusService.StatusChanged += statusService_StatusChanged;
-            statusService.ProgressUpdated += statusService_ProgressUpdated;
-            statusService.ProgressStarted += statusService_ProgressStarted;
-            statusService.ProgressStopped += statusService_ProgressStopped;
-
             Status = statusService.GetStatus();
-
-            updateService.UpdatesAvailableEvent += updateService_UpdatesAvailableEvent;
         }
 
-        void updateService_UpdatesAvailableEvent(object sender, EventArgs e)
+        private void MessageHandler(Message message)
         {
-            UpdateColorNotify = true;
-        }
+            switch (message.MessageType)
+            {
+                case MessageType.STATUS_CHANGED:
+                    Status = message.Data as string;
+                    break;
+                case MessageType.PROGRESS_UPDATED:
+                    ProgressValue = (int)message.Data;
+                    break;
+                case MessageType.PROGRESS_STARTED:
+                    ShowProgress = true;
+                    break;
+                case MessageType.PROGRESS_FINISHED:
+                    ShowProgress = false;
+                    break;
+                case MessageType.UPDATES_AVAILABLE:
+                    UpdateColorNotify = true;
+                    break;
 
-        void statusService_ProgressStopped(object sender, EventArgs e)
-        {
-            ShowProgress = false;
-        }
-
-        void statusService_ProgressStarted(object sender, EventArgs e)
-        {
-            ShowProgress = true;
-        }
-
-        void statusService_ProgressUpdated(object sender, ProgressUpdatedEventArgs e)
-        {
-            ProgressValue = e.Progress;
-        }
-
-        void statusService_StatusChanged(object sender, StatusChangedEventArgs e)
-        {
-            Status = e.Status;
+                default:
+                    break;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

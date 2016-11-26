@@ -20,6 +20,10 @@ namespace HomeCalc.Core.Helpers
 
         public static string EscapeStringForDatabase(string p)
         {
+            if (p == null)
+            {
+                return null;
+            }
             var result = p.Replace("'", "''");
             return result;
         }

@@ -1,6 +1,7 @@
 ﻿using HomeCalc.Core.Helpers;
 using HomeCalc.Core.LogService;
 using HomeCalc.Core.Services;
+using HomeCalc.Core.Services.Messages;
 using HomeCalc.Core.Utilities;
 using HomeCalc.Model.DataModels;
 using HomeCalc.Model.DbService;
@@ -71,8 +72,8 @@ namespace HomeCalc.Presentation.Models
         private void AnnounceHistoryUpdate()
         {
             logger.Debug("Announce history update");
-            MsgDispatcher.Post("historyUpdated");
-            }
+            MsgDispatcher.Post(MessageType.HISTORY_UPDATED);
+        }
 
         public static StorageService GetInstance()
         {
@@ -80,6 +81,7 @@ namespace HomeCalc.Presentation.Models
             {
                 instance = new StorageService();
             }
+
             return instance;
         }
         #region Settings
@@ -334,7 +336,7 @@ namespace HomeCalc.Presentation.Models
             var result = await DBService.SaveProductSubType(SubTypeToModel(productSubType)).ConfigureAwait(false);
             if (result > 0)
             {
-                SubTypeUpdated();
+                SubTypeUpdated(productSubType.TypeId);
             }
             return result;
         }
@@ -345,7 +347,7 @@ namespace HomeCalc.Presentation.Models
             var result = await DBService.DeleteProductSubType(SubTypeToModel(pSubType)).ConfigureAwait(false);
             if (result)
             {
-                SubTypeUpdated();
+                SubTypeUpdated(pSubType.TypeId);
             }
             return result;
         }
@@ -434,6 +436,7 @@ namespace HomeCalc.Presentation.Models
             {
                 Id = purchase.Id,
                 ProductId = productId,
+                ProductName = purchase.Name,
                 StoreId = storeId,
                 Timestamp = purchase.Date.Ticks,
                 ItemsNumber = purchase.ItemsNumber,
@@ -466,12 +469,12 @@ namespace HomeCalc.Presentation.Models
         }
         private void TypeUpdated()
         {
-            MsgDispatcher.Post("typesUpdated");
+            MsgDispatcher.Post(MessageType.TYPES_UPDATED);
         }
 
-        private void SubTypeUpdated()
-            {
-            MsgDispatcher.Post("subTypesUpdated");
+        private void SubTypeUpdated(long typeId)
+        {
+            MsgDispatcher.Post(new Message { MessageType = MessageType.SUBTYPES_UPDATED, Data = typeId });
         }
 
         public List<Purchase> PurchaseHistory

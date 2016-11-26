@@ -30,7 +30,7 @@ namespace HomeCalc.Core.Helpers
             bool parsed = double.TryParse(str, out result);
             return parsed && !double.IsNaN(result) && !double.IsInfinity(result);
         }
-        public static string GetCorrected(string str, int precision = 6)
+        public static string GetCorrected(string str, int precision = 6, bool inverse = false)
         {
             if (str == null)
             {
@@ -38,14 +38,27 @@ namespace HomeCalc.Core.Helpers
             }
             int correcterValue = precision + 1;
 
-            str = str.Replace(INCORRECT_COMA, CORRECT_COMA);
-            int dividerPlace = str.IndexOf(CORRECT_COMA);
+            char correctComa, incorrectComa;
+            if (inverse)
+            {
+                // used for DataGrid control
+                correctComa = INCORRECT_COMA;
+                incorrectComa = CORRECT_COMA;
+            }
+            else
+            {
+                correctComa = CORRECT_COMA;
+                incorrectComa = INCORRECT_COMA;
+            }
+
+            str = str.Replace(incorrectComa, correctComa);
+            int dividerPlace = str.IndexOf(correctComa);
             if (dividerPlace > -1 && (dividerPlace + correcterValue) < str.Length)
             {
                 str = str.Substring(0, (dividerPlace + correcterValue));
             }
 
-            str = str.Replace(INCORRECT_COMA, CORRECT_COMA);
+            str = str.Replace(incorrectComa, correctComa);
             return str;
         }
         private static string Normalize(string str)

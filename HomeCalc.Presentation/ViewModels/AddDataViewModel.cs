@@ -13,6 +13,8 @@ using System.Globalization;
 using HomeCalc.Presentation.Services;
 using HomeCalc.Core.Helpers;
 using HomeCalc.Presentation.Utils;
+using System.Threading;
+using HomeCalc.Core.Services.Messages;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -44,14 +46,16 @@ namespace HomeCalc.Presentation.ViewModels
         }
 
         #region event handlers
-        private void HandleMessage(string message)
+        private void HandleMessage(Message message)
         {
-            switch (message)
+            switch (message.MessageType)
             {
-                case "historyUpdated":
+                case MessageType.HISTORY_UPDATED:
+
                     logger.Debug("Purchase history updated, updating purchase list");
                     PurchaseHistoryItemsWrapper = StoreService.PurchaseHistory;
                     break;
+
                 default:
                     break;
             }
@@ -62,18 +66,21 @@ namespace HomeCalc.Presentation.ViewModels
 
             Task.Factory.StartNew(async () => 
             {
+                var pName = purchase.Name;
                 var result = await StoreService.AddPurchase(purchase);
                 if (result != null)
                 {
-                    logger.Info("Purchase saved: {0}", purchase.Name);
-                    Status.Post("Покупка \"{0}\" збережена", purchase.Name);
+                    int tId = Thread.CurrentThread.ManagedThreadId;
+                    logger.Info("Purchase saved: {0}", pName);
+                    Status.Post("Покупка \"{0}\" збережена", pName);
+
                     purchase = new Purchase();
                     CleanInputFields();
                 }
                 else
                 {
-                    logger.Warn("Purchase not saved: {0}", purchase.Name);
-                    Status.Post("Помилка: покупка \"{0}\" не збережена", purchase.Name);
+                    logger.Warn("Purchase not saved: {0}", pName);
+                    Status.Post("Помилка: покупка \"{0}\" не збережена", pName);
                 }
             });
             
@@ -120,13 +127,22 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void CleanInputFields()
         {
-            PurchaseName = string.Empty;
-
             fieldCalculationBlocked = true;
+
             Count = string.Empty;
             ItemCost = string.Empty;
             TotalCost = string.Empty;
+
             fieldCalculationBlocked = false;
+
+            MonthlyPurchase = false;
+            PurchaseComment = string.Empty;
+            StoreComment = string.Empty;
+            PurchaseRate = 0;
+            StoreRate = 0;
+            StoreName = string.Empty;
+            PurchaseName = string.Empty;
+            
         }
         private void SearchPurchase()
         {
@@ -362,6 +378,10 @@ namespace HomeCalc.Presentation.ViewModels
             }
             set
             {
+                if (value == null)
+                {
+                    return;
+                }
                 var type = ProductSubTypes.Where(e => e.Id == value.Id).FirstOrDefault();
                 if (type != purchase.SubType)
                 {

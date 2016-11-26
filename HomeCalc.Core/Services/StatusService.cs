@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HomeCalc.Core.Services.Messages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,18 +12,19 @@ namespace HomeCalc.Core.Services
         private static StatusService instance;
 
         private string status;
-        public event EventHandler<StatusChangedEventArgs> StatusChanged;
-        public event EventHandler<ProgressUpdatedEventArgs> ProgressUpdated;
-        public event EventHandler ProgressStarted;
-        public event EventHandler ProgressStopped;
+
+        MessageDispatcher MsgDispatcher;
+
+        private StatusService()
+        {
+            MsgDispatcher = MessageDispatcher.GetInstance();
+        }
 
         public void Post(string msg, params object[] args)
         {
             status = string.Format(msg, args);
-            if (StatusChanged != null)
-            {
-                StatusChanged.Invoke(null, new StatusChangedEventArgs { Status = status });
-            }
+
+            MsgDispatcher.Post(new Message { MessageType = MessageType.STATUS_CHANGED, Data = status });
         }
 
         public static StatusService GetInstance()
@@ -37,41 +39,22 @@ namespace HomeCalc.Core.Services
         public void StartProgress()
         {
             UpdateProgress(0);
-            
-            if (ProgressStarted != null)
-            {
-                ProgressStarted(null, EventArgs.Empty);
-            }
+
+            MsgDispatcher.Post(MessageType.PROGRESS_STARTED);
         }
         public void StopProgress()
         {
-            if (ProgressStopped != null)
-            {
-                ProgressStopped(null, EventArgs.Empty);
-            }
+            MsgDispatcher.Post(MessageType.PROGRESS_FINISHED);
         }
 
         public void UpdateProgress(int progress)
         {
-            
-            if (ProgressUpdated != null)
-            {
-                ProgressUpdated(null, new ProgressUpdatedEventArgs { Progress = progress });
-            }
+            MsgDispatcher.Post(new Message { MessageType = MessageType.PROGRESS_UPDATED, Data = progress });
         }
 
         public string GetStatus()
         {
             return status;
         }
-    }
-
-    public class StatusChangedEventArgs : EventArgs
-    {
-        public string Status { get; set; }
-    }
-    public class ProgressUpdatedEventArgs : EventArgs
-    {
-        public int Progress { get; set; }
     }
 }

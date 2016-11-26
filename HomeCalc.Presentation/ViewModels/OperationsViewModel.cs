@@ -1,5 +1,6 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Presentation;
+using HomeCalc.Core.Services.Messages;
 using HomeCalc.Core.Utilities;
 using HomeCalc.Presentation.BasicModels;
 using HomeCalc.Presentation.Models;
@@ -14,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Msg = HomeCalc.Core.Services.Messages;
 
 namespace HomeCalc.Presentation.ViewModels
 {
@@ -21,8 +23,6 @@ namespace HomeCalc.Presentation.ViewModels
     {
         public OperationsViewModel()
         {
-            //AddCommand("SelectPath", new DelegateCommand(SelectPathCommandExecute));
-            //AddCommand("ImportData", new DelegateCommand(ImportDataCommandExecute, CanImportData));
             AddCommand("AddType", new DelegateCommand(AddTypeCommandExecute, CanAddType));
             AddCommand("RenameType", new DelegateCommand(RenameTypeCommandExecute, CanRenameType));
             AddCommand("DeleteType", new DelegateCommand(DeleteTypeCommandExecute, CanDeleteType));
@@ -36,17 +36,17 @@ namespace HomeCalc.Presentation.ViewModels
 
         }
 
-        private void HandleMessage(string msg)
+        private void HandleMessage(Msg.Message msg)
         {
-            switch (msg)
+            switch (msg.MessageType)
             {
-                case "productSubTypesLoaded":
+                case MessageType.SUBTYPES_LOADED:
                     ProductSubTypeSelectable = true;
                     break;
-                case "productSubTypesUnLoaded":
+                case MessageType.SUBTYPES_UNLOADED:
                     ProductSubTypeSelectable = false;
                     break;
-                case "subTypesUpdated":
+                case MessageType.SUBTYPES_UPDATED:
                     LoadSubTypes(ProductType.Id);
                     break;
                 default:
@@ -139,9 +139,9 @@ namespace HomeCalc.Presentation.ViewModels
             return !string.IsNullOrWhiteSpace(NewProductSubType);
         }
 
-        private void AddSubTypeCommandExecute(object obj)
+        private async void AddSubTypeCommandExecute(object obj)
         {
-            Task.Factory.StartNew(async () =>
+            await Task.Factory.StartNew(async () =>
             {
                 if (await StoreService.SaveProductSubType(new ProductSubType { Name = NewProductSubType, TypeId = ProductType.Id }) > 0)
                 {
@@ -195,10 +195,10 @@ namespace HomeCalc.Presentation.ViewModels
 
         private void DeleteSubTypeCommandExecute(object obj)
         {
-            Task.Factory.StartNew(async () =>
+            Task.Factory.StartNew(() =>
             {
                 var typeToDeleteName = ProductSubType.Name;
-                if (await StoreService.RemoveProductSubType(ProductSubType))
+                if (StoreService.RemoveProductSubType(ProductSubType).Result)
                 {
                     logger.Info("Purchase Sub type {0} removed", typeToDeleteName);
                     Status.Post("Підтип покупки \"{0}\" видалено", typeToDeleteName);
@@ -210,7 +210,7 @@ namespace HomeCalc.Presentation.ViewModels
                 }
                 NewProductSubType = string.Empty;
                 NewProductSubTypeEditable = true;
-            });
+            });            
         }
 
         private void SelectPathCommandExecute(object obj)
