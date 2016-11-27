@@ -135,7 +135,7 @@ namespace HomeCalc.Presentation.ViewModels
 
             fieldCalculationBlocked = false;
 
-            MonthlyPurchase = false;
+            IsMonthly = false;
             PurchaseComment = string.Empty;
             StoreComment = string.Empty;
             PurchaseRate = 0;
@@ -158,7 +158,7 @@ namespace HomeCalc.Presentation.ViewModels
 
                 var selectedPurchase = resultList.FirstOrDefault();
                 ProductType = selectedPurchase.Type;
-                MonthlyPurchase = selectedPurchase.IsMonthly;
+                IsMonthly = selectedPurchase.IsMonthly;
                 ProductSubType = selectedPurchase.SubType;
             }
             else
@@ -274,7 +274,7 @@ namespace HomeCalc.Presentation.ViewModels
             }
         }
 
-        public bool MonthlyPurchase
+        public bool IsMonthly
         {
             get { return purchase.IsMonthly; }
             set
@@ -282,7 +282,7 @@ namespace HomeCalc.Presentation.ViewModels
                 if (purchase.IsMonthly != value)
                 {
                     purchase.IsMonthly = value;
-                    OnPropertyChanged(() => MonthlyPurchase);
+                    OnPropertyChanged(() => IsMonthly);
                 }
             }
         }

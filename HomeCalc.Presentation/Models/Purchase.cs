@@ -255,7 +255,7 @@ namespace HomeCalc.Presentation.Models
                 if (value != monthlyPurchase)
                 {
                     monthlyPurchase = value;
-                    PublishChange("MonthlyPurchase");
+                    PublishChange("IsMonthly");
                 }
             }
         }

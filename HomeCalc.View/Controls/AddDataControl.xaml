@@ -87,7 +87,7 @@
         		IsDropDownOpen="{Binding ShowPurchaseHistory}"
         		IsEditable="True"/>
             <StackPanel Grid.Row="2" Grid.Column="2" Margin="7" Orientation="Horizontal" Visibility="{Binding ShowMonthlyPurchase, Converter={StaticResource boolToVisibilityConverter}}">
-                <CheckBox IsChecked="{Binding MonthlyPurchase, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox IsChecked="{Binding IsMonthly, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="Щомісячна покупка" Margin="5,0"/>
             </StackPanel>
             

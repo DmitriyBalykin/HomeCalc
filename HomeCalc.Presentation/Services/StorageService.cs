@@ -175,15 +175,7 @@ namespace HomeCalc.Presentation.Models
 
             return purchase;
         }
-        public async Task<bool> UpdatePurchase(Purchase purchase)
-        {
-            if (await DBService.SaveProduct(ProductToModel(purchase)).ConfigureAwait(false) != -1)
-            {
-                Status.Post("Запис \"{0}\" оновлено", purchase.Name);
-                return true;
-            }
-            return false;
-        }
+
         public async Task<bool> DeletePurchase(Purchase purchase)
         {
             if (await DBService.DeletePurchase(purchase.Id).ConfigureAwait(false))

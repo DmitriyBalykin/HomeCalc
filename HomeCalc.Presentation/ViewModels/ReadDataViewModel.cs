@@ -39,7 +39,13 @@ namespace HomeCalc.Presentation.ViewModels
                     var referencePurchase = SearchResultListBackup.ElementAt(e.NewIndex);
                     if (!RecalculatePurchase(purchase, referencePurchase))
 	                {
-                        Task.Factory.StartNew(async () => await StoreService.UpdatePurchase(purchase));
+                        Task.Factory.StartNew(async () =>
+                        {
+                            if((await StoreService.AddPurchase(purchase)) != null)
+                            {
+                                Status.Post("Зміни до покупки \"{0}\" збрежені", purchase.Name);
+                            }
+                        });
 	                }
                     break;
                 case ListChangedType.ItemDeleted:
@@ -114,7 +120,7 @@ namespace HomeCalc.Presentation.ViewModels
                 //SearchResultList = new BindingList<Purchase>(SearchResultListBackup);
                 Task.Factory.StartNew(async () => 
                 {
-                    if (await StoreService.UpdatePurchase(editingPurchase))
+                    if ((await StoreService.AddPurchase(editingPurchase)) != null)
                     {
                         Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
                     }

@@ -17,6 +17,5 @@ namespace HomeCalc.Presentation.Services
         Task<ProductType> ResolveProductType(long id, string name);
         Task<long> SaveProductType(ProductType purchaseType);
         Task<bool> SaveSettings(SettingsModel settings);
-        Task<bool> UpdatePurchase(Purchase purchase);
     }
 }
