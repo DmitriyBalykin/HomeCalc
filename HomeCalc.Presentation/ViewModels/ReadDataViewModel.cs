@@ -43,7 +43,7 @@ namespace HomeCalc.Presentation.ViewModels
                         {
                             if((await StoreService.AddPurchase(purchase)) != null)
                             {
-                                Status.Post("Зміни до покупки \"{0}\" збрежені", purchase.Name);
+                                Status.Post("Зміни до покупки \"{0}\" збережені", purchase.Name);
                             }
                         });
 	                }
@@ -122,7 +122,7 @@ namespace HomeCalc.Presentation.ViewModels
                 {
                     if ((await StoreService.AddPurchase(editingPurchase)) != null)
                     {
-                        Status.Post("Зміни до покупки \"{0}\" збрежені", editingPurchase.Name);
+                        Status.Post("Зміни до покупки \"{0}\" збережені", editingPurchase.Name);
                     }
                 });
                 
@@ -146,14 +146,14 @@ namespace HomeCalc.Presentation.ViewModels
                 TypeId = ProductType != null ?ProductType.Id : -1,
                 CostStart = costStart,
                 CostEnd = costEnd,
-                DateStart = searchFromDate,
-                DateEnd = searchToDate,
-                IsMonthly = isMonthly,
-                SearchByName = searchByName,
-                SearchByType = searchByType,
-                SearchByDate = searchByDate,
-                SearchByCost = searchByCost,
-                SearchByMonthly = searchByMonthly
+                DateStart = SearchFromDate,
+                DateEnd = SearchToDate,
+                IsMonthly = IsMonthly,
+                SearchByName = SearchByName,
+                SearchByType = SearchByType,
+                SearchByDate = SearchByDate,
+                SearchByCost = SearchByCost,
+                SearchByMonthly = SearchByMonthly
             };
 
             Task.Factory.StartNew(async () => 
@@ -281,24 +281,20 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             }
         }
+
         private DateTime searchToDate;
         public DateTime SearchToDate
         {
             get
             {
-                return searchToDate;
+                return searchToDate.Round(TimeSpan.FromDays(1)).AddDays(1);
             }
             set
             {
                 SearchByDate = true;
-                if (searchToDate != value &&
-                    searchFromDate <= value)
+                if (searchToDate != value && searchFromDate <= value)
                 {
                     searchToDate = value;
-                    if (searchToDate.Hour == 0 && searchToDate.Minute == 0 && searchToDate.Second == 0)
-                    {
-                        searchToDate = searchToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
-                    }
                     
                     OnPropertyChanged(() => SearchToDate);
                 }

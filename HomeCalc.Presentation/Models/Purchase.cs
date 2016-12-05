@@ -14,11 +14,12 @@ namespace HomeCalc.Presentation.Models
         {
             date = DateTime.Now;
         }
+
         public Purchase(Purchase purchase)
         {
             Id = purchase.Id;
             Name = purchase.Name;
-            Date = new DateTime(purchase.Date.Ticks);
+            Date = purchase.Date;
             ItemCost = purchase.ItemCost;
             ItemsNumber = purchase.ItemsNumber;
             TotalCost = purchase.TotalCost;

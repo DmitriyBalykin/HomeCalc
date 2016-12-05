@@ -62,7 +62,7 @@ namespace HomeCalc.Presentation.ViewModels
         }
         private void SaveCommandExecute(object obj)
         {
-            PreparePurchaseToSave();
+            purchase.Name = purchase.Name.Trim();
 
             Task.Factory.StartNew(async () => 
             {
@@ -74,7 +74,12 @@ namespace HomeCalc.Presentation.ViewModels
                     logger.Info("Purchase saved: {0}", pName);
                     Status.Post("Покупка \"{0}\" збережена", pName);
 
-                    purchase = new Purchase();
+                    purchase = new Purchase 
+                    {
+                        Type = purchase.Type,
+                        SubType = purchase.SubType
+                    };
+
                     CleanInputFields();
                 }
                 else
@@ -84,21 +89,6 @@ namespace HomeCalc.Presentation.ViewModels
                 }
             });
             
-        }
-
-        private void PreparePurchaseToSave()
-        {
-            purchase.Name = purchase.Name.Trim();
-
-            if (purchase.Type == null)
-            {
-                purchase.Type = ProductType;
-            }
-
-            if (purchase.SubType == null)
-            {
-                purchase.SubType = ProductSubType;
-            }
         }
 
         private bool SaveCommandCanExecute(object obj)
