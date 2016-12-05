@@ -1,5 +1,6 @@
 ﻿using HomeCalc.Core.Helpers;
 using HomeCalc.Core.LogService;
+using HomeCalc.Core.Services.Messages;
 using HomeCalc.Presentation.Services;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,11 @@ namespace HomeCalc.Core.Services
     {
         private static UpdateService instance;
         private Logger logger;
-        public event EventHandler UpdatesAvailableEvent;
+        private MessageDispatcher MsgDispatcher;
         private UpdateService()
         {
+            MsgDispatcher = MessageDispatcher.GetInstance();
+
             logger = LogService.LogService.GetLogger();
             logger.SendEmail = SettingsService.GetInstance().GetSetting(SettingsService.SEND_EMAIL_AUTO_KEY).SettingBoolValue;
         }
@@ -53,10 +56,7 @@ namespace HomeCalc.Core.Services
                     }
                     result = sb.ToString();
 
-                    if (UpdatesAvailableEvent != null)
-                    {
-                        UpdatesAvailableEvent(null, EventArgs.Empty);
-                    }
+                    MsgDispatcher.Post(MessageType.UPDATES_AVAILABLE);
                 }
             }
             catch (WebException ex)
