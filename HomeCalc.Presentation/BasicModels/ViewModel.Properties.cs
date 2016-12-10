@@ -101,6 +101,12 @@ namespace HomeCalc.Presentation.BasicModels
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs(memberExpression.Member.Name));
             }
         }
+
+        protected void OnAllPropertiesChanged()
+        {
+            this.GetType().GetProperties().ToList().ForEach(property => this.OnPropertyChanged(property.Name));
+        }
+
         #endregion
         #region Helpers
         

@@ -119,20 +119,13 @@ namespace HomeCalc.Presentation.ViewModels
         {
             fieldCalculationBlocked = true;
 
-            Count = string.Empty;
-            ItemCost = string.Empty;
-            TotalCost = string.Empty;
+            this.TotalCost = string.Empty;
+            this.ItemCost = string.Empty;
+            this.Count = string.Empty;
+
+            OnAllPropertiesChanged();
 
             fieldCalculationBlocked = false;
-
-            IsMonthly = false;
-            PurchaseComment = string.Empty;
-            StoreComment = string.Empty;
-            PurchaseRate = 0;
-            StoreRate = 0;
-            StoreName = string.Empty;
-            PurchaseName = string.Empty;
-            
         }
         private void SearchPurchase()
         {
