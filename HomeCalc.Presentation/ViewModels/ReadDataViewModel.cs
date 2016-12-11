@@ -287,7 +287,7 @@ namespace HomeCalc.Presentation.ViewModels
         {
             get
             {
-                return searchToDate.Round(TimeSpan.FromDays(1)).AddDays(1);
+                return searchToDate.Round(TimeSpan.FromDays(1)).AddDays(1).AddMilliseconds(-1);
             }
             set
             {
