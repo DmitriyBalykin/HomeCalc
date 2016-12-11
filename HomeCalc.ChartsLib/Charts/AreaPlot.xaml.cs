@@ -17,13 +17,8 @@ using System.Windows.Shapes;
 
 namespace HomeCalc.ChartsLib.Charts
 {
-    /// <summary>
-    /// Interaction logic for AreaPlot.xaml
-    /// </summary>
     public partial class AreaPlot : UserControl
     {
-        Canvas plotArea;
-
         private const double ARGUMENT_LABEL_VERTICAL_SHIFT = 10;
         private const double VALUE_LABEL_HORIZONTAL_SHIFT = 0;
         private const double MAX_DESIRED_X_VALUES = 12;
@@ -32,182 +27,92 @@ namespace HomeCalc.ChartsLib.Charts
         public AreaPlot()
         {
             InitializeComponent();
-
-            plotArea = FindName("PlotArea") as Canvas;
         }
 
         #region Properties
 
-        private IEnumerable<IEnumerable<SeriesDateBasedElement>> series;
-        public IEnumerable<IEnumerable<SeriesDateBasedElement>> Series
+        public static readonly DependencyProperty SeriesProperty = DependencyProperty.Register("Series", typeof(IEnumerable<IEnumerable<SeriesDateBasedElement>>), typeof(AreaPlot), new FrameworkPropertyMetadata(OnSeriesPropertyChanged));
+
+        public static readonly DependencyProperty ChartBackgroundProperty = DependencyProperty.Register("ChartBackground", typeof(Brush), typeof(AreaPlot));
+
+        public static IEnumerable<IEnumerable<SeriesDateBasedElement>> GetSeriesProperty(DependencyObject source)
         {
-            get { return series; }
-            set
-            {
-                //SetValue(SeriesProperty, value);
-                series = value;
-                DrawChart();
-            }
+            return source.GetValue(SeriesProperty) as IEnumerable<IEnumerable<SeriesDateBasedElement>>;
         }
 
-        // Using a DependencyProperty as the backing store for Series.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SeriesProperty =
-            DependencyProperty.Register(
-            "Series",
-            typeof(IEnumerable<IEnumerable<SeriesDateBasedElement>>),
-            typeof(AreaPlot),
-            new FrameworkPropertyMetadata(
-                default(IEnumerable<IEnumerable<SeriesDateBasedElement>>),
-                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                new PropertyChangedCallback(OnSeriesChangedCallback),
-                new CoerceValueCallback(OnSeriesCoerceCallback))
-                );
-
-        private static object OnSeriesCoerceCallback(DependencyObject d, object baseValue)
+        public static void SetSeriesProperty(DependencyObject source, IEnumerable<IEnumerable<SeriesDateBasedElement>> value)
         {
-            if (d is AreaPlot)
-            {
-                return (d as AreaPlot).OnCoerceSeriesProperty(baseValue);
-            }
-            else
-            {
-                return baseValue;
-            }
+            source.SetValue(SeriesProperty, value);
         }
 
-        private object OnCoerceSeriesProperty(object baseValue)
+        public static Brush GetChartBackgroundProperty(DependencyObject source)
         {
-            if (baseValue != null)
-            {
-                Series = baseValue as IEnumerable<IEnumerable<SeriesDateBasedElement>>;
-            }
-            return series;
+            return source.GetValue(SeriesProperty) as Brush;
         }
 
-        private static void OnSeriesChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static void SetChartBackgroundProperty(DependencyObject source, Brush value)
         {
-            if (d is AreaPlot)
-            {
-                (d as AreaPlot).OnSeriesPropertyChanged(e);
-            }
+            source.SetValue(SeriesProperty, value);
         }
 
-        private void OnSeriesPropertyChanged(DependencyPropertyChangedEventArgs e)
+        private static void OnSeriesPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
-            var localValue = ReadLocalValue(SeriesProperty);
-            if (localValue != null)
-            {
-                series = localValue as IEnumerable<IEnumerable<SeriesDateBasedElement>>;
-            }
-        }
+            var series = GetSeriesProperty(source);
 
-        private Brush chartBackground;
-        public Brush ChartBackground
-        {
-            get { return chartBackground; }
-            set
-            {
-                chartBackground = value;
-            }
-        }
+            var backBrush = GetChartBackgroundProperty(source);
 
-        // Using a DependencyProperty as the backing store for Series.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ChartBackgroundProperty =
-            DependencyProperty.Register(
-            "ChartBackground",
-            typeof(Brush),
-            typeof(AreaPlot),
-            new FrameworkPropertyMetadata(
-                default(Brush),
-                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                new PropertyChangedCallback(OnChartBackgroundChangedCallback),
-                new CoerceValueCallback(OnChartBackgroundCoerceCallback))
-                );
+            var plotArea = (source as FrameworkElement).FindName("PlotArea") as Canvas;
 
-        private static object OnChartBackgroundCoerceCallback(DependencyObject d, object baseValue)
-        {
-            if (d is AreaPlot)
+            if (plotArea == null)
             {
-                return (d as AreaPlot).OnCoerceChartBackgroundProperty(baseValue);
+                return;
             }
-            else
+            if (series == null || series.Count() == 0)
             {
-                return baseValue;
+                return;
             }
-        }
+            if (series.FirstOrDefault().Count() == 0)
+            {
+                return;
+            }
 
-        private object OnCoerceChartBackgroundProperty(object baseValue)
-        {
-            if (baseValue != null)
-            {
-                ChartBackground = baseValue as Brush;
-            }
-            return series;
-        }
-
-        private static void OnChartBackgroundChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is AreaPlot)
-            {
-                (d as AreaPlot).OnChartBackgroundPropertyChanged(e);
-            }
-        }
-
-        private void OnChartBackgroundPropertyChanged(DependencyPropertyChangedEventArgs e)
-        {
-            var localValue = ReadLocalValue(ChartBackgroundProperty);
-            if (localValue != null)
-            {
-                chartBackground = localValue as Brush;
-            }
+            DrawChart(plotArea, series, backBrush);
         }
 
         #endregion
 
         #region Internal
-        private void DrawChart()
+        private static void DrawChart(Canvas plotArea, IEnumerable<IEnumerable<SeriesDateBasedElement>> series, Brush backgroundColor)
         {
-            if (plotArea == null)
-            {
-                return;
-            }
-            if (Series == null || Series.Count() == 0)
-            {
-                return;
-            }
-            if (Series.FirstOrDefault().Count() == 0)
-            {
-                return;
-            }
             plotArea.Children.Clear();
 
-            ChartPlotInfo plotInfo = CalculatePlotInfo();
+            ChartPlotInfo plotInfo = CalculatePlotInfo(series);
 
             plotArea.Width = plotInfo.Width + plotInfo.LeftMarginWidth + plotInfo.RightMarginWidth;
             plotArea.Height = plotInfo.MaxHeight + plotInfo.FooterHeight + plotInfo.HeaderHeight;
 
             DrawLegend();
-            DrawBackground(plotInfo);
-            DrawGrid(plotInfo);
-            foreach (var seria in Series)
+            DrawBackground(plotArea, plotInfo, backgroundColor);
+            DrawGrid(plotArea, plotInfo);
+            foreach (var seria in series)
             {
-                DrawSeria(seria, plotInfo, BrushGenerator.GetBrush());
+                DrawSeria(plotArea, seria, plotInfo, BrushGenerator.GetBrush());
             }
         }
 
-        private void DrawBackground(ChartPlotInfo plotInfo)
+        private static void DrawBackground(Canvas plotArea, ChartPlotInfo plotInfo, Brush background)
         {
             var chartBack = new Rectangle();
             chartBack.Width = plotInfo.MaxWidth;
             chartBack.Height = plotInfo.MaxHeight;
             Canvas.SetLeft(chartBack, plotInfo.LeftMarginWidth);
             Canvas.SetTop(chartBack, plotInfo.HeaderHeight);
-            chartBack.Fill = ChartBackground;
+            chartBack.Fill = background;
             
             plotArea.Children.Add(chartBack);
         }
 
-        private void DrawGrid(ChartPlotInfo info)
+        private static void DrawGrid(Canvas plotArea, ChartPlotInfo info)
         {
             var frameBrush = Brushes.SteelBlue;
             var gridBrush = Brushes.LightSteelBlue;
@@ -217,7 +122,7 @@ namespace HomeCalc.ChartsLib.Charts
             {
                 if (x > info.MinX)
                 {
-                    DrawLine(x, 0, x, info.PhysHeight, info, gridBrush, true);
+                    DrawLine(plotArea, x, 0, x, info.PhysHeight, info, gridBrush, true);
                 }
                 var labelModel = new LabelModel(info)
                 {
@@ -225,13 +130,13 @@ namespace HomeCalc.ChartsLib.Charts
                     XPhys = x,
                     YPix = info.MaxHeight + ARGUMENT_LABEL_VERTICAL_SHIFT + info.HeaderHeight
                 };
-                
-                DrawLabel(labelModel, info);
+
+                DrawLabel(plotArea, labelModel, info);
             }
 
             for (var y = info.MinY; y <= info.MaxY; y += info.YStep)
             {
-                DrawLine(0, y, info.Width, y, info, gridBrush, true);
+                DrawLine(plotArea, 0, y, info.Width, y, info, gridBrush, true);
 
                 var labelModel = new LabelModel(info)
                 {
@@ -239,21 +144,21 @@ namespace HomeCalc.ChartsLib.Charts
                     XPix = VALUE_LABEL_HORIZONTAL_SHIFT,
                     YPhys = y
                 };
-                DrawLabel(labelModel, info);
+                DrawLabel(plotArea, labelModel, info);
             }
 
             //Frame
             //left
-            DrawLine(0, 0, 0, info.MaxY, info, frameBrush);
+            DrawLine(plotArea, 0, 0, 0, info.MaxY, info, frameBrush);
             //right
-            DrawLine(info.Width, 0, info.Width, info.MaxY, info, frameBrush);
+            DrawLine(plotArea, info.Width, 0, info.Width, info.MaxY, info, frameBrush);
             //bottom
-            DrawLine(0, info.MaxY, info.Width, info.MaxY, info, frameBrush);
+            DrawLine(plotArea, 0, info.MaxY, info.Width, info.MaxY, info, frameBrush);
             //top
-            DrawLine(0, 0, info.Width, 0, info, frameBrush);
+            DrawLine(plotArea, 0, 0, info.Width, 0, info, frameBrush);
         }
 
-        private void DrawLabel(LabelModel labelModel, ChartPlotInfo info, LabelAlign align = LabelAlign.Left)
+        private static void DrawLabel(Canvas plotArea, LabelModel labelModel, ChartPlotInfo info, LabelAlign align = LabelAlign.Left)
         {
             switch (align)
             {
@@ -271,10 +176,10 @@ namespace HomeCalc.ChartsLib.Charts
             var textBlock = new TextBlock();
             textBlock.Text = labelModel.Text;
 
-            RenderElement(textBlock, labelModel.XPix, labelModel.YPix);
+            RenderElement(plotArea, textBlock, labelModel.XPix, labelModel.YPix);
         }
 
-        private void DrawLine(DateTime x1, double y1, DateTime x2, double y2, ChartPlotInfo info, Brush brush, bool isDashed = false)
+        private static void DrawLine(Canvas plotArea, DateTime x1, double y1, DateTime x2, double y2, ChartPlotInfo info, Brush brush, bool isDashed = false)
         {
             var line = new Line();
             line.X1 = GeometricHelper.DateToChart(x1, info);
@@ -292,10 +197,10 @@ namespace HomeCalc.ChartsLib.Charts
                 line.StrokeDashArray = dashes;
             }
 
-            RenderElement(line);
+            RenderElement(plotArea, line);
         }
 
-        private void DrawLine(double x1, double y1, double x2, double y2, ChartPlotInfo info, Brush brush, bool isDashed = false)
+        private static void DrawLine(Canvas plotArea, double x1, double y1, double x2, double y2, ChartPlotInfo info, Brush brush, bool isDashed = false)
         {
             var line = new Line();
             line.X1 = GeometricHelper.XCoordToChart(x1, info);
@@ -310,10 +215,10 @@ namespace HomeCalc.ChartsLib.Charts
                 line.StrokeDashOffset = 5;
             }
 
-            RenderElement(line);
+            RenderElement(plotArea, line);
         }
 
-        private void DrawCircle(DateTime dateTime, double p, ChartPlotInfo info, Brush brush)
+        private static void DrawCircle(Canvas plotArea, DateTime dateTime, double p, ChartPlotInfo info, Brush brush)
         {
             var circle = new Ellipse();
 
@@ -330,10 +235,10 @@ namespace HomeCalc.ChartsLib.Charts
             Canvas.SetTop(circle, y);
             Canvas.SetLeft(circle, x);
 
-            RenderElement(circle);
+            RenderElement(plotArea, circle);
         }
 
-        private void DrawBezierSegment(Point p1, Point p2, Point p3, ChartPlotInfo info, Brush brush)
+        private static void DrawBezierSegment(Point p1, Point p2, Point p3, ChartPlotInfo info, Brush brush)
         {
             //var line = new BezierSegment();
             //line.Point1 = GeometricHelper.PointToChart(p1, info);
@@ -344,7 +249,7 @@ namespace HomeCalc.ChartsLib.Charts
 
             //RenderElement(line);
         }
-        private void RenderElement(UIElement element, double? x = null, double? y = null)
+        private static void RenderElement(Canvas plotArea, UIElement element, double? x = null, double? y = null)
         {
             if (x != null)
             {
@@ -357,18 +262,19 @@ namespace HomeCalc.ChartsLib.Charts
 
             plotArea.Children.Add(element);
         }
-        private void DrawLegend()
+        private static void DrawLegend()
         {
             //TODO: Implement Legend drawing
         }
 
-        private void DrawSeria(IEnumerable<SeriesDateBasedElement> seria, ChartPlotInfo info, Brush brush)
+        private static void DrawSeria(Canvas plotArea, IEnumerable<SeriesDateBasedElement> seria, ChartPlotInfo info, Brush brush)
         {
             var timeOrderedSeria = seria.OrderBy(x => x.Argument).ToList();
             var prevItem = timeOrderedSeria.First();
             foreach (var item in timeOrderedSeria.Skip(1))
             {
                 DrawLine(
+                    plotArea,
                     prevItem.Argument,
                     prevItem.Value,
                     item.Argument,
@@ -379,18 +285,18 @@ namespace HomeCalc.ChartsLib.Charts
             }
             foreach (var item in timeOrderedSeria)
             {
-                DrawCircle(item.Argument, item.Value, info, brush);
+                DrawCircle(plotArea, item.Argument, item.Value, info, brush);
             }
         }
 
-        private ChartPlotInfo CalculatePlotInfo()
+        private static ChartPlotInfo CalculatePlotInfo(IEnumerable<IEnumerable<SeriesDateBasedElement>> series)
         {
             ChartPlotInfo plotInfo = new ChartPlotInfo();
 
-            DateTime minDate = Series.FirstOrDefault().Min(element => element.Argument);
-            DateTime maxDate = Series.FirstOrDefault().Max(element => element.Argument);
-            double maxValue = Series.FirstOrDefault().Max(element => element.Value);
-            foreach (var seria in Series.Skip(1))
+            DateTime minDate = series.FirstOrDefault().Min(element => element.Argument);
+            DateTime maxDate = series.FirstOrDefault().Max(element => element.Argument);
+            double maxValue = series.FirstOrDefault().Max(element => element.Value);
+            foreach (var seria in series.Skip(1))
             {
                 var minX = seria.Min(el => el.Argument);
                 if (minX < minDate)
