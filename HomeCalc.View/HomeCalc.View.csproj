@@ -221,8 +221,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>H:\workspace\HomeCalc\ZipBuild\ZipBuild.exe H:\HomeCalc\ $(TargetDir) HomeCalc.View.exe.config HomeCalc.ChartsLib.dll HomeCalc.Core.dll HomeCalc.Model.dll HomeCalc.Presentation.dll Microsoft.WindowsAPICodePack.dll Microsoft.WindowsAPICodePack.Shell.dll NLog.dll System.Data.SQLite.dll HomeCalc.View.exe Updater.exe x86 x64</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
