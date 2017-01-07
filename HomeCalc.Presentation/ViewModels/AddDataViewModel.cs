@@ -77,7 +77,8 @@ namespace HomeCalc.Presentation.ViewModels
                     purchase = new Purchase 
                     {
                         Type = purchase.Type,
-                        SubType = purchase.SubType
+                        SubType = purchase.SubType,
+                        Date = purchase.Date
                     };
 
                     CleanInputFields();

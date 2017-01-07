@@ -25,7 +25,7 @@ namespace HomeCalc.Presentation.ViewModels
             AddCommand("Calculate", new DelegateCommand(CalculateCommandExecuted));
             AddCommand("CancelCalculate", new DelegateCommand(CancelCalculateCommandExecuted));
 
-            SearchFromDate = DateTime.Now.AddMonths(-1);
+            SearchFromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             SearchToDate = DateTime.Now;
         }
 
