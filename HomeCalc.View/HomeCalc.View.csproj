@@ -41,7 +41,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -54,12 +54,16 @@
     <ApplicationIcon>Icon4.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=4.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.4.1.0\lib\net45\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -221,7 +225,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>H:\workspace\HomeCalc\ZipBuild\ZipBuild.exe H:\HomeCalc\ $(TargetDir) HomeCalc.View.exe.config HomeCalc.ChartsLib.dll HomeCalc.Core.dll HomeCalc.Model.dll HomeCalc.Presentation.dll Microsoft.WindowsAPICodePack.dll Microsoft.WindowsAPICodePack.Shell.dll NLog.dll System.Data.SQLite.dll HomeCalc.View.exe Updater.exe x86 x64</PostBuildEvent>
+    <PostBuildEvent>powershell Compress-Archive -Path '$(TargetDir)\HomeCalc.View.exe.config', '$(TargetDir)\HomeCalc.ChartsLib.dll', '$(TargetDir)\HomeCalc.Core.dll', '$(TargetDir)\HomeCalc.Model.dll', '$(TargetDir)\HomeCalc.Presentation.dll', '$(TargetDir)\Microsoft.WindowsAPICodePack.dll', '$(TargetDir)\Microsoft.WindowsAPICodePack.Shell.dll', '$(TargetDir)\NLog.dll', '$(TargetDir)\System.Data.SQLite.dll', '$(TargetDir)\HomeCalc.View.exe', '$(TargetDir)\Updater.exe', '$(TargetDir)\x86', '$(TargetDir)\x64' -DestinationPath 'G:\HomeCalc\HomeCalc.zip' -Force</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -140,7 +140,7 @@ namespace HomeCalc.Model.DbService
                     return true;
                 }
             }
-            catch (SQLiteException ex)
+            catch (SQLiteException)
             {
                 Console.WriteLine("Table {0} not exist", table);
             }

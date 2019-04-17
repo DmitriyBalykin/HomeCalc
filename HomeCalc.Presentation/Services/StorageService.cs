@@ -415,6 +415,7 @@ namespace HomeCalc.Presentation.Models
                 TotalCost = model.TotalCost,
                 ItemsNumber = model.ItemsNumber,
                 PurchaseComment = model.Comment,
+                StoreComment = model.StoreComment,
                 PurchaseRate = model.Rate,
                 StoreName = model.StoreName,
                 IsMonthly = model.IsMonthly,
