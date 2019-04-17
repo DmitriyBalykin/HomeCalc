@@ -12,7 +12,7 @@ namespace Updater
 {
     public class VersionUpdater
     {
-        private static string versionBinaryPath = @"http://www.homecalc.com.ua/distributives/";
+        private static string versionBinaryPath = @"https://homecalc.file.core.windows.net/release/";
 
         private static string versionBinaryFileName = @"HomeCalc.zip";
 

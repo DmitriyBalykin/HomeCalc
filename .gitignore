@@ -45,3 +45,7 @@ obj/
 bin/
 packages/
 HomeCalc.v12.suo
+.vs/HomeCalc/v15/Server/sqlite3/storage.ide-wal
+.vs/HomeCalc/v15/Server/sqlite3/storage.ide
+.vs/HomeCalc/v15/Server/sqlite3/db.lock
+.vs/HomeCalc/v15/Server/sqlite3/storage.ide-shm

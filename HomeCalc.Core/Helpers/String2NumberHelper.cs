@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HomeCalc.Core.Helpers
 {
     public static class String2NumberHelper
     {
-        private const char INCORRECT_COMA = '.';
-        private const char CORRECT_COMA = ',';
+        private const char INCORRECT_COMA = ',';
+        private const char CORRECT_COMA = '.';
         public static double ToNumber(string str)
         {
             str = Normalize(str);
@@ -17,7 +14,7 @@ namespace HomeCalc.Core.Helpers
             {
                 return 0;
             }
-            return double.Parse(str);
+            return double.Parse(str, NumberStyles.Any, CultureInfo.InvariantCulture);
         }
         public static bool IsNumber(string str)
         {

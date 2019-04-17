@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 using HomeCalc.Presentation.Models;
 using System.Linq;
 
@@ -86,16 +85,18 @@ namespace FunctionalTests
             Assert.IsTrue(StoreService.DeletePurchase(purchase2.Name).Result, "Cleanup failed");
             Assert.IsTrue(StoreService.DeletePurchase(purchase3.Name).Result, "Cleanup failed");
             Assert.IsTrue(StoreService.DeletePurchase(purchase4.Name).Result, "Cleanup failed");
-            
+
+            var foundListPre = StoreService.LoadPurchaseList(SearchRequestModel.Requests.Empty).Result;
+
             //Save test
             purchase = StoreService.AddPurchase(purchase).Result;
-            Assert.IsTrue(purchase != null, "Purchase saving error");
+            Assert.IsNotNull(purchase, "Purchase saving error");
             purchase2 = StoreService.AddPurchase(purchase2).Result;
-            Assert.IsTrue(purchase != null, "Purchase saving error");
+            Assert.IsNotNull(purchase, "Purchase saving error");
             purchase3 = StoreService.AddPurchase(purchase3).Result;
-            Assert.IsTrue(purchase != null, "Purchase saving error");
+            Assert.IsNotNull(purchase, "Purchase saving error");
             purchase4 = StoreService.AddPurchase(purchase4).Result;
-            Assert.IsTrue(purchase != null, "Purchase saving error");
+            Assert.IsNotNull(purchase, "Purchase saving error");
             //read test
 
             var searchRequest = new SearchRequestModel
@@ -158,7 +159,7 @@ namespace FunctionalTests
             Assert.IsTrue(StoreService.DeletePurchase(purchase).Result, "Purchase deletion error");
 
             var deletedPurchase = StoreService.LoadPurchase(purchase.Id).Result;
-            Assert.IsTrue (deletedPurchase == null, "Purchase deletion error: not deleted");
+            Assert.IsNull(deletedPurchase, "Purchase deletion error: not deleted");
 
         }
     }
