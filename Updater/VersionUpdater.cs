@@ -1,7 +1,9 @@
 ﻿using HomeCalc.Core.LogService;
 using HomeCalc.Core.Services;
+using HomeCalc.Core.Settings;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,9 +14,9 @@ namespace Updater
 {
     public class VersionUpdater
     {
-        private static string versionBinaryPath = @"https://homecalc.file.core.windows.net/release/";
+        //private static string versionBinaryPath = @"https://homecalc.file.core.windows.net/release/";
 
-        private static string versionBinaryFileName = @"HomeCalc.zip";
+        //private static string versionBinaryFileName = @"HomeCalc.zip";
 
 
         private static Logger logger = LogService.GetLogger();
@@ -24,9 +26,11 @@ namespace Updater
         {
             logger.Info("Starting update");
 
+            var settings = ConfigurationManager.GetSection(HomecalcApplicationSettingsSection.SectionName) as HomecalcApplicationSettingsSection;
+
             var updateDirectoryPath = GetUpdateDirectory();
-            var sourcePath = Path.Combine(versionBinaryPath, versionBinaryFileName);
-            var destPath = Path.Combine(updateDirectoryPath, versionBinaryFileName);
+            var sourcePath = Path.Combine(settings.Update.Folder, settings.Update.BinaryFileName);
+            var destPath = Path.Combine(updateDirectoryPath, settings.Update.BinaryFileName);
 
             var taskCancellationTokenSource = new ReportingCancellationTokenSource("Update");
             SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());

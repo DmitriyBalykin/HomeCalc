@@ -77,6 +77,8 @@
     <Compile Include="Services\Messages\MessageDispatcher.cs" />
     <Compile Include="Services\Messages\MessageType.cs" />
     <Compile Include="Services\StatusService.cs" />
+    <Compile Include="Settings\UpdateElement.cs" />
+    <Compile Include="Settings\HomecalcApplicationSettingsSection.cs" />
     <Compile Include="Utilities\Cache.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\ListSafe.cs" />

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCalc.View", "HomeCalc.View\HomeCalc.View.csproj", "{F515B5F8-0202-43B7-903B-CB3ECC12718E}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{A36C633A-FE99-4C11-94AB-76653C37085B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalTests", "FunctionalTests\FunctionalTests.csproj", "{031EEFFF-79FA-4461-A271-175F5B789A68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCalc.Contracts", "HomeCalc.Contracts\HomeCalc.Contracts.csproj", "{06458E64-9465-4D96-9EF3-4BD4C984DE00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,8 +53,15 @@ Global
 		{031EEFFF-79FA-4461-A271-175F5B789A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{031EEFFF-79FA-4461-A271-175F5B789A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{031EEFFF-79FA-4461-A271-175F5B789A68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06458E64-9465-4D96-9EF3-4BD4C984DE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06458E64-9465-4D96-9EF3-4BD4C984DE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06458E64-9465-4D96-9EF3-4BD4C984DE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06458E64-9465-4D96-9EF3-4BD4C984DE00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C4B8817-202C-4F6C-9600-60450F820FB9}
 	EndGlobalSection
 EndGlobal

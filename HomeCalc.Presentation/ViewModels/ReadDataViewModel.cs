@@ -158,7 +158,7 @@ namespace HomeCalc.Presentation.ViewModels
 
             Task.Factory.StartNew(async () => 
             {
-                List<Purchase> results = await StoreService.LoadPurchaseList(searchRequest).ConfigureAwait(false);
+                var results = await StoreService.LoadPurchaseList(searchRequest).ConfigureAwait(false);
                 results = results.OrderBy(p => p.Date).ToList();
                 TotalCount = results.Sum(p => p.ItemsNumber).ToString();
                 TotalCost = results.Sum(p => p.TotalCost).ToString();

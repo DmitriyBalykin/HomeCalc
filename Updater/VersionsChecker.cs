@@ -1,25 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using HomeCalc.Core.Settings;
+using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Updater
 {
     public static class VersionChecker
     {
-        private static string versionCheckPath = @"http://www.homecalc.com.ua/distributives/";
-        private static string versionCheckFilename = @"versionInfo.txt";
+        // private static string versionCheckPath = @"http://www.homecalc.com.ua/distributives/";
+        // private static string versionCheckFilename = @"versionInfo.txt";
 
         public static Task<VersionsInformation> GetUpdatesInformation(bool compareVersion)
         {
+            var settings = ConfigurationManager.GetSection(HomecalcApplicationSettingsSection.SectionName) as HomecalcApplicationSettingsSection;
+
             var webclient = new WebClient();
 
-            var source = Path.Combine(versionCheckPath, versionCheckFilename);
-            var destination = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, versionCheckFilename);
+            var source = Path.Combine(settings.Update.Folder, settings.Update.VersionFileName);
+            var destination = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, settings.Update.VersionFileName);
 
             try
             {

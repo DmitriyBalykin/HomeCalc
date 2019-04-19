@@ -90,7 +90,8 @@ namespace HomeCalc.Presentation.Models
             SettingsCache.SetNeedRefresh();
             return await DBService.SaveSettings(SettingToStorage(settings)).ConfigureAwait(false);
         }
-        public async Task<List<SettingsModel>> LoadSettings()
+
+        public async Task<IList<SettingsModel>> LoadSettings()
         {
             var settings = (await DBService.LoadSettings().ConfigureAwait(false)).Select(settingModel => StorageToSetting(settingModel)).ToList();
             if (!SettingsCache.IsActual())
@@ -185,6 +186,7 @@ namespace HomeCalc.Presentation.Models
             }
             return false;
         }
+
         [Obsolete("For Test purposes only!!!")]
         public async Task<bool> DeletePurchase(string purchaseName)
         {
@@ -199,7 +201,8 @@ namespace HomeCalc.Presentation.Models
         {
             return await ModelToPurchase(await DBService.LoadPurchase(id).ConfigureAwait(false));
         }
-        public async Task<List<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter)
+
+        public async Task<IList<Purchase>> LoadPurchaseList(SearchRequestModel.Requests enumFilter)
         {
             var list = new List<Purchase>();
             switch (enumFilter)
@@ -216,7 +219,8 @@ namespace HomeCalc.Presentation.Models
             logger.Debug("StorageService: purchase list loaded");
             return list;
         }
-        public async Task<List<Purchase>> LoadPurchaseList(SearchRequestModel filter)
+
+        public async Task<IList<Purchase>> LoadPurchaseList(SearchRequestModel filter)
         {
             var convertedList = new List<Purchase>();
 
@@ -263,7 +267,7 @@ namespace HomeCalc.Presentation.Models
             }
             return result;
         }
-        public async Task<List<ProductType>> LoadProductTypeList()
+        public async Task<IList<ProductType>> LoadProductTypeList()
         {
             if (!ProductTypesCache.IsActual())
             {
